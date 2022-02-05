@@ -1,0 +1,24 @@
+{
+	"env": {
+	  "myDefaultIncludePath": ["${workspaceFolder}/**"],
+	  "myCompilerPath": "C:/msys64/mingw64/bin/g++.exe"
+	},
+	"configurations": [
+	  {
+		"name": "Configuration 1",
+		"intelliSenseMode": "clang-x64",
+		"includePath": ["${workspaceFolder}/src/**"],
+		"defines": ["FOO", "BAR=100"],
+		"compilerPath": "C:/msys64/mingw64/bin/g++.exe",
+		"cStandard": "c11",
+		"cppStandard": "c++17",
+		"compileCommands": "C:/msys64/usr/bin/make.exe",
+		"browse": {
+		  "path": ["${workspaceFolder}"],
+		  "limitSymbolsToIncludedHeaders": true,
+		  "databaseFilename": ""
+		}
+	  }
+	],
+	"version": 4
+}  
