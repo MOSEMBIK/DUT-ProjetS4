@@ -1,5 +1,5 @@
 #pragma once
-#include "VertexRenderer.h"
+#include "../VertexRenderer.h"
 
 using namespace VertexRenderer::VAO;
 

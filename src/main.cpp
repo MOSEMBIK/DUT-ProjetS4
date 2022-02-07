@@ -2,8 +2,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-#include "Quad.h"
-#include "linmath.h"
+#include <Renderer/Geometry/Quad.h>
+#include <linmath.h>
 
 using namespace std;
 
@@ -40,12 +40,27 @@ int main(int argc, char **argv)
 	cout << glGetString(GL_VERSION) << endl;
 
 	Quad quad;
+	
+	// VSync (0 = No VSync (Pas de limite), 1 = VSync (Basé sur la vitesse de l'écran (60Hz => 60fps)), 2 = Double VSync (Moitié de la vitesse de l'écran) )
+	glfwSwapInterval(1);
+
+	double time = glfwGetTime();
 
 	// Tant que la fenêtre ne doit pas être fermer (Alt-F4 ou click sur la croix par exemple)
 	while (!glfwWindowShouldClose(window))
 	{
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+        glViewport(0, 0, width, height);
+
+		// Le delta time définit le temps qu'il s'est passé depuis la dernière update
+		double deltaTime = glfwGetTime() - time;
+		time = glfwGetTime();
+ 
+        glViewport(0, 0, width, height);
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+
 		quad.Draw();
 
 		glfwSwapBuffers(window);

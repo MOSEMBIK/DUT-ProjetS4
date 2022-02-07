@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <functional>
-#include "VertexRenderer.h"
+#include <Renderer/VertexRenderer.h>
 
 using namespace VertexRenderer;
 

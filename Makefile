@@ -3,6 +3,9 @@
 # 'make clean'  removes all .o and executable files
 #
 
+# wildcard function recursive
+rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+
 # define the Cpp compiler to use
 CXX = g++
 
@@ -51,7 +54,7 @@ INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
 LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%)) -lglfw3dll -lglfw3 -lopengl32 -lglew32 -lmingw32 -lSDL2main -lSDL2 -lSDL2_image
 
 # define the C source files
-SOURCES		:= $(wildcard $(patsubst %,%/*.cpp, $(SOURCEDIRS)))
+SOURCES		:= $(call rwildcard,$(SOURCEDIRS),*.cpp)
 
 # define the C object files 
 OBJECTS		:= $(SOURCES:.cpp=.o)

@@ -1,8 +1,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <vector>
-#include "VertexRenderer.h"
-#include "Quad.h"
+#include <Renderer/VertexRenderer.h>
+#include <Renderer/Geometry/Quad.h>
 
 using namespace VertexRenderer;
 
