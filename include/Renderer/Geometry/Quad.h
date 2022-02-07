@@ -1,9 +1,7 @@
 #pragma once
-#include "../VertexRenderer.h"
+#include <Renderer/Vertex/VertexRenderer.h>
 
-using namespace VertexRenderer::VAO;
-
-class Quad : public DirectDraw {
+class Quad : public Renderer::Vertex::VAO::DirectDraw {
 public:
     Quad(); 
 };

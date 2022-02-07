@@ -53,7 +53,8 @@
                     "-c",
                     "'make run'"
                 ]
-            }
+            },
+            "problemMatcher": []
         },
         {
             "label": "clean",
