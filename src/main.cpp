@@ -1,10 +1,11 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "image.h"
-using std::cout;
-using std::endl;
 
+#include "Quad.h"
+#include "linmath.h"
+
+using namespace std;
 
 int main(int argc, char **argv)
 {
@@ -30,8 +31,7 @@ int main(int argc, char **argv)
 
 	cout << glGetString(GL_VERSION) << endl;
 
-	/* Création d'une image */
-	Image img("../test.png");
+	Quad quad;
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
@@ -39,8 +39,7 @@ int main(int argc, char **argv)
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		// Render quad
-		img.draw();
+		quad.Draw();
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
