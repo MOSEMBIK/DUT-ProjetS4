@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 			"void main ()"
 			"{"
 				"gl_Position = MVP * vec4 (position, 1.0);"
-				"color = vec4 (1.0, 1.0, 1.0, 1.0);"
+				"color = vec4 (0.5 - position, 1.0);"
 			"}"
 		},
 		{
