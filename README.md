@@ -27,4 +27,6 @@ Le projet doit être réalisé en 8 semaines. Il est possible d'utiliser des ass
 >pacman -S make
 5. L'utilisation de VSCode est recommandé puisque les taches sont préconfigurées :
 6. Aller dans `Terminal > Run Task > Build` ou `Build & Run`
-7. Ouvrir l'executable compilé dans `build/Game.exe`
+7. Ouvrir l'executable compilé dans `build/Game.exe` 
+
+*Il est possible que l'ajout à la variable d'environment "PATH" du dossier `MSys64/MGWin64/bin` soit nécessaire*
