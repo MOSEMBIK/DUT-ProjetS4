@@ -29,22 +29,27 @@ INCLUDE	:= include
 # define lib directory
 LIB		:= lib
 
+# define shader directory
+SHADER	:= shader
+
 ifeq ($(OS),Windows_NT)
-MAIN	:= Game.exe
+MAIN		:= Game.exe
 SOURCEDIRS	:= $(SRC)
 INCLUDEDIRS	:= $(INCLUDE)
 LIBDIRS		:= $(LIB)
-FIXPATH = $(subst /,\,$1)
+FIXPATH 	= $(subst /,\,$1)
 RM			:= del /q /f
-MD	:= mkdir
+MD			:= mkdir
+COPY 		:= xcopy $(SHADER) $(OUTPUT)\\$(SHADER) /s /d /i
 else
-MAIN	:= Game
+MAIN		:= Game
 SOURCEDIRS	:= $(shell find $(SRC) -type d)
 INCLUDEDIRS	:= $(shell find $(INCLUDE) -type d)
 LIBDIRS		:= $(shell find $(LIB) -type d)
-FIXPATH = $1
-RM = rm -f
-MD	:= mkdir -p
+FIXPATH 	= $1
+RM 			:= rm -f
+MD			:= mkdir -p
+COPY		:= mkdir -p $(SHADER) $(OUTPUT)/$(SHADER) && cp $(SHADER) $(OUTPUT)/$(SHADER)
 endif
 
 # define any directories containing header files other than /usr/include

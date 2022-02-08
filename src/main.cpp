@@ -5,6 +5,7 @@
 
 #include <Renderer/Program.h>
 #include <Renderer/Geometry/Quad.h>
+#include <Renderer/Shader.h>
 
 #include <glm/mat4x4.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
@@ -32,7 +33,7 @@ int main(int argc, char **argv)
 	glfwSetErrorCallback(error_callback);
 
 	// Créer une fenêtre dans un contexte OpenGL
-	window = glfwCreateWindow(720, 720, "Hello World !", NULL, NULL);
+	window = glfwCreateWindow(1280, 720, "Hello World !", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -49,34 +50,17 @@ int main(int argc, char **argv)
 
 	Quad quad;
 	Program program = Program(ProgramParams {
-		{"position"},
-		{ {"MVP", "mat4"} },
-		{
-			"precision mediump float;"
-			"uniform float b;"
-			"uniform mat4 MVP;"
-			"attribute vec3 position;"
-			"varying vec4 color;"
-			"void main ()"
-			"{"
-				"gl_Position = MVP * vec4 (position, 1.0);"
-				"color = vec4 (0.5 - position, 1.0);"
-			"}"
-		},
-		{
-			"precision mediump float;"
-			"varying vec4 color;"
-			"void main ()"
-			"{"
-				"gl_FragColor = color;"
-			"}"
-		}
+		Shader::ReadShader("vertex"),
+		Shader::ReadShader("fragment")
 	});
 	
 	// VSync (0 = No VSync (Pas de limite), 1 = VSync (Basé sur la vitesse de l'écran (60Hz => 60fps)), 2 = Double VSync (Moitié de la vitesse de l'écran) )
 	glfwSwapInterval(1);
 
-	double time = glfwGetTime();
+	float time = glfwGetTime();
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 
 	// Tant que la fenêtre ne doit pas être fermer (Alt-F4 ou click sur la croix par exemple)
 	while (!glfwWindowShouldClose(window))
@@ -86,7 +70,7 @@ int main(int argc, char **argv)
         glViewport(0, 0, width, height);
 
 		// Le delta time définit le temps qu'il s'est passé depuis la dernière update
-		double deltaTime = glfwGetTime() - time;
+		float deltaTime = glfwGetTime() - time;
 		time = glfwGetTime();
 
 		int fps = 1 / deltaTime;
@@ -99,17 +83,29 @@ int main(int argc, char **argv)
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, 1.0f, 0.1f, 100.0f);
-		glm::mat4 V = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
-		glm::mat4 M = glm::mat4(1.0f);
-		M = glm::rotate(M, (float)glfwGetTime(),  glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 MVP = P * V * M;
-
 		program.Use (
-			{
-				{"MVP", &MVP[0][0] }
-			},
 			[=](const Program* p) {
+				// Création de la matrice de projection
+				glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, (float)width / height, 0.1f, 100.0f);
+				
+				// Création de la matrice de vue (Caméra)
+				glm::mat4 V = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
+				V = glm::rotate(V, time, glm::vec3(0.0f, -1.0f, 0.0f));
+				
+				// Création de la matrice du modèle (Objet)
+				glm::mat4 M = glm::mat4(1.0f);
+				M = glm::translate(M, glm::vec3(0.0f, 0.0f, -1.0f));
+				M = glm::rotate(M, time,  glm::vec3(0.0f, 1.0f, 0.0f));
+
+				// Multiplication en une matric MVP
+				glm::mat4 MVP = P * V * M;
+
+				p->SetUniformValue("MVP", MVP);
+				quad.Draw();
+
+				// Modification de la matrice MVP pour empécher l'objet de tourner et d'être translaté
+				MVP = P * V;
+				p->SetUniformValue("MVP", MVP);
 				quad.Draw();
 			}
 		);
