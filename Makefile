@@ -73,6 +73,7 @@ OBJECTS		:= $(SOURCES:.cpp=.o)
 OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
 
 all: $(OUTPUT) $(MAIN)
+	$(COPY)
 	@echo Executing 'all' complete!
 
 $(OUTPUT):

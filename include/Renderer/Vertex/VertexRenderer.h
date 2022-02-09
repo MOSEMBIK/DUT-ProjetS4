@@ -15,12 +15,22 @@ namespace Renderer::Vertex {
 		GLuint m_divisor = 0;
 	};
 
-	struct DirectDrawCommand
+	struct DrawCommand
 	{
 		GLenum m_mode;
-		GLint m_first = 0;
 		GLsizei m_count;
-		GLsizei m_primCount = 0;
+	};
+
+	struct DirectDrawCommand : DrawCommand
+	{
+		GLint m_first = 0;
+		GLsizei m_primCount = 1;
+	};
+
+	struct IndexedDrawCommand : DrawCommand
+	{
+		GLint m_offset = 0;
+		GLsizei m_primCount = 1;
 	};
 
 	namespace VBO {
@@ -31,9 +41,11 @@ namespace Renderer::Vertex {
 			GLuint m_target;
 			GLuint m_rendererID;
 		public:
-			AbstractVBO(const void*, unsigned int, int = GL_ARRAY_BUFFER, GLenum = GL_STATIC_DRAW);
-			void Bind(std::function<void(const AbstractVBO*)>, bool = true) const;
-			virtual void Draw(const DirectDrawCommand&) const = 0;
+			const void* m_data;
+			AbstractVBO(const void*, unsigned int, GLenum, GLenum = GL_STATIC_DRAW);
+			virtual void Bind() const;
+			void Unbind() const;
+			virtual void Draw(const DirectDrawCommand&) const { }
 		};
 
 		class ArrayBuffer : public AbstractVBO {
@@ -41,8 +53,15 @@ namespace Renderer::Vertex {
 			std::vector<VertexAttri> m_attribs;
 		public:
 			ArrayBuffer(const void*, unsigned int, const std::vector<VertexAttri>&, GLenum = GL_STATIC_DRAW);
-			void Bind(std::function<void(const ArrayBuffer*)>, bool = true) const;
+			virtual void Bind() const;
 			virtual void Draw(const DirectDrawCommand&) const;
+		};
+
+		class ElementArrayBuffer : public AbstractVBO {
+		public:
+			const GLenum m_type;
+			ElementArrayBuffer(const void*, unsigned int, GLenum = GL_UNSIGNED_INT, GLenum = GL_STATIC_DRAW);
+			virtual void Draw(const IndexedDrawCommand&) const;
 		};
 	}
 
@@ -54,14 +73,22 @@ namespace Renderer::Vertex {
 			GLenum m_usage = GL_STATIC_DRAW;
 		};
 
+		struct ElementParams
+		{
+			std::vector<GLuint> m_data;
+			GLenum m_type = GL_UNSIGNED_INT;
+			GLenum m_usage = GL_STATIC_DRAW;
+		};
+
 		class AbstractVAO
 		{
 		protected:
 			GLuint m_vaoId;
 		public:
 			AbstractVAO();
-			void Bind(std::function<void(const AbstractVAO*)>) const;
-			virtual void Draw(const DirectDrawCommand&) const = 0;
+			void Bind() const;
+			void Unbind() const;
+			virtual void Draw(const DirectDrawCommand&) const { }
 		};
 
 		class DirectVAO : public AbstractVAO {
@@ -78,7 +105,26 @@ namespace Renderer::Vertex {
 			DirectDrawCommand m_cmd;
 		public:
 			DirectDraw(const VertexParams&, const DirectDrawCommand&);
-			virtual void Draw(GLsizei = 1) const;
+			void Draw(GLsizei = 1) const;
+		};
+
+		class IndexedVAO : public AbstractVAO {
+		public:
+		protected:
+			VBO::ArrayBuffer m_vertices;
+			VBO::ElementArrayBuffer m_elements;
+		public:
+			IndexedVAO(const VertexParams&, const ElementParams&);
+			virtual void Draw(const IndexedDrawCommand&) const;
+		};
+
+		class IndexedDraw {
+		protected:
+			IndexedDrawCommand m_cmd;
+			IndexedVAO m_vao;
+		public:
+			IndexedDraw(const VertexParams&, const ElementParams&,const IndexedDrawCommand&);
+			void Draw(GLsizei = 1) const;
 		};
 	}
 }

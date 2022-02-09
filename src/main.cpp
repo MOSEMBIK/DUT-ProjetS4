@@ -5,6 +5,7 @@
 
 #include <Renderer/Program.h>
 #include <Renderer/Geometry/Quad.h>
+#include <Renderer/Geometry/Cube.h>
 #include <Renderer/Shader.h>
 
 #include <glm/mat4x4.hpp>
@@ -49,7 +50,9 @@ int main(int argc, char **argv)
 	cout << glGetString(GL_VERSION) << endl;
 
 	Quad quad;
-	Program program = Program(ProgramParams {
+	Cube cube;
+
+	Program program = Program({
 		Shader::ReadShader("vertex"),
 		Shader::ReadShader("fragment")
 	});
@@ -78,7 +81,7 @@ int main(int argc, char **argv)
 		fpsCount += std::to_string(fps);
 
 		glfwSetWindowTitle(window, fpsCount.c_str());
- 
+
         glViewport(0, 0, width, height);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -89,13 +92,13 @@ int main(int argc, char **argv)
 				glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, (float)width / height, 0.1f, 100.0f);
 				
 				// Création de la matrice de vue (Caméra)
-				glm::mat4 V = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
+				glm::mat4 V = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -7.5f));
 				V = glm::rotate(V, time, glm::vec3(0.0f, -1.0f, 0.0f));
 				
 				// Création de la matrice du modèle (Objet)
 				glm::mat4 M = glm::mat4(1.0f);
-				M = glm::translate(M, glm::vec3(0.0f, 0.0f, -1.0f));
-				M = glm::rotate(M, time,  glm::vec3(0.0f, 1.0f, 0.0f));
+				M = glm::translate(M, glm::vec3(0.0f, 0.0f, -2.0f));
+				M = glm::rotate(M, time * 2, glm::vec3(0.0f, 1.0f, 0.0f));
 
 				// Multiplication en une matric MVP
 				glm::mat4 MVP = P * V * M;
@@ -103,10 +106,10 @@ int main(int argc, char **argv)
 				p->SetUniformValue("MVP", MVP);
 				quad.Draw();
 
-				// Modification de la matrice MVP pour empécher l'objet de tourner et d'être translaté
-				MVP = P * V;
+				// Modification de la matrice MVP
+				MVP = P * V; 
 				p->SetUniformValue("MVP", MVP);
-				quad.Draw();
+				cube.Draw();
 			}
 		);
 
