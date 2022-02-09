@@ -1,7 +1,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <vector>
-#include <Renderer/Vertex/VertexRenderer.h>
 #include <Renderer/Geometry/Cube.h>
 
 using namespace Renderer::Vertex;

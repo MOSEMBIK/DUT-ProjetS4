@@ -1,7 +1,7 @@
 #pragma once
-#include <Renderer/Vertex/VertexRenderer.h>
+#include <Renderer/Vertex/IndexedDraw.h>
 
-class Cube : public Renderer::Vertex::VAO::IndexedDraw {
+class Cube : public Renderer::Vertex::IndexedDraw {
 public:
     Cube(); 
 };

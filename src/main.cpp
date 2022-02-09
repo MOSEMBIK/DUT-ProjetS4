@@ -49,6 +49,8 @@ int main(int argc, char **argv)
 
 	cout << glGetString(GL_VERSION) << endl;
 
+	glClearColor(1, 1, 1, 1);
+
 	Quad quad;
 	Cube cube;
 
@@ -64,6 +66,7 @@ int main(int argc, char **argv)
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+	int fps = 0;
 
 	// Tant que la fenêtre ne doit pas être fermer (Alt-F4 ou click sur la croix par exemple)
 	while (!glfwWindowShouldClose(window))
@@ -75,10 +78,13 @@ int main(int argc, char **argv)
 		// Le delta time définit le temps qu'il s'est passé depuis la dernière update
 		float deltaTime = glfwGetTime() - time;
 		time = glfwGetTime();
+		
+		int avgFPS = fps;
+		fps = 1 / deltaTime;
+		avgFPS = (avgFPS + fps) / 2;
 
-		int fps = 1 / deltaTime;
 		std::string fpsCount = "FPS :";
-		fpsCount += std::to_string(fps);
+		fpsCount += std::to_string(avgFPS);
 
 		glfwSetWindowTitle(window, fpsCount.c_str());
 

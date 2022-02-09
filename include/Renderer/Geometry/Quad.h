@@ -1,7 +1,7 @@
 #pragma once
-#include <Renderer/Vertex/VertexRenderer.h>
+#include <Renderer/Vertex/DirectDraw.h>
 
-class Quad : public Renderer::Vertex::VAO::DirectDraw {
+class Quad : public Renderer::Vertex::DirectDraw {
 public:
     Quad(); 
 };
