@@ -54,5 +54,5 @@ namespace Primitives
     static vector<unsigned int> FACE_INDEX_ORDER = { 0, 1, 2, 2, 1, 3 };
 
     Mesh FastCube();
-    Mesh Cube();
+    Mesh Cube(string diffuseTexturePath, string specularTexturePath);
 }

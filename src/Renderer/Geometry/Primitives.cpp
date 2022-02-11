@@ -13,7 +13,7 @@ Mesh Primitives::FastCube()
     return Mesh(vertices, indices, vector<Texture>(), GL_TRIANGLE_STRIP);
 }
 
-Mesh Primitives::Cube()
+Mesh Primitives::Cube(string diffuseTexturePath, string specularTexturePath)
 {
     vector<vec3> positions;
     vector<vec3> normals;
@@ -36,5 +36,5 @@ Mesh Primitives::Cube()
 
     vector<Vertex> vertices = Mesh::CreateFromVectors(positions, normals, texCoords, vec3(1.0f, 1.0f, 1.0f));
 
-    return Mesh(vertices, indices, Mesh::LoadTextures("assets/diffuse.png", "assets/specular.png"), GL_TRIANGLES);
+    return Mesh(vertices, indices, Mesh::LoadTextures(diffuseTexturePath, specularTexturePath), GL_TRIANGLES);
 }

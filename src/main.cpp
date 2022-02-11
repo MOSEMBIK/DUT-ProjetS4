@@ -34,6 +34,7 @@ int main(int argc, char **argv)
 	glfwSetErrorCallback(error_callback);
 
 	glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, 1);
+	//glfwWindowHint(GLFW_DECORATED, 0);
 	// Créer une fenêtre dans un contexte OpenGL
 	window = glfwCreateWindow(800, 800, "Hello World !", NULL, NULL);
 	if (!window)
@@ -51,7 +52,7 @@ int main(int argc, char **argv)
 	cout << glGetString(GL_VERSION) << endl;
 	glClearColor(0, 0, 0, 0);
 
-	Mesh cube = Primitives::Cube();
+	Mesh cube = Primitives::Cube("assets/diffuse.png", "assets/specular.png");
 	
 	// VSync (0 = No VSync (Pas de limite), 1 = VSync (Basé sur la vitesse de l'écran (60Hz => 60fps)), 2 = Double VSync (Moitié de la vitesse de l'écran) )
 	glfwSwapInterval(1);
@@ -97,7 +98,6 @@ int main(int argc, char **argv)
 		// Création de la matrice du modèle (Objet)
 		mat4 M = rotate(mat4(1.0f), time, vec3(1.0f, 1.0f, 1.0f));
 		
-
 		basicShader.use();
 		basicShader.SetUniformValue("_M", M);
 		basicShader.SetUniformValue("_iTM", mat3(transpose(inverse(M))));
