@@ -3,10 +3,8 @@
 
 #include <iostream>
 
-#include <Renderer/Program.h>
-#include <Renderer/Geometry/Quad.h>
-#include <Renderer/Geometry/Cube.h>
 #include <Renderer/Shader.h>
+#include <Renderer/Geometry/Primitives.h>
 
 #include <glm/mat4x4.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
@@ -15,7 +13,6 @@
 #include <glm/gtx/string_cast.hpp>
 
 using namespace std;
-using namespace Renderer;
 
 void error_callback(int error, const char* description)
 {
@@ -33,8 +30,9 @@ int main(int argc, char **argv)
 	// Définit la fonction appelée lors d'erreur
 	glfwSetErrorCallback(error_callback);
 
+	glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, 1);
 	// Créer une fenêtre dans un contexte OpenGL
-	window = glfwCreateWindow(1280, 720, "Hello World !", NULL, NULL);
+	window = glfwCreateWindow(800, 800, "Hello World !", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -48,16 +46,9 @@ int main(int argc, char **argv)
 		cout << "ERROR!" << endl;
 
 	cout << glGetString(GL_VERSION) << endl;
+	glClearColor(0, 0, 0, 0);
 
-	glClearColor(1, 1, 1, 1);
-
-	Quad quad;
-	Cube cube;
-
-	Program program = Program({
-		Shader::ReadShader("vertex"),
-		Shader::ReadShader("fragment")
-	});
+	Mesh cube = Primitives::Cube();
 	
 	// VSync (0 = No VSync (Pas de limite), 1 = VSync (Basé sur la vitesse de l'écran (60Hz => 60fps)), 2 = Double VSync (Moitié de la vitesse de l'écran) )
 	glfwSwapInterval(1);
@@ -66,7 +57,10 @@ int main(int argc, char **argv)
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+	
 	int fps = 0;
+
+	Shader basicShader("shader/vertex.glsl", "shader/fragment.glsl");
 
 	// Tant que la fenêtre ne doit pas être fermer (Alt-F4 ou click sur la croix par exemple)
 	while (!glfwWindowShouldClose(window))
@@ -88,36 +82,25 @@ int main(int argc, char **argv)
 
 		glfwSetWindowTitle(window, fpsCount.c_str());
 
-        glViewport(0, 0, width, height);
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		program.Use (
-			[=](const Program* p) {
-				// Création de la matrice de projection
-				glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, (float)width / height, 0.1f, 100.0f);
-				
-				// Création de la matrice de vue (Caméra)
-				glm::mat4 V = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -7.5f));
-				V = glm::rotate(V, time, glm::vec3(0.0f, -1.0f, 0.0f));
-				
-				// Création de la matrice du modèle (Objet)
-				glm::mat4 M = glm::mat4(1.0f);
-				M = glm::translate(M, glm::vec3(0.0f, 0.0f, -2.0f));
-				M = glm::rotate(M, time * 2, glm::vec3(0.0f, 1.0f, 0.0f));
+		// Création de la matrice de projection
+		glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, (float)width / height, 0.1f, 100.0f);
+		
+		// Création de la matrice de vue (Caméra)
+		glm::mat4 V = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -7.5f));
+		
+		// Création de la matrice du modèle (Objet)
+		glm::mat4 M = glm::rotate(glm::mat4(1.0f), time * 2, glm::vec3(1.0f, 1.0f, 1.0f));
 
-				// Multiplication en une matric MVP
-				glm::mat4 MVP = P * V * M;
-
-				p->SetUniformValue("MVP", MVP);
-				quad.Draw();
-
-				// Modification de la matrice MVP
-				MVP = P * V; 
-				p->SetUniformValue("MVP", MVP);
-				cube.Draw();
-			}
-		);
+		basicShader.use();
+		basicShader.SetUniformValue("_ambientColor", vec3(1.0f, 1.0f, 1.0f));
+		basicShader.SetUniformValue("_ambientStrength", 0.2f);
+		basicShader.SetUniformValue("_lightPos", vec3(50.0f, 20.0f, 10.0f));
+		basicShader.SetUniformValue("_M", M);
+		basicShader.SetUniformValue("_V", V);
+		basicShader.SetUniformValue("_P", P);
+		cube.Draw(basicShader);
 
 		glfwSwapBuffers(window);
 

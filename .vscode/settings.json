@@ -59,6 +59,8 @@
         "xlocmes": "cpp",
         "xlocmon": "cpp",
         "xloctime": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "sstream": "cpp",
+        "numeric": "cpp"
     }
 }
