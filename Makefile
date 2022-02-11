@@ -32,6 +32,8 @@ LIB		:= lib
 # define shader directory
 SHADER	:= shader
 
+ASSETS  := assets
+
 ifeq ($(OS),Windows_NT)
 MAIN		:= Game.exe
 SOURCEDIRS	:= $(SRC)
@@ -40,7 +42,7 @@ LIBDIRS		:= $(LIB)
 FIXPATH 	= $(subst /,\,$1)
 RM			:= del /q /f
 MD			:= mkdir
-COPY 		:= xcopy $(SHADER) $(OUTPUT)\\$(SHADER) /s /d /i
+COPY 		:= xcopy $(SHADER) $(OUTPUT)\\$(SHADER) /s /d /i && xcopy $(ASSETS) $(OUTPUT)\\$(ASSETS) /s /d /i
 else
 MAIN		:= Game
 SOURCEDIRS	:= $(shell find $(SRC) -type d)
@@ -49,7 +51,7 @@ LIBDIRS		:= $(shell find $(LIB) -type d)
 FIXPATH 	= $1
 RM 			:= rm -f
 MD			:= mkdir -p
-COPY		:= mkdir -p $(SHADER) $(OUTPUT)/$(SHADER) && cp $(SHADER) $(OUTPUT)/$(SHADER)
+COPY		:= mkdir -p $(SHADER) $(OUTPUT)/$(SHADER) && cp $(SHADER) $(OUTPUT)/$(SHADER) && mkdir -p $(ASSETS) $(OUTPUT)/$(ASSETS) && cp $(ASSETS) $(OUTPUT)/$(ASSETS)
 endif
 
 # define any directories containing header files other than /usr/include

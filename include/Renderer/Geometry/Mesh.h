@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stb_image.h>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -30,60 +32,16 @@ class Mesh {
         vector<Vertex>       vertices;
         vector<unsigned int> indices;
         vector<Texture>      textures;
-        Mesh(vector<Vertex> vertices);
         Mesh(vector<Vertex> vertices, vector<Texture> textures, GLenum drawType);
         Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures, GLenum drawType);
         void Draw(Shader &shader);
 
-        static vector<Vertex> CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vec3 color = vec3(1.0f))
-        {
-            vector<Vertex> vertices;
-            for(int i = 0; i < positions.size(); i++)
-            {
-                vertices.push_back({positions[i], normals[i], vec2(0.0f), color});
-            }
-            return vertices;
-        }
-
-        static vector<Vertex> CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec3> colors)
-        {
-            vector<Vertex> vertices;
-            for(int i = 0; i < positions.size(); i++)
-            {
-                vertices.push_back({positions[i], normals[i], vec2(0.0f), colors[i]});
-            }
-            return vertices;
-        }
-        
-        static vector<Vertex> CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec2> texCoords, vec3 color = vec3(1.0f))
-        {
-            vector<Vertex> vertices;
-            for(int i = 0; i < positions.size(); i++)
-            {
-                vertices.push_back({positions[i], normals[i], texCoords[i], color});
-            }
-            return vertices;
-        }
-        
-        static vector<Vertex> CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec2> texCoords)
-        {
-            vector<Vertex> vertices;
-            for(int i = 0; i < positions.size(); i++)
-            {
-                vertices.push_back({positions[i], normals[i], texCoords[i], vec3(1.0f)});
-            }
-            return vertices;
-        }
-        
-        static vector<Vertex> CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec2> texCoords, vector<vec3> colors)
-        {
-            vector<Vertex> vertices;
-            for(int i = 0; i < positions.size(); i++)
-            {
-                vertices.push_back({positions[i], normals[i], texCoords[i], colors[i]});
-            }
-            return vertices;
-        }
+        static vector<Texture> LoadTextures(string diffuseTexture, string specularTexture);
+        static vector<Vertex> CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vec3 color = vec3(1.0f));
+        static vector<Vertex> CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec3> colors);
+        static vector<Vertex> CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec2> texCoords, vec3 color = vec3(1.0f));
+        static vector<Vertex> CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec2> texCoords);
+        static vector<Vertex> CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec2> texCoords, vector<vec3> colors);
     private:
         //  render data
         GLenum drawType;

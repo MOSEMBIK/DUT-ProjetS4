@@ -10,7 +10,7 @@ using namespace std;
 
 namespace Primitives
 {
-    vector<vec3> VERTICES =
+    static vector<vec3> VERTICES =
     {
         vec3(-1, -1, -1),
         vec3(+1, -1, -1),
@@ -22,7 +22,7 @@ namespace Primitives
         vec3(+1, +1, +1) 
     };
     
-    vector<ivec4> FACES =
+    static vector<ivec4> FACES =
     {
         ivec4(0, 4, 2, 6),
         ivec4(5, 1, 7, 3),
@@ -32,7 +32,7 @@ namespace Primitives
         ivec4(4, 5, 6, 7) 
     };
 
-    vector<vec3> NORMALS =
+    static vector<vec3> NORMALS =
     {
         vec3(-1,  0,  0),
         vec3(+1,  0,  0),
@@ -42,49 +42,17 @@ namespace Primitives
         vec3( 0,  0, +1)
     };
 
-    vector<unsigned int> FACE_INDEX_ORDER = { 0, 1, 2, 2, 1, 3 };
-
-    Mesh FastCube()
+    static vector<vec2> TEXTURE =
     {
-        vector<vec3> positions = { vec3(-1, -1, -1), vec3(+1, -1, -1), vec3(-1, +1, -1), vec3(+1, +1, -1), vec3(-1, -1, +1), vec3(+1, -1, +1), vec3(-1, +1, +1), vec3(+1, +1, +1) };
-        vector<unsigned int> indices = { 3, 2, 7, 6, 4, 2, 0, 3, 1, 7, 5, 4, 1, 0};
+        vec2{0, 0},
+        vec2{1, 0},
+        vec2{0, 1},
+        vec2{1, 1}
+    };
 
-        vector<Vertex> vertices = Mesh::CreateFromVectors(positions, positions, vec3(0.1f, 0.5f, 0.8f));
 
-        return Mesh(vertices, indices, vector<Texture>(), GL_TRIANGLE_STRIP);
-    }
+    static vector<unsigned int> FACE_INDEX_ORDER = { 0, 1, 2, 2, 1, 3 };
 
-    Mesh Cube()
-    {
-        vector<vec3> positions;
-        for (int f = 0; f < 6; f++)
-        {
-            for (int v = 0; v < 4; v++)
-            {
-                positions.push_back(VERTICES [FACES [f][v]]);
-            }
-        }
-        
-        vector<vec3> normals;
-        for (int f = 0; f < 6; f++)
-        {
-            for (int v = 0; v < 4; v++)
-            {
-                normals.push_back(NORMALS [f]);
-            }
-        }
-
-        vector<unsigned int> indices;
-        for (int i = 0; i < 6; i++)
-        {
-            for (int j = 0; j < 6; j++)
-            {
-                indices.push_back(FACE_INDEX_ORDER[j] + 4 * i);
-            }
-        }
-
-        vector<Vertex> vertices = Mesh::CreateFromVectors(positions, normals, vec3(0.1f, 0.5f, 0.8f));
-
-        return Mesh(vertices, indices, vector<Texture>(), GL_TRIANGLES);
-    }
+    Mesh FastCube();
+    Mesh Cube();
 }

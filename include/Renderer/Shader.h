@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <typeinfo>
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -22,13 +23,23 @@ public:
 
     Shader(const char* vertexPath, const char* fragmentPath);
     void use();
-    template<typename T> void SetUniformValue(const char * name, const T& value) const {}
+    template<typename T> void SetUniformValue(const char * name, const T& value) const 
+    {
+        std::cout << typeid(value).name() << " type not implemented for uniforms value!" << std::endl;
+    }
 private:
     void checkCompileErrors(unsigned int shader, std::string type);
 };
 
 template<>
 inline void Shader::SetUniformValue<GLboolean>(const char * name, const GLboolean& value) const
+{
+    GLint l = glGetUniformLocation(ID, name);
+    glUniform1i(l, value);
+}
+
+template<>
+inline void Shader::SetUniformValue<GLuint>(const char * name, const GLuint& value) const
 {
     GLint l = glGetUniformLocation(ID, name);
     glUniform1i(l, value);

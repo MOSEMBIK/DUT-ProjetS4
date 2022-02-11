@@ -1,3 +1,5 @@
+#define STB_IMAGE_IMPLEMENTATION
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -13,6 +15,7 @@
 #include <glm/gtx/string_cast.hpp>
 
 using namespace std;
+using namespace glm;
 
 void error_callback(int error, const char* description)
 {
@@ -85,21 +88,32 @@ int main(int argc, char **argv)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Création de la matrice de projection
-		glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, (float)width / height, 0.1f, 100.0f);
+		mat4 P = perspective(pi<float>() / 4.0f, (float)width / height, 0.1f, 100.0f);
 		
 		// Création de la matrice de vue (Caméra)
-		glm::mat4 V = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -7.5f));
+		vec3 cameraPosition = vec3(0.0f, 0.0f, -7.5f);
+		mat4 V = translate(mat4(1.0f), cameraPosition);
 		
 		// Création de la matrice du modèle (Objet)
-		glm::mat4 M = glm::rotate(glm::mat4(1.0f), time * 2, glm::vec3(1.0f, 1.0f, 1.0f));
+		mat4 M = rotate(mat4(1.0f), time, vec3(1.0f, 1.0f, 1.0f));
+		
 
 		basicShader.use();
-		basicShader.SetUniformValue("_ambientColor", vec3(1.0f, 1.0f, 1.0f));
-		basicShader.SetUniformValue("_ambientStrength", 0.2f);
-		basicShader.SetUniformValue("_lightPos", vec3(50.0f, 20.0f, 10.0f));
 		basicShader.SetUniformValue("_M", M);
+		basicShader.SetUniformValue("_iTM", mat3(transpose(inverse(M))));
 		basicShader.SetUniformValue("_V", V);
 		basicShader.SetUniformValue("_P", P);
+
+		basicShader.SetUniformValue("_light.diffuse", vec3(0.5f, 0.5f, 0.5f));
+		basicShader.SetUniformValue("_light.specular", vec3(1.0f, 1.0f, 1.0f));
+		basicShader.SetUniformValue("_light.position", vec3(0.0f, 1.0f, 5.0f));
+
+		basicShader.SetUniformValue("_cameraPos", -cameraPosition);
+
+		basicShader.SetUniformValue("_material.ambient", vec3(1.0f, 0.5f, 0.31f));
+		basicShader.SetUniformValue("_material.diffuse_color", vec3(1.0f, 1.0f, 1.0f));
+		basicShader.SetUniformValue("_material.specular_color", vec3(1.0f, 1.0f, 1.0f));
+		basicShader.SetUniformValue("_material.shininess", 32.0f);
 		cube.Draw(basicShader);
 
 		glfwSwapBuffers(window);
