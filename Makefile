@@ -42,7 +42,7 @@ LIBDIRS		:= $(LIB)
 FIXPATH 	= $(subst /,\,$1)
 RM			:= del /q /f
 MD			:= mkdir
-COPY 		:= xcopy $(SHADER) $(OUTPUT)\\$(SHADER) /s /d /i && xcopy $(ASSETS) $(OUTPUT)\\$(ASSETS) /s /d /i
+COPY 		:= xcopy "$(SHADER)" "$(OUTPUT)\$(SHADER)"/S/D/I/Y && xcopy "$(ASSETS)" "$(OUTPUT)\$(ASSETS)"/S/D/I/Y
 else
 MAIN		:= Game
 SOURCEDIRS	:= $(shell find $(SRC) -type d)
