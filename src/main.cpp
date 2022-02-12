@@ -7,6 +7,7 @@
 
 #include <Renderer/Shader.h>
 #include <Renderer/Geometry/Primitives.h>
+#include <Renderer/Geometry/Transform.h>
 
 #include <glm/mat4x4.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
@@ -65,6 +66,7 @@ int main(int argc, char **argv)
 	int fps = 0;
 
 	Shader basicShader("shader/vertex.glsl", "shader/fragment.glsl");
+	Transform transform;
 
 	// Tant que la fenêtre ne doit pas être fermer (Alt-F4 ou click sur la croix par exemple)
 	while (!glfwWindowShouldClose(window))
@@ -94,9 +96,13 @@ int main(int argc, char **argv)
 		// Création de la matrice de vue (Caméra)
 		vec3 cameraPosition = vec3(0.0f, 0.0f, -7.5f);
 		mat4 V = translate(mat4(1.0f), cameraPosition);
+
+		transform.Rotate(vec3(1.0f, 1.0f, 1.0f) * deltaTime * pi<float>() / 4.0f);
+		transform.SetScale(vec3(1.0f) + vec3(1.0f) * (sinf(time) + 1) * 0.25f);
+
+		mat4 M = transform.GetTRSMatrix();
 		
 		// Création de la matrice du modèle (Objet)
-		mat4 M = rotate(mat4(1.0f), time, vec3(1.0f, 1.0f, 1.0f));
 		
 		basicShader.use();
 		basicShader.SetUniformValue("_M", M);

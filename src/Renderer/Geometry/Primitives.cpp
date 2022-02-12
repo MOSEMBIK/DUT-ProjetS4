@@ -26,7 +26,6 @@ Mesh Primitives::Cube(string diffuseTexturePath, string specularTexturePath)
             positions.push_back(VERTICES [FACES [f][v]]);
             normals.push_back(NORMALS [f]);
             texCoords.push_back(TEXTURE [v]);
-            std::cout << TEXTURE[v][0] << " " << TEXTURE[v][1] << " ";
         }
         for (int j = 0; j < 6; j++)
         {
