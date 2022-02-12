@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine/Shader.h>
+#include <Engine/Shader.hpp>
 
 #include <stb_image.h>
 

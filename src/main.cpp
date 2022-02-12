@@ -1,9 +1,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define UNUSED(x) (void)(x)
 
-#include <Engine/Shader.h>
-#include <Engine/Primitives.h>
-#include <Engine/Transform.h>
+#include <Engine/Shader.hpp>
+#include <Engine/Primitives.hpp>
+#include <Engine/Transform.hpp>
+#include <Engine/Lights.hpp>
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -53,20 +54,50 @@ int main(int argc, char **argv)
 	cout << glGetString(GL_VERSION) << endl;
 	glClearColor(0, 0, 0, 0);
 
-	Mesh cube = Primitives::Cube("assets/diffuse.png", "assets/specular.png");
+	Mesh cube = Primitives::Cube("assets/block_diffuse.png", "assets/block_specular.png");
 	
 	// VSync (0 = No VSync (Pas de limite), 1 = VSync (Basé sur la vitesse de l'écran (60Hz => 60fps)), 2 = Double VSync (Moitié de la vitesse de l'écran) )
-	glfwSwapInterval(1);
+	glfwSwapInterval(0);
 
 	float time = glfwGetTime();
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
-	
-	int fps = 0;
 
 	Shader basicShader("shader/vertex.glsl", "shader/fragment.glsl");
 	Transform transform;
+
+	DirectionalLight dirLight(vec3(-1.0f, -1.0f, -1.0f), vec3(0.1f), vec3(0.0f), vec3(0.0f));
+	vector<PointLight> pointLights;
+	for(int i = 0; i < 4; i++)
+		pointLights.push_back(PointLight(i));
+		
+	pointLights[0].Enable();
+	pointLights[0].SetDiffuse(vec3(1.0f, 0.0f, 0.0f));
+	pointLights[0].SetSpecular(vec3(5.0f, 0.0f, 0.0f));
+	pointLights[0].SetPosition(vec3(0.0f, 0.0f, 10.0f));
+	pointLights[0].SetRange(50);
+
+	pointLights[1].Enable();
+	pointLights[1].SetDiffuse(vec3(0.0f, 0.0f, 2.0f));
+	pointLights[1].SetSpecular(vec3(0.0f, 0.0f, 10.0f));
+	pointLights[1].SetPosition(vec3(-10.0f, 0.0f, 10.0f));
+	pointLights[1].SetRange(50);
+
+	pointLights[2].Enable();
+	pointLights[2].SetDiffuse(vec3(0.0f, 0.5f, 0.0f));
+	pointLights[2].SetSpecular(vec3(0.0f, 10.0f, 0.0f));
+	pointLights[2].SetPosition(vec3(.0f, 10.0f, 10.0f));
+	pointLights[2].SetRange(50);
+
+	basicShader.Use();
+	dirLight.SendToShader(basicShader);
+	for(int i = 0; i < 4; i++)
+	{
+		pointLights[i].SendToShader(basicShader);
+	}
+
+	float lastTime = time - 1;
 
 	// Tant que la fenêtre ne doit pas être fermer (Alt-F4 ou click sur la croix par exemple)
 	while (!glfwWindowShouldClose(window))
@@ -79,14 +110,13 @@ int main(int argc, char **argv)
 		float deltaTime = glfwGetTime() - time;
 		time = glfwGetTime();
 		
-		int avgFPS = fps;
-		fps = 1 / deltaTime;
-		avgFPS = (avgFPS + fps) / 2;
-
-		std::string fpsCount = "FPS :";
-		fpsCount += std::to_string(avgFPS);
-
-		glfwSetWindowTitle(window, fpsCount.c_str());
+		if(time - lastTime >= 1)
+		{
+			std::string fpsCount = "FPS :";
+			fpsCount += std::to_string((int)(1 / deltaTime));
+			glfwSetWindowTitle(window, fpsCount.c_str());
+			lastTime = time;
+		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -98,28 +128,23 @@ int main(int argc, char **argv)
 		mat4 V = translate(mat4(1.0f), cameraPosition);
 
 		transform.Rotate(vec3(1.0f, 1.0f, 1.0f) * deltaTime * pi<float>() / 4.0f);
-		transform.SetScale(vec3(1.0f) + vec3(1.0f) * (sinf(time) + 1) * 0.25f);
+		//transform.SetScale(vec3(1.0f) + vec3(1.0f) * (sinf(time) + 1) * 0.25f);
 
 		mat4 M = transform.GetTRSMatrix();
 		
 		// Création de la matrice du modèle (Objet)
-		
 		basicShader.Use();
 		basicShader.SetUniformValue("_M", M);
 		basicShader.SetUniformValue("_iTM", mat3(transpose(inverse(M))));
 		basicShader.SetUniformValue("_V", V);
 		basicShader.SetUniformValue("_P", P);
 
-		basicShader.SetUniformValue("_light.diffuse", vec3(0.5f, 0.5f, 0.5f));
-		basicShader.SetUniformValue("_light.specular", vec3(1.0f, 1.0f, 1.0f));
-		basicShader.SetUniformValue("_light.position", vec3(0.0f, 1.0f, 5.0f));
-
 		basicShader.SetUniformValue("_cameraPos", -cameraPosition);
 
 		basicShader.SetUniformValue("_material.ambient", vec3(1.0f, 0.5f, 0.31f));
-		basicShader.SetUniformValue("_material.diffuse_color", vec3(1.0f, 1.0f, 1.0f));
-		basicShader.SetUniformValue("_material.specular_color", vec3(1.0f, 1.0f, 1.0f));
+		basicShader.SetUniformValue("_material.color", vec3(1.0f, 1.0f, 1.0f));
 		basicShader.SetUniformValue("_material.shininess", 32.0f);
+
 		cube.Draw(basicShader);
 
 		glfwSwapBuffers(window);

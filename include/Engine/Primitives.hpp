@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine/Mesh.h>
+#include <Engine/Mesh.hpp>
 
 namespace Primitives
 {
