@@ -1,16 +1,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define UNUSED(x) (void)(x)
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <Engine/Shader.h>
+#include <Engine/Primitives.h>
+#include <Engine/Transform.h>
 
-#include <iostream>
-
-#include <Renderer/Shader.h>
-#include <Renderer/Primitives.h>
-#include <Renderer/Transform.h>
-
-#include <glm/mat4x4.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/scalar_constants.hpp>
@@ -22,7 +16,7 @@ using namespace glm;
 void error_callback(int error, const char* description)
 {
 	UNUSED(error);
-	
+
     fprintf(stderr, "An Error has occured: %s\n", description);
 }
 

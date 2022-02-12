@@ -1,15 +1,10 @@
 #pragma once
 
+#include <Engine/Shader.h>
+
 #include <stb_image.h>
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
 #include <vector>
-#include <string>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <Renderer/Shader.h>
 
 struct Vertex {
     glm::vec3 Position;

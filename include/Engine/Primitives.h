@@ -1,8 +1,6 @@
 #pragma once
 
-#include <vector>
-#include <Renderer/Mesh.h>
-#include <glm/vec3.hpp>
+#include <Engine/Mesh.h>
 
 namespace Primitives
 {
