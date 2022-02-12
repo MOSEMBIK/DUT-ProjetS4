@@ -19,7 +19,7 @@
 class Shader
 {
 public:
-    unsigned int ID;
+    unsigned int m_ID;
 
     /**
      * @brief Construct a new Shader object
@@ -54,69 +54,69 @@ private:
 template<>
 inline void Shader::SetUniformValue<GLboolean>(const char * name, const GLboolean& value) const
 {
-    GLint l = glGetUniformLocation(ID, name);
+    GLint l = glGetUniformLocation(m_ID, name);
     glUniform1i(l, value);
 }
 
 template<>
 inline void Shader::SetUniformValue<GLuint>(const char * name, const GLuint& value) const
 {
-    GLint l = glGetUniformLocation(ID, name);
+    GLint l = glGetUniformLocation(m_ID, name);
     glUniform1i(l, value);
 }
 
 template<>
 inline void Shader::SetUniformValue<GLint>(const char * name, const GLint& value) const
 {
-    GLint l = glGetUniformLocation(ID, name);
+    GLint l = glGetUniformLocation(m_ID, name);
     glUniform1i(l, value);
 }
 
 template<>
 inline void Shader::SetUniformValue<GLfloat>(const char * name, const GLfloat& value) const
 {
-    GLint l = glGetUniformLocation(ID, name);
+    GLint l = glGetUniformLocation(m_ID, name);
     glUniform1f(l, value);
 }
 
 template<>
 inline void Shader::SetUniformValue<glm::vec2>(const char * name, const glm::vec2& value) const
 {
-    GLint l = glGetUniformLocation(ID, name);
+    GLint l = glGetUniformLocation(m_ID, name);
     glUniform2fv(l, 1, &value[0]);
 }
 
 template<>
 inline void Shader::SetUniformValue<glm::vec3>(const char * name, const glm::vec3& value) const
 {
-    GLint l = glGetUniformLocation(ID, name);
+    GLint l = glGetUniformLocation(m_ID, name);
     glUniform3fv(l, 1, &value[0]);
 }
 
 template<>
 inline void Shader::SetUniformValue<glm::vec4>(const char * name, const glm::vec4& value) const
 {
-    GLint l = glGetUniformLocation(ID, name);
+    GLint l = glGetUniformLocation(m_ID, name);
     glUniform4fv(l, 1, &value[0]);
 }
 
 template<>
 inline void Shader::SetUniformValue<glm::mat2>(const char * name, const glm::mat2& value) const
 {
-    GLint l = glGetUniformLocation(ID, name);
+    GLint l = glGetUniformLocation(m_ID, name);
     glUniformMatrix2fv(l, 1, GL_FALSE, &value[0][0]);
 }
 
 template<>
 inline void Shader::SetUniformValue<glm::mat3>(const char * name, const glm::mat3& value) const
 {
-    GLint l = glGetUniformLocation(ID, name);
+    GLint l = glGetUniformLocation(m_ID, name);
     glUniformMatrix3fv(l, 1, GL_FALSE, &value[0][0]);
 }
 
 template<>
 inline void Shader::SetUniformValue<glm::mat4>(const char * name, const glm::mat4& value) const
 {
-    GLint l = glGetUniformLocation(ID, name);
+    GLint l = glGetUniformLocation(m_ID, name);
     glUniformMatrix4fv(l, 1, GL_FALSE, &value[0][0]);
 }

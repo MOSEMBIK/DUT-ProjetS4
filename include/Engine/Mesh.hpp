@@ -7,23 +7,23 @@
 #include <vector>
 
 struct Vertex {
-    glm::vec3 Position;
-    glm::vec3 Normal;
-    glm::vec2 TexCoords;
-    glm::vec3 Colors;
+    glm::vec3 m_position;
+    glm::vec3 m_normal;
+    glm::vec2 m_texCoords;
+    glm::vec3 m_colors;
 };
 
 struct Texture {
-    unsigned int id;
-    std::string type;
+    unsigned int m_id;
+    std::string m_type;
 };  
 
 class Mesh {
     public:
         // mesh data
-        std::vector<Vertex>       vertices;
-        std::vector<unsigned int> indices;
-        std::vector<Texture>      textures;
+        std::vector<Vertex>       m_vertices;
+        std::vector<unsigned int> m_indices;
+        std::vector<Texture>      m_textures;
         
         /**
          * @brief Construct a new Mesh object from vertices, texture and draw type

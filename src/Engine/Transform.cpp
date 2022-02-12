@@ -38,19 +38,19 @@ void Transform::SetRotation(const quat& rotation)
     this->m_rotation = quat(rotation);
 }
 
-void Transform::SetEuleurAngle(const vec3& rotation) 
+void Transform::SetEulerAngle(const vec3& rotation) 
 {
     this->m_rotation = quat(rotation);
 }
 
 void Transform::Rotate(const vec3& rotation) 
 {
-    this->m_rotation = quat(rotation) * this->m_rotation;
+    this->m_rotation = this->m_rotation * quat(rotation);
 }
 
 void Transform::Rotate(const quat& rotation) 
 {
-    this->m_rotation = rotation * this->m_rotation;
+    this->m_rotation = this->m_rotation * rotation;
 }
 
 vec3 Transform::GetScale() 
@@ -79,5 +79,5 @@ mat4 Transform::GetTRSMatrix()
     mat4 rotate = glm::toMat4(this->m_rotation);
     mat4 scale = glm::scale(this->m_scale);
 
-    return translate * rotate * scale;
+    return scale * rotate * translate;
 }

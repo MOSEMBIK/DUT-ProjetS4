@@ -5,6 +5,7 @@
 #include <Engine/Primitives.hpp>
 #include <Engine/Transform.hpp>
 #include <Engine/Lights.hpp>
+#include <Engine/Camera.hpp>
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -19,6 +20,46 @@ void error_callback(int error, const char* description)
 	UNUSED(error);
 
     fprintf(stderr, "An Error has occured: %s\n", description);
+}
+
+double oldMouseXPos;
+double oldMouseYPos;
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+}
+
+void process_inputs(GLFWwindow* window, float deltaTime)
+{
+	// Camera movement
+	Transform* cameraTransform =  &Camera::GetInstance()->GetTransform();
+    const float cameraSpeed = 5.0f;
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        cameraTransform->Translate(vec3(0.0f, 0.0f, 1.0f) * cameraTransform->GetRotation() * cameraSpeed * deltaTime);
+
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        cameraTransform->Translate(vec3(0.0f, 0.0f, -1.0f) * cameraTransform->GetRotation() * cameraSpeed * deltaTime);
+
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        cameraTransform->Translate(vec3(1.0f, 0.0f, 0.0f) * cameraTransform->GetRotation() * cameraSpeed * deltaTime);
+
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        cameraTransform->Translate(vec3(-1.0f, 0.0f, 0.0f) * cameraTransform->GetRotation() * cameraSpeed * deltaTime);
+		
+
+	double xpos, ypos;
+	glfwGetCursorPos(window, &xpos, &ypos);
+	float deltaX = xpos - oldMouseXPos, deltaY = ypos - oldMouseYPos;
+
+	// Camera rotation
+	const float rotationSpeed = 2.0f;
+	cameraTransform->Rotate(vec3(0.0f, 1.0f, 0.0f) * cameraTransform->GetRotation() * rotationSpeed * deltaX * deltaTime);
+	cameraTransform->Rotate(vec3(1.0f, 0.0f, 0.0f) * cameraTransform->GetRotation() * rotationSpeed * deltaY * deltaTime);
+
+	oldMouseXPos = xpos, oldMouseYPos = ypos;
 }
 
 int main(int argc, char **argv)
@@ -61,9 +102,16 @@ int main(int argc, char **argv)
 
 	float time = glfwGetTime();
 
+	glEnable(GL_CULL_FACE); 
+
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	if (glfwRawMouseMotionSupported())
+		glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+
+	Camera* camera =  Camera::GetInstance();
 	Shader basicShader("shader/vertex.glsl", "shader/fragment.glsl");
 	Transform transform;
 
@@ -97,19 +145,22 @@ int main(int argc, char **argv)
 		pointLights[i].SendToShader(basicShader);
 	}
 
+	glfwGetCursorPos(window, &oldMouseXPos, &oldMouseYPos);
+	glfwSetKeyCallback(window, key_callback);
+
 	float lastTime = time - 1;
+
+	Camera::GetInstance()->GetTransform().Translate(vec3(0.0f, 0.0f, -7.5f));
 
 	// Tant que la fenêtre ne doit pas être fermer (Alt-F4 ou click sur la croix par exemple)
 	while (!glfwWindowShouldClose(window))
 	{
-        int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
-        glViewport(0, 0, width, height);
-
 		// Le delta time définit le temps qu'il s'est passé depuis la dernière update
 		float deltaTime = glfwGetTime() - time;
 		time = glfwGetTime();
 		
+		process_inputs(window, deltaTime);
+
 		if(time - lastTime >= 1)
 		{
 			std::string fpsCount = "FPS :";
@@ -120,14 +171,13 @@ int main(int argc, char **argv)
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Création de la matrice de projection
-		mat4 P = perspective(pi<float>() / 4.0f, (float)width / height, 0.1f, 100.0f);
-		
-		// Création de la matrice de vue (Caméra)
-		vec3 cameraPosition = vec3(0.0f, 0.0f, -7.5f);
-		mat4 V = translate(mat4(1.0f), cameraPosition);
+		// Récupération de la matrice de projection
+		mat4 P = camera->GetProjectionMatrix(window);
 
-		transform.Rotate(vec3(1.0f, 1.0f, 1.0f) * deltaTime * pi<float>() / 4.0f);
+		// Création de la matrice de vue (Caméra)
+		mat4 V = camera->GetViewMatrix();
+
+		//transform.Rotate(vec3(1.0f, 1.0f, 1.0f) * deltaTime * pi<float>() / 4.0f);
 		//transform.SetScale(vec3(1.0f) + vec3(1.0f) * (sinf(time) + 1) * 0.25f);
 
 		mat4 M = transform.GetTRSMatrix();
@@ -139,7 +189,7 @@ int main(int argc, char **argv)
 		basicShader.SetUniformValue("_V", V);
 		basicShader.SetUniformValue("_P", P);
 
-		basicShader.SetUniformValue("_cameraPos", -cameraPosition);
+		basicShader.SetUniformValue("_cameraPos", -camera->GetTransform().GetPosition());
 
 		basicShader.SetUniformValue("_material.ambient", vec3(1.0f, 0.5f, 0.31f));
 		basicShader.SetUniformValue("_material.color", vec3(1.0f, 1.0f, 1.0f));
@@ -149,7 +199,6 @@ int main(int argc, char **argv)
 
 		glfwSwapBuffers(window);
 
-		// Récupérer les events tels que les clicks, les touches claviers etc...
 		glfwPollEvents();
 	}
 
