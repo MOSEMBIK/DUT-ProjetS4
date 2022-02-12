@@ -63,11 +63,11 @@ public:
     void SetRotation(const glm::quat& rotation);
 
     /**
-     * @brief Set the Euleur Angle of the object
+     * @brief Set the Euler Angle of the object
      * 
      * @param rotation 
      */
-    void SetEuleurAngle(const glm::vec3& rotation);
+    void SetEulerAngle(const glm::vec3& rotation);
 
     /**
      * @brief Rotate the objet on each axis (in radians)

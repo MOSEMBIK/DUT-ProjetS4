@@ -45,11 +45,11 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     glCompileShader(fragment);
     checkCompileErrors(fragment, "FRAGMENT");
     // shader Program
-    ID = glCreateProgram();
-    glAttachShader(ID, vertex);
-    glAttachShader(ID, fragment);
-    glLinkProgram(ID);
-    checkCompileErrors(ID, "PROGRAM");
+    m_ID = glCreateProgram();
+    glAttachShader(m_ID, vertex);
+    glAttachShader(m_ID, fragment);
+    glLinkProgram(m_ID);
+    checkCompileErrors(m_ID, "PROGRAM");
     // delete the shaders as they're linked into our program now and no longer necessary
     glDeleteShader(vertex);
     glDeleteShader(fragment);
@@ -58,7 +58,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 // ------------------------------------------------------------------------
 void Shader::Use() 
 { 
-    glUseProgram(ID); 
+    glUseProgram(m_ID); 
 }
 
 void Shader::checkCompileErrors(unsigned int shader, std::string type)
