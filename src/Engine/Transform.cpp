@@ -1,6 +1,9 @@
-#include <Renderer/Geometry/Transform.h>
+#include <Engine/Transform.h>
+
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
+
+using namespace glm;
 
 Transform::Transform(const vec3& position, const quat& rotation, const vec3& scale)
     : m_position(position), m_rotation(rotation), m_scale(scale) { }

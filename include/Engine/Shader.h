@@ -21,8 +21,28 @@ class Shader
 public:
     unsigned int ID;
 
+    /**
+     * @brief Construct a new Shader object
+     * 
+     * @param vertexPath Path of the vertex shader file
+     * @param fragmentPath Path of the fragment shader file
+     */
     Shader(const char* vertexPath, const char* fragmentPath);
-    void use();
+
+    /**
+     * @brief Define this shader as the currently used one.
+     * This need to be called before setting uniform values.
+     */
+    void Use();
+
+    /**
+     * @brief Set the Uniform Value for the shader
+     * (If the type isn't implemented, it won't set it)
+     * 
+     * @tparam T Type of value
+     * @param name Name of the uniform variable
+     * @param value Value to set
+     */
     template<typename T> void SetUniformValue(const char * name, const T& value) const 
     {
         std::cout << typeid(value).name() << " type not implemented for uniforms value!" << std::endl;

@@ -1,15 +1,10 @@
 #define STB_IMAGE_IMPLEMENTATION
+#define UNUSED(x) (void)(x)
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <Engine/Shader.h>
+#include <Engine/Primitives.h>
+#include <Engine/Transform.h>
 
-#include <iostream>
-
-#include <Renderer/Shader.h>
-#include <Renderer/Geometry/Primitives.h>
-#include <Renderer/Geometry/Transform.h>
-
-#include <glm/mat4x4.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/scalar_constants.hpp>
@@ -20,11 +15,16 @@ using namespace glm;
 
 void error_callback(int error, const char* description)
 {
+	UNUSED(error);
+
     fprintf(stderr, "An Error has occured: %s\n", description);
 }
 
 int main(int argc, char **argv)
 {
+	UNUSED(argc);
+	UNUSED(argv);
+
 	GLFWwindow* window;
 
 	// Initialise la librairie GLFW
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 		
 		// Création de la matrice du modèle (Objet)
 		
-		basicShader.use();
+		basicShader.Use();
 		basicShader.SetUniformValue("_M", M);
 		basicShader.SetUniformValue("_iTM", mat3(transpose(inverse(M))));
 		basicShader.SetUniformValue("_V", V);

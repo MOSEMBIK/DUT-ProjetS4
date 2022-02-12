@@ -1,4 +1,4 @@
-#include <Renderer/Shader.h>
+#include <Engine/Shader.h>
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
@@ -56,7 +56,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 }
 // activate the shader
 // ------------------------------------------------------------------------
-void Shader::use() 
+void Shader::Use() 
 { 
     glUseProgram(ID); 
 }
