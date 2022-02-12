@@ -1,5 +1,8 @@
-#include <Renderer/Geometry/Mesh.h>
+#include <Renderer/Mesh.h>
 #include <numeric>
+
+using namespace std;
+using namespace glm;
 
 Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures, GLenum drawType = GL_TRIANGLES)
 {
@@ -123,7 +126,7 @@ vector<Texture> Mesh::LoadTextures(string diffuseTexture, string specularTexture
 vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vec3 color)
 {
     vector<Vertex> vertices;
-    for(int i = 0; i < positions.size(); i++)
+    for(size_t i = 0; i < positions.size(); i++)
     {
         vertices.push_back({positions[i], normals[i], vec2(0.0f), color});
     }
@@ -133,7 +136,7 @@ vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> norm
 vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec3> colors)
 {
     vector<Vertex> vertices;
-    for(int i = 0; i < positions.size(); i++)
+    for(size_t i = 0; i < positions.size(); i++)
     {
         vertices.push_back({positions[i], normals[i], vec2(0.0f), colors[i]});
     }
@@ -143,19 +146,9 @@ vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> norm
 vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec2> texCoords, vec3 color)
 {
     vector<Vertex> vertices;
-    for(int i = 0; i < positions.size(); i++)
+    for(size_t i = 0; i < positions.size(); i++)
     {
         vertices.push_back({positions[i], normals[i], texCoords[i], color});
-    }
-    return vertices;
-}
-
-vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec2> texCoords)
-{
-    vector<Vertex> vertices;
-    for(int i = 0; i < positions.size(); i++)
-    {
-        vertices.push_back({positions[i], normals[i], texCoords[i], vec3(1.0f)});
     }
     return vertices;
 }
@@ -163,7 +156,7 @@ vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> norm
 vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec2> texCoords, vector<vec3> colors)
 {
     vector<Vertex> vertices;
-    for(int i = 0; i < positions.size(); i++)
+    for(size_t i = 0; i < positions.size(); i++)
     {
         vertices.push_back({positions[i], normals[i], texCoords[i], colors[i]});
     }

@@ -1,7 +1,9 @@
-#include <Renderer/Geometry/Primitives.h>
+#include <Renderer/Primitives.h>
 #include <iostream>
 
 using namespace Primitives;
+using namespace std;
+using namespace glm;
 
 Mesh Primitives::FastCube()
 {
