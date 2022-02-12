@@ -1,4 +1,4 @@
-#include <Engine/Mesh.h>
+#include <Engine/Mesh.hpp>
 #include <numeric>
 
 using namespace std;

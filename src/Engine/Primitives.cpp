@@ -1,4 +1,4 @@
-#include <Engine/Primitives.h>
+#include <Engine/Primitives.hpp>
 
 using namespace Primitives;
 using namespace std;
