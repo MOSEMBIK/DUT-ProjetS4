@@ -2,8 +2,6 @@
 
 #include <Engine/Shader.hpp>
 
-#include <stb_image.h>
-
 #include <vector>
 
 struct Vertex {
@@ -24,6 +22,14 @@ class Mesh {
         std::vector<Vertex>       m_vertices;
         std::vector<unsigned int> m_indices;
         std::vector<Texture>      m_textures;
+
+        /**
+         * @brief Construct a new Mesh object from vertices and draw type
+         * 
+         * @param vertices List of Vertices (position, normal, texCoords and color of a space point)
+         * @param drawType Type of draw (GL_TRIANGLE, GL_TRIANGLE_STRIP, ...)
+         */
+        Mesh(std::vector<Vertex> vertices, GLenum drawType = GL_TRIANGLES);
         
         /**
          * @brief Construct a new Mesh object from vertices, texture and draw type
@@ -32,17 +38,26 @@ class Mesh {
          * @param textures List of Textures ("diffuse" or "specular") of the model
          * @param drawType Type of draw (GL_TRIANGLE, GL_TRIANGLE_STRIP, ...)
          */
-        Mesh(std::vector<Vertex> vertices, std::vector<Texture> textures, GLenum drawType);
+        Mesh(std::vector<Vertex> vertices, std::vector<Texture> textures, GLenum drawType = GL_TRIANGLES);
         
         /**
-         * @brief Construct a new Mesh object from vertices, texture and draw type
+         * @brief Construct a new Mesh object from vertices, indices and draw type
+         * 
+         * @param vertices List of Vertices (position, normal, texCoords and color of a space point)
+         * @param indices List of Indices (order in which vertex has to be used)
+         * @param drawType Type of draw (GL_TRIANGLE, GL_TRIANGLE_STRIP, ...)
+         */
+        Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, GLenum drawType = GL_TRIANGLES);
+
+        /**
+         * @brief Construct a new Mesh object from vertices, indices, texture, and draw type
          * 
          * @param vertices List of Vertices (position, normal, texCoords and color of a space point)
          * @param indices List of Indices (order in which vertex has to be used)
          * @param textures List of Textures ("diffuse" or "specular") of the model
          * @param drawType Type of draw (GL_TRIANGLE, GL_TRIANGLE_STRIP, ...)
          */
-        Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures, GLenum drawType);
+        Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures, GLenum drawType = GL_TRIANGLES);
         
         /**
          * @brief Draw the mesh according to the vertices, textures, etc... using the given shader.
@@ -50,15 +65,6 @@ class Mesh {
          * @param shader Shader used for drawing
          */
         void Draw(Shader &shader);
-
-        /**
-         * @brief Load a set of diffuse and specular texture from path for the basic shader
-         * 
-         * @param diffuseTexture Path to diffuse texture (texture applied)
-         * @param specularTexture Path to specular texture (reflected surfaces)
-         * @return std::vector<Texture> Set of texture for the basic shader
-         */
-        static std::vector<Texture> LoadTextures(std::string diffuseTexture, std::string specularTexture);
 
         /**
          * @brief Create a std::vector of vertices from multiple std::vectors with an unique color

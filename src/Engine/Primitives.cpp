@@ -1,4 +1,5 @@
 #include <Engine/Primitives.hpp>
+#include <Engine/ResourceLoader.hpp>
 
 using namespace Primitives;
 using namespace std;
@@ -14,7 +15,7 @@ Mesh Primitives::FastCube()
     return Mesh(vertices, indices, vector<Texture>(), GL_TRIANGLE_STRIP);
 }
 
-Mesh Primitives::Cube(string diffuseTexturePath, string specularTexturePath)
+Mesh Primitives::Cube()
 {
     vector<vec3> positions;
     vector<vec3> normals;
@@ -36,5 +37,5 @@ Mesh Primitives::Cube(string diffuseTexturePath, string specularTexturePath)
 
     vector<Vertex> vertices = Mesh::CreateFromVectors(positions, normals, texCoords, vec3(1.0f, 1.0f, 1.0f));
 
-    return Mesh(vertices, indices, Mesh::LoadTextures(diffuseTexturePath, specularTexturePath), GL_TRIANGLES);
+    return Mesh(vertices, indices, vector<Texture>(), GL_TRIANGLES);
 }
