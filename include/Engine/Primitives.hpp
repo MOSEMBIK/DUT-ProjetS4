@@ -54,11 +54,9 @@ namespace Primitives
     Mesh FastCube();
 
     /**
-     * @brief Generate a cube with texture
+     * @brief Generate a cube with sharped edges
      * 
-     * @param diffuseTexturePath 
-     * @param specularTexturePath 
      * @return Mesh 
      */
-    Mesh Cube(std::string diffuseTexturePath, std::string specularTexturePath);
+    Mesh Cube();
 }

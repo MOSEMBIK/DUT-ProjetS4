@@ -1,4 +1,3 @@
-#define STB_IMAGE_IMPLEMENTATION
 #define UNUSED(x) (void)(x)
 
 #include <Engine/Shader.hpp>
@@ -6,6 +5,7 @@
 #include <Engine/Transform.hpp>
 #include <Engine/Lights.hpp>
 #include <Engine/Camera.hpp>
+#include <Engine/ResourceLoader.hpp>
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -27,7 +27,10 @@ double oldMouseYPos;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	UNUSED(scancode);
+	UNUSED(mods);
+
+    if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
 
@@ -55,9 +58,9 @@ void process_inputs(GLFWwindow* window, float deltaTime)
 	float deltaX = xpos - oldMouseXPos, deltaY = ypos - oldMouseYPos;
 
 	// Camera rotation
-	const float rotationSpeed = 2.0f;
-	cameraTransform->Rotate(vec3(0.0f, 1.0f, 0.0f) * cameraTransform->GetRotation() * rotationSpeed * deltaX * deltaTime);
-	cameraTransform->Rotate(vec3(1.0f, 0.0f, 0.0f) * cameraTransform->GetRotation() * rotationSpeed * deltaY * deltaTime);
+	const float rotationSpeed = 0.007f;
+	cameraTransform->Rotate(vec3(0.0f, 1.0f, 0.0f) * cameraTransform->GetRotation() * rotationSpeed * deltaX);
+	cameraTransform->Rotate(vec3(1.0f, 0.0f, 0.0f) * cameraTransform->GetRotation() * rotationSpeed * deltaY);
 
 	oldMouseXPos = xpos, oldMouseYPos = ypos;
 }
@@ -94,11 +97,17 @@ int main(int argc, char **argv)
 
 	cout << glGetString(GL_VERSION) << endl;
 	glClearColor(0, 0, 0, 0);
-
-	Mesh cube = Primitives::Cube("assets/block_diffuse.png", "assets/block_specular.png");
 	
 	// VSync (0 = No VSync (Pas de limite), 1 = VSync (Basé sur la vitesse de l'écran (60Hz => 60fps)), 2 = Double VSync (Moitié de la vitesse de l'écran) )
-	glfwSwapInterval(0);
+	glfwSwapInterval(1);
+
+	unsigned int textureWhiteID;
+	if(!Resource::LoadTexture("assets/white_texture.png", textureWhiteID))
+	{
+		cout << "Failed to load white texture" << endl;
+		glfwTerminate();
+		return 0;
+	}
 
 	float time = glfwGetTime();
 
@@ -111,16 +120,25 @@ int main(int argc, char **argv)
 	if (glfwRawMouseMotionSupported())
 		glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 
+	Mesh cube = Primitives::Cube();
+
+	vector<vec3> vertices, normals;
+	vector<vec2> texCoords;
+
+	Resource::LoadOBJ("assets/models/Susanne.obj", vertices, texCoords, normals);
+	vector<Vertex> susanneVertex = Mesh::CreateFromVectors(vertices, normals, texCoords);
+	Mesh susanne = Mesh(susanneVertex, GL_TRIANGLES);
+
 	Camera* camera =  Camera::GetInstance();
 	Shader basicShader("shader/vertex.glsl", "shader/fragment.glsl");
 	Transform transform;
 
-	DirectionalLight dirLight(vec3(-1.0f, -1.0f, -1.0f), vec3(0.1f), vec3(0.0f), vec3(0.0f));
+	DirectionalLight dirLight(vec3(-1.0f, -1.0f, -1.0f), vec3(0.1f), vec3(1.0f), vec3(1.0f));
 	vector<PointLight> pointLights;
 	for(int i = 0; i < 4; i++)
 		pointLights.push_back(PointLight(i));
 		
-	pointLights[0].Enable();
+	/*pointLights[0].Enable();
 	pointLights[0].SetDiffuse(vec3(1.0f, 0.0f, 0.0f));
 	pointLights[0].SetSpecular(vec3(5.0f, 0.0f, 0.0f));
 	pointLights[0].SetPosition(vec3(0.0f, 0.0f, 10.0f));
@@ -136,7 +154,7 @@ int main(int argc, char **argv)
 	pointLights[2].SetDiffuse(vec3(0.0f, 0.5f, 0.0f));
 	pointLights[2].SetSpecular(vec3(0.0f, 10.0f, 0.0f));
 	pointLights[2].SetPosition(vec3(.0f, 10.0f, 10.0f));
-	pointLights[2].SetRange(50);
+	pointLights[2].SetRange(50);*/
 
 	basicShader.Use();
 	dirLight.SendToShader(basicShader);
@@ -195,7 +213,7 @@ int main(int argc, char **argv)
 		basicShader.SetUniformValue("_material.color", vec3(1.0f, 1.0f, 1.0f));
 		basicShader.SetUniformValue("_material.shininess", 32.0f);
 
-		cube.Draw(basicShader);
+		susanne.Draw(basicShader);
 
 		glfwSwapBuffers(window);
 
