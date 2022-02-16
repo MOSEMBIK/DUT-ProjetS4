@@ -29,4 +29,4 @@ Le projet doit être réalisé en 8 semaines. Il est possible d'utiliser des ass
 6. Aller dans `Terminal > Run Task > Build` ou `Build & Run`
 7. Ouvrir l'executable compilé dans `build/Game.exe` 
 
-*Il est possible que l'ajout à la variable d'environment "PATH" du dossier `MSys64/MGWin64/bin` soit nécessaire*
+*Il est possible que l'ajout à la variable d'environment "PATH" du dossier `MSys64/MGWin64/bin` et `MSys64/user/bin` soit nécessaire*

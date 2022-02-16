@@ -29,22 +29,29 @@ INCLUDE	:= include
 # define lib directory
 LIB		:= lib
 
+# define shader directory
+SHADER	:= shader
+
+ASSETS  := assets
+
 ifeq ($(OS),Windows_NT)
-MAIN	:= Game.exe
+MAIN		:= Game.exe
 SOURCEDIRS	:= $(SRC)
 INCLUDEDIRS	:= $(INCLUDE)
 LIBDIRS		:= $(LIB)
-FIXPATH = $(subst /,\,$1)
+FIXPATH 	= $(subst /,\,$1)
 RM			:= del /q /f
-MD	:= mkdir
+MD			:= mkdir
+COPY 		:= xcopy "$(SHADER)" "$(OUTPUT)\$(SHADER)"/S/D/I/Y && xcopy "$(ASSETS)" "$(OUTPUT)\$(ASSETS)"/S/D/I/Y && xcopy "$(LIB)\glew32.dll" "$(OUTPUT)"/S/D/I/Y && xcopy "$(LIB)\glfw3.dll" "$(OUTPUT)"/S/D/I/Y
 else
-MAIN	:= Game
+MAIN		:= Game
 SOURCEDIRS	:= $(shell find $(SRC) -type d)
 INCLUDEDIRS	:= $(shell find $(INCLUDE) -type d)
 LIBDIRS		:= $(shell find $(LIB) -type d)
-FIXPATH = $1
-RM = rm -f
-MD	:= mkdir -p
+FIXPATH 	= $1
+RM 			:= rm -f
+MD			:= mkdir -p
+COPY		:= mkdir -p $(SHADER) $(OUTPUT)/$(SHADER) && cp $(SHADER) $(OUTPUT)/$(SHADER) && mkdir -p $(ASSETS) $(OUTPUT)/$(ASSETS) && cp $(ASSETS) $(OUTPUT)/$(ASSETS) && cp $(LIB)\glew32.dll $(OUTPUT) && cp $(LIB)\glfw3.dll $(OUTPUT)
 endif
 
 # define any directories containing header files other than /usr/include
@@ -68,6 +75,7 @@ OBJECTS		:= $(SOURCES:.cpp=.o)
 OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
 
 all: $(OUTPUT) $(MAIN)
+	$(COPY)
 	@echo Executing 'all' complete!
 
 $(OUTPUT):
