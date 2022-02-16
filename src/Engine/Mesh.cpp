@@ -53,7 +53,7 @@ void Mesh::setupMesh()
     glBindVertexArray(0);
 }  
 
-void Mesh::Draw(Shader &shader) const
+void Mesh::Draw() const
 {
     glBindVertexArray(VAO);
     glDrawElements(this->drawType, m_indices.size(), GL_UNSIGNED_INT, 0);

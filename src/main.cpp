@@ -1,11 +1,14 @@
 #define UNUSED(x) (void)(x)
 
+#include <Engine/Window.hpp>
 #include <Engine/Shader.hpp>
 #include <Engine/Primitives.hpp>
 #include <Engine/Transform.hpp>
 #include <Engine/Lights.hpp>
 #include <Engine/Camera.hpp>
 #include <Engine/ResourceLoader.hpp>
+
+#include <Game/Map.hpp>
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -86,10 +89,10 @@ int main(int argc, char **argv)
 	// Définit la fonction appelée lors d'erreur
 	glfwSetErrorCallback(error_callback);
 
-	glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, 1);
+	//glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, 1);
 	//glfwWindowHint(GLFW_DECORATED, 0);
 	// Créer une fenêtre dans un contexte OpenGL
-	window = glfwCreateWindow(800, 800, "Hello World !", NULL, NULL);
+	window = Window::GetMain()->GetWindow();
 	if (!window)
 	{
 		glfwTerminate();
@@ -156,7 +159,7 @@ int main(int argc, char **argv)
 	vector<PointLight> pointLights;
 	for(int i = 0; i < 4; i++)
 		pointLights.push_back(PointLight(i));
-		
+	/**	
 	pointLights[0].Enable();
 	pointLights[0].SetDiffuse(vec3(1.0f, 0.0f, 0.0f));
 	pointLights[0].SetSpecular(vec3(5.0f, 0.0f, 0.0f));
@@ -174,6 +177,7 @@ int main(int argc, char **argv)
 	pointLights[2].SetSpecular(vec3(0.0f, 10.0f, 0.0f));
 	pointLights[2].SetPosition(vec3(.0f, 10.0f, 10.0f));
 	pointLights[2].SetRange(50);
+	**/
 
 	glfwGetCursorPos(window, &oldMouseXPos, &oldMouseYPos);
 	glfwSetKeyCallback(window, key_callback);
@@ -182,6 +186,8 @@ int main(int argc, char **argv)
 
 	Camera::GetInstance()->GetTransform().Translate(vec3(0.0f, 0.0f, -7.5f));
 
+	Map map;
+	map.generateMap(12);
 	// Tant que la fenêtre ne doit pas être fermer (Alt-F4 ou click sur la croix par exemple)
 	while (!glfwWindowShouldClose(window))
 	{
@@ -216,27 +222,11 @@ int main(int argc, char **argv)
 		for(PointLight pointLight : pointLights)
 			pointLight.SendToShader(*basicShader);
 
-		// Création de la matrice du modèle (Objet)
-		basicShader->Use();
-		basicShader->SetUniformValue("_M", M);
-		basicShader->SetUniformValue("_iTM", mat3(transpose(inverse(M))));
-		basicShader->SetUniformValue("_V", V);
-		basicShader->SetUniformValue("_P", P);
+		/**
+		 * @brief Draw Game Objects
+		 */
+		map.Draw();
 
-		basicShader->SetUniformValue("_cameraPos", -camera->GetTransform().GetPosition());
-
-		basicShader->SetUniformValue("_material.ambient", vec3(1.0f, 0.5f, 0.31f));
-		basicShader->SetUniformValue("_material.color", vec3(1.0f, 1.0f, 1.0f));
-		basicShader->SetUniformValue("_material.shininess", 32.0f);
-
-		for(unsigned int i = 0; i < meshes.size(); i++)
-		{
-			if(materials.size() > i)
-				materials[i].Use();
-			else
-				Material().Use();
-			meshes[i].Draw(*basicShader);
-		}
 
 		glfwSwapBuffers(window);
 
