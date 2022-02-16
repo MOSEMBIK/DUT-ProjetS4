@@ -6,7 +6,7 @@ class Light {
 protected:
     glm::vec3 m_ambient;
     glm::vec3 m_diffuse;
-    glm::vec3 specular;
+    glm::vec3 m_specular;
 public:
     /**
      * @brief Construct a new Light object
@@ -29,7 +29,7 @@ public:
      * 
      * @return glm::vec3 
      */
-    inline glm::vec3 GetAmbient() { return m_ambient; }
+    inline glm::vec3 GetAmbient() const { return m_ambient; }
 
     /**
      * @brief Set the Diffuse color of the light
@@ -43,28 +43,28 @@ public:
      * 
      * @return glm::vec3 
      */
-    inline glm::vec3 GetDiffuse() { return m_diffuse; }
+    inline glm::vec3 GetDiffuse() const{ return m_diffuse; }
 
     /**
      * @brief Set the Specular color of the light
      * 
      * @param specularColor 
      */
-    inline void SetSpecular(glm::vec3 specularColor) { this->specular = glm::vec3(specularColor); }
+    inline void SetSpecular(glm::vec3 specularColor) { this->m_specular = glm::vec3(specularColor); }
 
     /**
      * @brief Get the Specular color of the light
      * 
      * @return glm::vec3 
      */
-    inline glm::vec3 GetSpecular() { return specular; }
+    inline glm::vec3 GetSpecular() const { return m_specular; }
 
     /**
      * @brief Send the light information to the shader
      * 
      * @param shader 
      */
-    virtual void SendToShader(const Shader& shader) = 0;
+    virtual void SendToShader(const Shader& shader) const = 0;
 };
 
 class DirectionalLight : public Light{
@@ -93,14 +93,14 @@ public:
      * 
      * @return glm::vec3 
      */
-    inline glm::vec3 GetDirection() { return m_direction; }
+    inline glm::vec3 GetDirection() const { return m_direction; }
 
     /**
      * @brief Send the light information to the shader
      * 
      * @param shader 
      */
-    void SendToShader(const Shader& shader);
+    void SendToShader(const Shader& shader) const;
 };
 
 class PointLight : public Light{
@@ -127,7 +127,7 @@ public:
      * 
      * @return glm::vec3 
      */
-    inline glm::vec3 GetPosition() { return m_position; }
+    inline glm::vec3 GetPosition() const { return m_position; }
 
     /**
      * @brief Set the Position of the light
@@ -141,7 +141,7 @@ public:
      * 
      * @return float 
      */
-    inline float GetRange() { return m_range; }
+    inline float GetRange() const { return m_range; }
 
     /**
      * @brief Set the Light Distance object
@@ -155,7 +155,7 @@ public:
      * 
      * @param shader 
      */
-    void SendToShader(const Shader& shader);
+    void SendToShader(const Shader& shader) const;
 
     /**
      * @brief Enable this point light

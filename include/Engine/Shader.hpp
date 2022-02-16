@@ -8,6 +8,7 @@
 #include <sstream>
 #include <iostream>
 #include <typeinfo>
+#include <map>
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -18,8 +19,27 @@
 
 class Shader
 {
+private:
+    static std::map<std::string, Shader&> shaderDict;
+
 public:
     unsigned int m_ID;
+
+    /**
+     * @brief Save the shader in the dictionnary
+     * 
+     * @param name Name of the shader
+     * @param shader 
+     */
+    static void Register(std::string name, Shader& shader);
+
+    /**
+     * @brief Find a shader in the dictionnary
+     * 
+     * @param name Name of the shader
+     * @return Shader* Pointer to the shader, nullptr if not found
+     */
+    static Shader* Find(std::string name);
 
     /**
      * @brief Construct a new Shader object
@@ -33,7 +53,7 @@ public:
      * @brief Define this shader as the currently used one.
      * This need to be called before setting uniform values.
      */
-    void Use();
+    void Use() const;
 
     /**
      * @brief Set the Uniform Value for the shader

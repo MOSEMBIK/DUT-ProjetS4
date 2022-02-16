@@ -42,7 +42,7 @@ public:
      * 
      * @return glm::mat4 
      */
-    inline glm::mat4 GetViewMatrix() { return m_transform.GetTRSMatrix(); }
+    inline glm::mat4 GetViewMatrix() const { return m_transform.GetTRSMatrix(); }
 
     /**
      * @brief Get the Projection Matrix of the Camera
@@ -50,5 +50,47 @@ public:
      * @param window 
      * @return glm::mat4 
      */
-    glm::mat4 GetProjectionMatrix(GLFWwindow* window);
+    glm::mat4 GetProjectionMatrix(GLFWwindow* window) const;
+
+    /**
+     * @brief Get current FOV (field of view) (in degree)
+     * 
+     * @return float 
+     */
+    inline float GetFOV() const { return m_fov; }
+
+    /**
+     * @brief Set current FOV (field of view) (in degree)
+     * 
+     * @param fov 
+     */
+    inline void SetFOV(float fov) { m_fov = fov; }
+
+    /**
+     * @brief Get the Near Plane distance (minimum distance to render)
+     * 
+     * @return float 
+     */
+    inline float GetNearPlane() const { return m_nearPlane; }
+
+    /**
+     * @brief Set the Near Plane distance (minimum distance to render)
+     * 
+     * @param nearPlane 
+     */
+    inline void SetNearPlane(float nearPlane) { m_nearPlane = nearPlane; }
+
+    /**
+     * @brief Get the Far Plane distance (maximum distance to render)
+     * 
+     * @return float 
+     */
+    inline float GetFarPlane() const { return m_farPlane; }
+
+    /**
+     * @brief Set the Far Plane distance (maximum distance to render)
+     * 
+     * @return float 
+     */
+    inline void SetFarPlane(float farPlane) { m_farPlane = farPlane; }
 };

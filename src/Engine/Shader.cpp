@@ -1,5 +1,29 @@
 #include <Engine/Shader.hpp>
 
+using namespace std;
+
+map<string, Shader&> Shader::shaderDict;
+
+void Shader::Register(string name, Shader& shader)
+{
+    auto search = shaderDict.find(name);
+    
+    if(search == shaderDict.end())
+        shaderDict.insert({name, shader});
+    else
+        cout << "Can't add the shader, there is already one existing with this name" << endl;
+}
+
+Shader* Shader::Find(string name)
+{
+    auto search = shaderDict.find(name);
+
+    if(search != shaderDict.end())
+        return &search->second;
+
+    return nullptr;
+}
+
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
     // 1. retrieve the vertex/fragment source code from filePath
@@ -56,7 +80,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 }
 // activate the shader
 // ------------------------------------------------------------------------
-void Shader::Use() 
+void Shader::Use() const
 { 
     glUseProgram(m_ID); 
 }

@@ -10,36 +10,82 @@
 #include <string>
 #include <fstream>
 #include <string.h>
+#include <glm/geometric.hpp>
 
 using namespace Resource;
 using namespace std;
 using namespace glm;
 
-bool Resource::LoadOBJ(const char* filename, vector<vec3> &vertices, vector<vec2> &texCoords, vector<vec3> &normals)
+bool Resource::LoadOBJ(const char* filename, vector<Mesh>& meshes, vector<Material>& materials)
 {
-    std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
-    std::vector< glm::vec3 > temp_vertices;
-    std::vector< glm::vec2 > temp_uvs;
-    std::vector< glm::vec3 > temp_normals;
-    
     FILE * file = fopen(filename, "r");
     if( file == NULL ){
-        printf("Impossible to open the file !\n");
+        cout << "Impossible to open the file '" << filename << " !" << endl;
         return false;
     }
 
+    std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
+    std::vector<glm::vec3> temp_vertices;
+    std::vector<glm::vec2> temp_uvs;
+    std::vector<glm::vec3> temp_normals;
+
     while( 1 )
     {
+        
         char lineHeader[128];
         int res = fscanf(file, "%s", lineHeader);
         if (res == EOF)
             break;
             
-        if (strcmp(lineHeader, "v") == 0)
+        if (strcmp(lineHeader, "usemtl") == 0)
+        {
+            if(vertexIndices.size() > 0)
+            {
+                std::vector<glm::vec3> vertices;
+                std::vector<glm::vec2> uvs;
+                std::vector<glm::vec3> normals;
+                for( unsigned int i=0; i<vertexIndices.size(); i++ )
+                {
+                    unsigned int vertexIndex = vertexIndices[i];
+                    vec3 vertex = temp_vertices[vertexIndex - 1];
+                    vertices.push_back(vertex);
+                }
+
+                for( unsigned int i=0; i<uvIndices.size(); i++ )
+                {
+                    unsigned int uvIndex = uvIndices[i];
+                    vec2 uv = temp_uvs[uvIndex - 1];
+                    uvs.push_back(uv);
+                }
+
+                for( unsigned int i=0; i<normalIndices.size(); i++ )
+                {
+                    unsigned int normalIndex = normalIndices[i];
+                    vec3 normal = temp_normals[normalIndex - 1];
+                    normals.push_back(normal);
+                }
+                vertexIndices.clear();
+                uvIndices.clear();
+                normalIndices.clear();
+
+                meshes.push_back(Mesh(Mesh::CreateFromVectors(vertices, normals, uvs)));
+            }
+        }
+        else if (strcmp(lineHeader, "v") == 0)
         {
             glm::vec3 vertex;
             fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z );
             temp_vertices.push_back(vertex);
+        }
+        else if (strcmp(lineHeader, "mtllib") == 0)
+        {
+            char materialName[128];
+            fscanf(file, "%s\n", materialName );
+            
+            string filenameS = string(filename);
+            unsigned int lastSlash = filenameS.find_last_of('/');
+        
+            Resource::LoadMTL((filenameS.substr(0, lastSlash + 1) + materialName).c_str(), materials);
         }
         else if (strcmp(lineHeader, "vt") == 0)
         {
@@ -58,7 +104,8 @@ bool Resource::LoadOBJ(const char* filename, vector<vec3> &vertices, vector<vec2
             unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
             int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2] );
             if (matches != 9){
-                printf("File can't be read by our simple parser : ( Try exporting with other options\n");
+                cout << "File can't be read by the parser";
+                fclose(file);
                 return false;
             }
             vertexIndices.push_back(vertexIndex[0]);
@@ -73,6 +120,11 @@ bool Resource::LoadOBJ(const char* filename, vector<vec3> &vertices, vector<vec2
         }
     }
 
+    fclose(file);
+
+    std::vector<glm::vec3> vertices;
+    std::vector<glm::vec2> uvs;
+    std::vector<glm::vec3> normals;
     for( unsigned int i=0; i<vertexIndices.size(); i++ )
     {
         unsigned int vertexIndex = vertexIndices[i];
@@ -84,7 +136,7 @@ bool Resource::LoadOBJ(const char* filename, vector<vec3> &vertices, vector<vec2
     {
         unsigned int uvIndex = uvIndices[i];
         vec2 uv = temp_uvs[uvIndex - 1];
-        texCoords.push_back(uv);
+        uvs.push_back(uv);
     }
 
     for( unsigned int i=0; i<normalIndices.size(); i++ )
@@ -94,6 +146,75 @@ bool Resource::LoadOBJ(const char* filename, vector<vec3> &vertices, vector<vec2
         normals.push_back(normal);
     }
 
+    meshes.push_back(Mesh(Mesh::CreateFromVectors(vertices, normals, uvs)));
+
+    return true;
+}
+
+bool Resource::LoadMTL(const char* filename, vector<Material>& materials)
+{
+    FILE * file = fopen(filename, "r");
+    if( file == NULL ){
+        cout << "Impossible to open the file '" << filename << " !" << endl;
+        return false;
+    }
+
+    while( 1 )
+    {
+        char lineHeader[128];
+        int res = fscanf(file, "%s", lineHeader);
+        if (res == EOF)
+            break;
+        
+        if (strcmp(lineHeader, "newmtl") == 0)
+        {
+            char materialName[128]; 
+            fscanf(file, "%s\n", materialName);
+            materials.push_back(Material());
+        }
+        else if (strcmp(lineHeader, "Ka") == 0)
+        {
+            glm::vec3 ambientColor;
+            fscanf(file, "%f %f %f\n", &ambientColor.x, &ambientColor.y, &ambientColor.z );
+            materials.back().SetAmbientColor(ambientColor);
+        }
+        else if (strcmp(lineHeader, "Kd") == 0)
+        {
+            glm::vec3 diffuseColor;
+            fscanf(file, "%f %f %f\n", &diffuseColor.x, &diffuseColor.y, &diffuseColor.z );
+            materials.back().SetDiffuseColor(diffuseColor);
+        }
+        else if (strcmp(lineHeader, "Ks") == 0)
+        {
+            glm::vec3 specularColor;
+            fscanf(file, "%f %f %f\n", &specularColor.x, &specularColor.y, &specularColor.z );
+            materials.back().SetSpecularColor(specularColor);
+        }
+        else if (strcmp(lineHeader, "Ns") == 0)
+        {
+            float specularExponent;
+            fscanf(file, "%f\n", &specularExponent);
+            materials.back().SetSpecularExponent(specularExponent);
+        }
+        else if (strcmp(lineHeader, "map_Kd") == 0)
+        {
+            char diffuseMap[128]; 
+            fscanf(file, "%s\n", diffuseMap);
+            unsigned int textureId = 0;
+            Resource::LoadTexture(diffuseMap, textureId);
+            materials.back().SetDiffuseTexture(textureId);
+        }
+        else if (strcmp(lineHeader, "map_Ks") == 0)
+        {
+            char specularMap[128];
+            fscanf(file, "%s\n", specularMap);
+            unsigned int textureId = 0;
+            Resource::LoadTexture(specularMap, textureId);
+            materials.back().SetSpecularTexture(textureId);
+        }
+    }
+
+    fclose(file);
     return true;
 }
 
@@ -117,7 +238,5 @@ bool Resource::LoadTexture(const char* filename, unsigned int& textureID)
     glGenerateMipmap(GL_TEXTURE_2D);
 
     stbi_image_free(data);
-
-    cout << "d" << endl;
     return true;
 }
