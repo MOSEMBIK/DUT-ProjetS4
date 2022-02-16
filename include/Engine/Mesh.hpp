@@ -35,11 +35,9 @@ class Mesh {
         Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, GLenum drawType = GL_TRIANGLES);
         
         /**
-         * @brief Draw the mesh according to the vertices, textures, etc... using the given shader.
-         * 
-         * @param shader Shader used for drawing
+         * @brief Draw the mesh according to the vertices, textures, etc...
          */
-        void Draw(Shader &shader) const;
+        void Draw() const;
 
         /**
          * @brief Create a std::vector of vertices from multiple std::vectors with an unique color
