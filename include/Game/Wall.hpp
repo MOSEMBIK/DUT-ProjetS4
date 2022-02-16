@@ -11,7 +11,11 @@ private:
 	void onDestroy();
 
 public:
-	Wall();
+	enum Type { Metal, Stone, Wood };
+	Wall(int type = Metal);
 
+	inline int getType() { return type; }
+	inline int getHealth() { return health; }
+	void removeHealth();
 
 };

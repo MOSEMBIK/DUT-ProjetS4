@@ -79,5 +79,5 @@ mat4 Transform::GetTRSMatrix() const
     mat4 rotate = glm::toMat4(this->m_rotation);
     mat4 scale = glm::scale(this->m_scale);
 
-    return scale * rotate * translate;
+    return rotate * translate * scale;
 }

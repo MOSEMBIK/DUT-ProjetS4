@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 	// Définit la fonction appelée lors d'erreur
 	glfwSetErrorCallback(error_callback);
 
-	glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, 1);
+	//glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, 1);
 	//glfwWindowHint(GLFW_DECORATED, 0);
 	// Créer une fenêtre dans un contexte OpenGL
 	window = Window::GetMain()->GetWindow();
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
 	vector<PointLight> pointLights;
 	for(int i = 0; i < 4; i++)
 		pointLights.push_back(PointLight(i));
-		
+	/**	
 	pointLights[0].Enable();
 	pointLights[0].SetDiffuse(vec3(1.0f, 0.0f, 0.0f));
 	pointLights[0].SetSpecular(vec3(5.0f, 0.0f, 0.0f));
@@ -177,6 +177,7 @@ int main(int argc, char **argv)
 	pointLights[2].SetSpecular(vec3(0.0f, 10.0f, 0.0f));
 	pointLights[2].SetPosition(vec3(.0f, 10.0f, 10.0f));
 	pointLights[2].SetRange(50);
+	**/
 
 	glfwGetCursorPos(window, &oldMouseXPos, &oldMouseYPos);
 	glfwSetKeyCallback(window, key_callback);
@@ -221,8 +222,10 @@ int main(int argc, char **argv)
 		for(PointLight pointLight : pointLights)
 			pointLight.SendToShader(*basicShader);
 
-		
-		map.draw();
+		/**
+		 * @brief Draw Game Objects
+		 */
+		map.Draw();
 
 
 		glfwSwapBuffers(window);

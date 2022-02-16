@@ -13,7 +13,7 @@ struct cmpVec {
     }
 };
 
-class Map
+class Map: public Actor
 {
 private:
 	std::vector<Actor*> actors;
@@ -24,5 +24,5 @@ public:
 
 	void generateMap(int size = 12);
 
-	void draw();
+	void Draw();
 };

@@ -10,7 +10,7 @@ class Actor
 protected:
 	std::vector<Mesh> m_meshes;
 	std::vector<Material> m_materials;
-	bool collision;
+	bool collision = false;
 	Transform m_transform;
 
 public:

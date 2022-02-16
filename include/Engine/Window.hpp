@@ -6,8 +6,8 @@
 class Window
 {
 private:
-    const unsigned int WINDOW_W = 800;
-    const unsigned int WINDOW_H = 800;
+    const unsigned int WINDOW_W = 1920;
+    const unsigned int WINDOW_H = 1080;
 
     Window();
     GLFWwindow* m_window;
