@@ -25,7 +25,7 @@ public:
      * 
      * @return glm::vec3 
      */
-    glm::vec3 GetPosition();
+    glm::vec3 GetPosition() const;
 
     /**
      * @brief Set the Position of the object
@@ -46,14 +46,14 @@ public:
      * 
      * @return glm::quat 
      */
-    glm::quat GetRotation();
+    glm::quat GetRotation() const;
 
     /**
      * @brief Get the Euleur Angles of the object
      * 
      * @return glm::vec3 
      */
-    glm::vec3 GetEuleurAngles();
+    glm::vec3 GetEuleurAngles() const;
 
     /**
      * @brief Set the Rotation of the objet using a Quaternion
@@ -88,7 +88,7 @@ public:
      * 
      * @return glm::vec3 
      */
-    glm::vec3 GetScale();
+    glm::vec3 GetScale() const;
 
     /**
      * @brief Set the Scale of the object
@@ -116,5 +116,5 @@ public:
      * 
      * @return mat4 
      */
-    glm::mat4 GetTRSMatrix();
+    glm::mat4 GetTRSMatrix() const;
 };

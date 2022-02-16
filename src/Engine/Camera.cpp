@@ -9,7 +9,7 @@ Camera::Camera() : m_transform(Transform()), m_fov(60), m_nearPlane(0.03f), m_fa
 
 }
 
-Camera* Camera::GetInstance()
+Camera* Camera::GetInstance() 
 {
     if(m_instance == nullptr)
     {
@@ -18,7 +18,7 @@ Camera* Camera::GetInstance()
     return m_instance;
 }
 
-mat4 Camera::GetProjectionMatrix(GLFWwindow* window)
+mat4 Camera::GetProjectionMatrix(GLFWwindow* window) const
 {
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);

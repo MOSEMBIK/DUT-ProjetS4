@@ -12,7 +12,7 @@ Mesh Primitives::FastCube()
 
     vector<Vertex> vertices = Mesh::CreateFromVectors(positions, positions, vec3(1.0f));
 
-    return Mesh(vertices, indices, vector<Texture>(), GL_TRIANGLE_STRIP);
+    return Mesh(vertices, indices, GL_TRIANGLE_STRIP);
 }
 
 Mesh Primitives::Cube()
@@ -37,5 +37,5 @@ Mesh Primitives::Cube()
 
     vector<Vertex> vertices = Mesh::CreateFromVectors(positions, normals, texCoords, vec3(1.0f, 1.0f, 1.0f));
 
-    return Mesh(vertices, indices, vector<Texture>(), GL_TRIANGLES);
+    return Mesh(vertices, indices, GL_TRIANGLES);
 }

@@ -15,6 +15,8 @@
 using namespace std;
 using namespace glm;
 
+
+
 void error_callback(int error, const char* description)
 {
 	UNUSED(error);
@@ -40,6 +42,12 @@ void process_inputs(GLFWwindow* window, float deltaTime)
 	Transform* cameraTransform =  &Camera::GetInstance()->GetTransform();
     const float cameraSpeed = 5.0f;
 
+    if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS)
+        Camera::GetInstance()->SetFOV(Camera::GetInstance()->GetFOV() - 1);
+
+    if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS)
+        Camera::GetInstance()->SetFOV(Camera::GetInstance()->GetFOV() + 1);
+
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraTransform->Translate(vec3(0.0f, 0.0f, 1.0f) * cameraTransform->GetRotation() * cameraSpeed * deltaTime);
 
@@ -51,7 +59,6 @@ void process_inputs(GLFWwindow* window, float deltaTime)
 
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraTransform->Translate(vec3(-1.0f, 0.0f, 0.0f) * cameraTransform->GetRotation() * cameraSpeed * deltaTime);
-		
 
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
@@ -101,10 +108,18 @@ int main(int argc, char **argv)
 	// VSync (0 = No VSync (Pas de limite), 1 = VSync (Basé sur la vitesse de l'écran (60Hz => 60fps)), 2 = Double VSync (Moitié de la vitesse de l'écran) )
 	glfwSwapInterval(1);
 
-	unsigned int textureWhiteID;
+    static unsigned int textureWhiteID;
 	if(!Resource::LoadTexture("assets/white_texture.png", textureWhiteID))
 	{
 		cout << "Failed to load white texture" << endl;
+		glfwTerminate();
+		return 0;
+	}
+
+    static unsigned int textureBlackID;
+	if(!Resource::LoadTexture("assets/black_texture.png", textureBlackID))
+	{
+		cout << "Failed to load black texture" << endl;
 		glfwTerminate();
 		return 0;
 	}
@@ -120,25 +135,29 @@ int main(int argc, char **argv)
 	if (glfwRawMouseMotionSupported())
 		glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 
+	Shader* basicShader = new Shader("shader/vertex.glsl", "shader/fragment.glsl");
+	Shader::Register("Base", *basicShader);
+	Transform transform;
+
+	Camera* camera =  Camera::GetInstance();
+
 	Mesh cube = Primitives::Cube();
 
 	vector<vec3> vertices, normals;
 	vector<vec2> texCoords;
+	vector<Material> materials;
+	vector<Mesh> meshes;
 
-	Resource::LoadOBJ("assets/models/Susanne.obj", vertices, texCoords, normals);
+	Resource::LoadOBJ("assets/models/ColoredCube.obj", meshes, materials);
 	vector<Vertex> susanneVertex = Mesh::CreateFromVectors(vertices, normals, texCoords);
 	Mesh susanne = Mesh(susanneVertex, GL_TRIANGLES);
-
-	Camera* camera =  Camera::GetInstance();
-	Shader basicShader("shader/vertex.glsl", "shader/fragment.glsl");
-	Transform transform;
 
 	DirectionalLight dirLight(vec3(-1.0f, -1.0f, -1.0f), vec3(0.1f), vec3(1.0f), vec3(1.0f));
 	vector<PointLight> pointLights;
 	for(int i = 0; i < 4; i++)
 		pointLights.push_back(PointLight(i));
 		
-	/*pointLights[0].Enable();
+	pointLights[0].Enable();
 	pointLights[0].SetDiffuse(vec3(1.0f, 0.0f, 0.0f));
 	pointLights[0].SetSpecular(vec3(5.0f, 0.0f, 0.0f));
 	pointLights[0].SetPosition(vec3(0.0f, 0.0f, 10.0f));
@@ -154,14 +173,7 @@ int main(int argc, char **argv)
 	pointLights[2].SetDiffuse(vec3(0.0f, 0.5f, 0.0f));
 	pointLights[2].SetSpecular(vec3(0.0f, 10.0f, 0.0f));
 	pointLights[2].SetPosition(vec3(.0f, 10.0f, 10.0f));
-	pointLights[2].SetRange(50);*/
-
-	basicShader.Use();
-	dirLight.SendToShader(basicShader);
-	for(int i = 0; i < 4; i++)
-	{
-		pointLights[i].SendToShader(basicShader);
-	}
+	pointLights[2].SetRange(50);
 
 	glfwGetCursorPos(window, &oldMouseXPos, &oldMouseYPos);
 	glfwSetKeyCallback(window, key_callback);
@@ -195,25 +207,36 @@ int main(int argc, char **argv)
 		// Création de la matrice de vue (Caméra)
 		mat4 V = camera->GetViewMatrix();
 
-		//transform.Rotate(vec3(1.0f, 1.0f, 1.0f) * deltaTime * pi<float>() / 4.0f);
+		//transform.Rotate(vec3(1.0f, 1.0f, -1.0f) * deltaTime * pi<float>() / 4.0f);
 		//transform.SetScale(vec3(1.0f) + vec3(1.0f) * (sinf(time) + 1) * 0.25f);
 
 		mat4 M = transform.GetTRSMatrix();
 		
+		dirLight.SendToShader(*basicShader);
+		for(PointLight pointLight : pointLights)
+			pointLight.SendToShader(*basicShader);
+
 		// Création de la matrice du modèle (Objet)
-		basicShader.Use();
-		basicShader.SetUniformValue("_M", M);
-		basicShader.SetUniformValue("_iTM", mat3(transpose(inverse(M))));
-		basicShader.SetUniformValue("_V", V);
-		basicShader.SetUniformValue("_P", P);
+		basicShader->Use();
+		basicShader->SetUniformValue("_M", M);
+		basicShader->SetUniformValue("_iTM", mat3(transpose(inverse(M))));
+		basicShader->SetUniformValue("_V", V);
+		basicShader->SetUniformValue("_P", P);
 
-		basicShader.SetUniformValue("_cameraPos", -camera->GetTransform().GetPosition());
+		basicShader->SetUniformValue("_cameraPos", -camera->GetTransform().GetPosition());
 
-		basicShader.SetUniformValue("_material.ambient", vec3(1.0f, 0.5f, 0.31f));
-		basicShader.SetUniformValue("_material.color", vec3(1.0f, 1.0f, 1.0f));
-		basicShader.SetUniformValue("_material.shininess", 32.0f);
+		basicShader->SetUniformValue("_material.ambient", vec3(1.0f, 0.5f, 0.31f));
+		basicShader->SetUniformValue("_material.color", vec3(1.0f, 1.0f, 1.0f));
+		basicShader->SetUniformValue("_material.shininess", 32.0f);
 
-		susanne.Draw(basicShader);
+		for(unsigned int i = 0; i < meshes.size(); i++)
+		{
+			if(materials.size() > i)
+				materials[i].Use();
+			else
+				Material().Use();
+			meshes[i].Draw(*basicShader);
+		}
 
 		glfwSwapBuffers(window);
 
