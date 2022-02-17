@@ -17,4 +17,6 @@ private:
 public:
 	Player();
 
+	inline float getSpeed() const { return speed; }
+
 };
