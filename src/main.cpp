@@ -9,6 +9,7 @@
 #include <Engine/ResourceLoader.hpp>
 
 #include <Game/Map.hpp>
+#include <Game/Robot.hpp>
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -184,10 +185,20 @@ int main(int argc, char **argv)
 
 	float lastTime = time - 1;
 
-	Camera::GetInstance()->GetTransform().Translate(vec3(0.0f, 0.0f, -7.5f));
+	camera->GetTransform().SetPosition(vec3(-5.86219f, -13.4262f, -16.7321f));
+	camera->GetTransform().SetRotation(vec3(0.446024f, 0.00986233f, -0.0049932f));
 
+	// Tests bizarre avec la map
 	Map map;
-	map.generateMap(12);
+	map.generateMap(13);
+	Actor resTorus;
+	resTorus.loadOBJ("assets/models/ResTorus.obj");
+	map.addActor(&resTorus);
+	Robot* robot = new Robot(), *robot2 = new Robot();
+	robot->loadOBJ("assets/models/Bomberman.obj");
+	robot->getTransform().SetPosition(vec3(6.0f, 0.0f, 6.0f));
+	map.addActor(robot);
+	map.addActor(robot2);
 	// Tant que la fenêtre ne doit pas être fermer (Alt-F4 ou click sur la croix par exemple)
 	while (!glfwWindowShouldClose(window))
 	{
@@ -225,7 +236,10 @@ int main(int argc, char **argv)
 		/**
 		 * @brief Draw Game Objects
 		 */
-		map.Draw();
+		robot->update(deltaTime);
+		robot2->update(deltaTime);
+		resTorus.getTransform().Rotate(vec3(0.0f, 1.0f, 0.0f) * deltaTime * pi<float>());
+		map.draw();
 
 
 		glfwSwapBuffers(window);
