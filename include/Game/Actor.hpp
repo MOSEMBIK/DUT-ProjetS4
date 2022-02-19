@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utils.h>
+
 #include <Engine/Mesh.hpp>
 #include <Engine/Material.hpp>
 #include <Engine/Transform.hpp>
@@ -45,4 +47,5 @@ public:
 	 */
 	inline Transform& getTransform() { return this->m_transform; }
 
+	virtual void update(float deltaTime) { UNUSED(deltaTime); }
 };

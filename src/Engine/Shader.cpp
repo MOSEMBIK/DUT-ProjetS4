@@ -9,9 +9,14 @@ void Shader::Register(string name, Shader& shader)
     auto search = shaderDict.find(name);
     
     if(search == shaderDict.end())
+    {
         shaderDict.insert({name, shader});
+        cout << "Shader registered as name : '" << name << "' successufully!" << endl;
+    }
     else
+    {
         cout << "Can't add the shader, there is already one existing with this name" << endl;
+    }
 }
 
 Shader* Shader::Find(string name)
@@ -21,6 +26,7 @@ Shader* Shader::Find(string name)
     if(search != shaderDict.end())
         return &search->second;
 
+    cout << "Shader named : '" << name << "' not found!" << endl;
     return nullptr;
 }
 
