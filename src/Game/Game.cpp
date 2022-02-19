@@ -1,6 +1,7 @@
 #include <Game/Game.hpp>
 #include <Game/Robot.hpp>
 
+#include <Engine/Button.hpp>
 #include <Engine/Transform.hpp>
 #include <Engine/Camera.hpp>
 #include <Engine/ResourceLoader.hpp>
@@ -47,14 +48,14 @@ bool Game::init()
     mainCamera = new Camera();
 
     // Hide one useless faces
-	//glEnable(GL_CULL_FACE); 
+	glEnable(GL_CULL_FACE); 
 
     // Manage depth
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
     // Make the lights
-	DirectionalLight dirLight(vec3(-1.0f, -1.0f, -1.0f), vec3(0.1f), vec3(1.0f), vec3(1.0f));
+	DirectionalLight dirLight(vec3(-1.0f, -0.0f, -0.5f), vec3(0.1f), vec3(1.0f), vec3(1.0f));
 
 	vector<PointLight> pointLights;
 	for(int i = 0; i < 4; i++)
@@ -77,10 +78,11 @@ bool Game::init()
 		map->addActor(bomb);
 	}
 
+
 	m_lastTime = m_currentTime - 1;
 
 	mainCamera->GetTransform().SetPosition(vec3(-5.86219f, -10.4262f, -20.7321f));
-	mainCamera->GetTransform().SetRotation(vec3(0.446024f, 0.00986233f, -0.0049932f));
+	mainCamera->GetTransform().SetRotation(vec3(0.45f, 0.0f, 0.0f));
     return true;
 }
 
@@ -143,6 +145,10 @@ void Game::update()
 
 	map->update(m_deltaTime);
 	map->draw();
+
+	// Test de bouton
+	Button button(0.5f, 0.2f, 0.0f, 0.0f, "Test", mainWindow->GetWindow());
+	button.draw();
 
 	if(m_currentTime - m_lastTime >= 1)
 	{

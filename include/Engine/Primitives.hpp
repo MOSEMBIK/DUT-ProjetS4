@@ -59,4 +59,11 @@ namespace Primitives
      * @return Mesh 
      */
     Mesh Cube();
+
+	/**
+	 * @brief Generate a quad with given size
+	 * 
+	 * @return Mesh 
+	 */
+	Mesh Quad(glm::vec2 size);
 }

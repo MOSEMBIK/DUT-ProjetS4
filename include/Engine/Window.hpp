@@ -3,8 +3,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-const unsigned int WINDOW_W = 800;
-const unsigned int WINDOW_H = 800;
+const unsigned int WINDOW_W = 1280;
+const unsigned int WINDOW_H = 720;
 
 class Window
 {
