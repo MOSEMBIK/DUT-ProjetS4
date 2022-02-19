@@ -5,10 +5,11 @@
 class Robot: public Player
 {
 private:
-	int x = rand()%13, z = rand()%13;
+	int mapSize;
+	int x, z;
 
 public:
-	Robot();
+	Robot(Map* map);
 
 	void update(float deltaTime);
 

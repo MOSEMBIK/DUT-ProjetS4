@@ -13,10 +13,12 @@
 
 using namespace std;
 
-Actor::Actor() {}
+Actor::Actor(Map* map) : map(map) {}
 
-bool Actor::getCollision() {
-	return this->collision;
+Actor::Actor(Map* map, const char* filename) : map(map) {
+	if (!loadOBJ(filename)) {
+		cout << "Failed to load " << filename << endl;
+	}
 }
 
 bool Actor::loadOBJ(const char* filename) {

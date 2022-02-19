@@ -67,10 +67,12 @@ bool Game::init()
     map = new Map();
 	map->generateMap(13);
 	
-	Robot* robot = new Robot();
-	robot->loadOBJ("assets/models/Bomberman.obj");
-	robot->getTransform().SetPosition(vec3(6.0f, 0.0f, 6.0f));
-	map->addActor(robot);
+	// Test de robots
+	for (int i = 0; i < 10; i++) {
+		Robot* robot = new Robot(map);
+		robot->getTransform().SetPosition(vec3(6.0f, 0.0f, 6.0f));
+		map->addActor(robot);
+	}
 
 	m_lastTime = m_currentTime - 1;
 

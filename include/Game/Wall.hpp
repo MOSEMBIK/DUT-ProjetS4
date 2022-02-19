@@ -12,7 +12,7 @@ private:
 
 public:
 	enum Type { Metal, Stone, Wood };
-	Wall(int type = Metal);
+	Wall(Map* map, int type = Metal);
 
 	inline int getType() { return type; }
 	inline int getHealth() { return health; }
