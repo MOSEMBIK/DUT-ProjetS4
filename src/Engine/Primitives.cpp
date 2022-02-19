@@ -39,3 +39,13 @@ Mesh Primitives::Cube()
 
     return Mesh(vertices, indices, GL_TRIANGLES);
 }
+
+Mesh Primitives::Quad(vec2 size)
+{
+    vector<vec3> positions = { vec3(0, 0, 0), vec3(size.x, 0, 0), vec3(0, size.y, 0), vec3(size.x, size.y, 0) };
+    vector<vec2> uvs = { vec2(0, 0), vec2(1, 0), vec2(0, 1), vec2(1, 1) };
+	
+    vector<Vertex> vertices = Mesh::CreateFromVectors(positions, positions, uvs, vec3(1.0f));
+
+    return Mesh(vertices, GL_TRIANGLE_STRIP);
+}

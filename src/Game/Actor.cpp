@@ -41,6 +41,7 @@ void Actor::draw() {
 
 		glm::mat4 M = this->m_transform.GetTRSMatrix();
 
+		shader->Use();
 		shader->SetUniformValue("_M", M);
 		shader->SetUniformValue("_iTM", glm::mat3(glm::transpose(glm::inverse(M))));
 		shader->SetUniformValue("_V", Game::getInstance()->getMainCamera()->GetViewMatrix());
