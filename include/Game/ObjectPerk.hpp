@@ -9,7 +9,7 @@ private:
 	float lifetime;
 
 public:
-	ObjectPerk();
+	ObjectPerk(Map* map);
 	virtual void onPickUp(Player*) = 0;
 
 };

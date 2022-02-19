@@ -17,12 +17,15 @@ class Map
 private:
 	std::vector<Actor*> actors;
 	std::map<glm::ivec2, Wall*, cmpVec> walls;
+	int mapSize;
 
 public:
 	Map();
 
 	void generateMap(int size = 13);
 	void addActor(Actor* actor);
+
+	inline int getSize() { return mapSize; }
 
 	void draw();
 	void update(float deltaTime);

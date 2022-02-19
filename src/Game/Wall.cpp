@@ -2,8 +2,9 @@
 #include <Engine/Primitives.hpp>
 #include <Engine/Material.hpp>
 #include <Game/Wall.hpp>
+#include <Game/Map.hpp>
 
-Wall::Wall(int type): type(type) {
+Wall::Wall(Map* map, int type): Actor(map), type(type) {
 	m_meshes.push_back(Primitives::Cube());
 	Material mat;
 	switch (type) {
