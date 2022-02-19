@@ -50,3 +50,13 @@ void PointLight::SendToShader(const Shader& shader) const
         shader.SetUniformValue(("_pointLights[" + lightIndexStr + "].specular").c_str(), noLight);
     }
 }
+
+void PointLight::reset()
+{
+    this->m_range = 10.0f;
+    this->m_position = vec3(0.0f);
+    this->m_enabled = false;
+    this->m_ambient = vec3(0.0f);
+    this->m_diffuse = vec3(0.0f);
+    this->m_specular = vec3(0.0f);
+}

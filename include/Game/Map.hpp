@@ -8,8 +8,7 @@
 
 struct cmpVec {
     bool operator()(const glm::vec2& lhs, const glm::vec2& rhs) const {
-        return lhs.x < rhs.x ||
-           lhs.x == rhs.x && lhs.y < rhs.y;
+        return lhs.x < rhs.x || (lhs.x == rhs.x && lhs.y < rhs.y);
     }
 };
 
@@ -26,4 +25,5 @@ public:
 	void addActor(Actor* actor);
 
 	void draw();
+	void update(float deltaTime);
 };

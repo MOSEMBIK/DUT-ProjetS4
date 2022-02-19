@@ -8,27 +8,13 @@
 class Camera
 {
 private:
-    Camera();
-
     Transform m_transform;
     float m_fov;
     float m_nearPlane;
     float m_farPlane;
 
-    // Singleton
-    static Camera* m_instance;
-
 public:
-    // Suppression du clonage et de l'opérateur =
-    Camera(Camera&) = delete;
-    void operator= (const Camera&) = delete;
-
-    /**
-     * @brief Get the Singleton instance of Camera
-     * 
-     * @return Camera* 
-     */
-    static Camera* GetInstance();
+    Camera();
 
     /**
      * @brief Get the Transform of the Camera

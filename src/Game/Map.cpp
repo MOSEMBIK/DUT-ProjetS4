@@ -2,6 +2,8 @@
 #include <Game/Map.hpp>
 #include <Game/Actor.hpp>
 
+using namespace std;
+
 Map::Map() {}
 
 void Map::generateMap(int size) {
@@ -42,7 +44,18 @@ void Map::draw() {
 	for (auto wall : walls) {
 		wall.second->draw();
 	}
+	
 	for (Actor* actor : actors) {
 		actor->draw();
+	}
+}
+
+void Map::update(float deltaTime) {
+	for (auto wall : walls) {
+		wall.second->update(deltaTime);
+	}
+	
+	for (Actor* actor : actors) {
+		actor->update(deltaTime);
 	}
 }
