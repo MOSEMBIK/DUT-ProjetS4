@@ -70,8 +70,11 @@ bool Game::init()
 	// Test de robots
 	for (int i = 0; i < 10; i++) {
 		Robot* robot = new Robot(map);
+		Bomb* bomb = new Bomb(map, vec3(rand()%100/100.0f, rand()%100/100.0f, rand()%100/100.0f), 5, 5);
 		robot->getTransform().SetPosition(vec3(6.0f, 0.0f, 6.0f));
+		bomb->getTransform().SetPosition(vec3(rand()%11+1, 0, rand()%11+1));
 		map->addActor(robot);
+		map->addActor(bomb);
 	}
 
 	m_lastTime = m_currentTime - 1;
