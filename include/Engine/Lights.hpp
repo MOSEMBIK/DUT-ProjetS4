@@ -123,6 +123,12 @@ public:
     PointLight(int index, float range = 10.0f, glm::vec3 position = glm::vec3(0.0f), glm::vec3 ambient = glm::vec3(0.0f), glm::vec3 diffuse = glm::vec3(1.0f), glm::vec3 specular = glm::vec3(1.0f));
 
     /**
+     * @brief Reset parameters;
+     * 
+     */
+    void reset();
+
+    /**
      * @brief Get the Position of the light
      * 
      * @return glm::vec3 

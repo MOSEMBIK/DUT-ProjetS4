@@ -2,12 +2,15 @@
 #include <Game/Map.hpp>
 #include <Game/Actor.hpp>
 
+using namespace std;
+
 Map::Map() {}
 
 void Map::generateMap(int size) {
 	if (size % 2 == 0) {
 		size++;
 	}
+	this->mapSize = size;
 	int sizeMax = size-1;
 	for (int i = 0; i < size; i++) {
 		for (int j = 0; j < size; j++) {
@@ -17,7 +20,7 @@ void Map::generateMap(int size) {
 			 * @brief Border Walls
 			 */
 			if (i == 0 || i == sizeMax || j == 0 || j == sizeMax || (i%2 == 0 && j%2 == 0)) {
-				walls[pos] = new Wall(Wall::Type::Metal);
+				walls[pos] = new Wall(this, Wall::Type::Metal);
 				walls[pos]->getTransform().SetPosition(glm::vec3(i, 0, j));
 				walls[pos]->getTransform().SetScale(glm::vec3(0.5f));
 			}
@@ -26,7 +29,7 @@ void Map::generateMap(int size) {
 			 * @brief Random Walls
 			 */
 			else if (rand() % 10 <= 6) {
-				walls[pos] = new Wall((rand()%5 == 0) ? Wall::Type::Stone : Wall::Type::Wood);
+				walls[pos] = new Wall(this, (rand()%5 == 0) ? Wall::Type::Stone : Wall::Type::Wood);
 				walls[pos]->getTransform().SetPosition(glm::vec3(i, 0, j));
 				walls[pos]->getTransform().SetScale(glm::vec3(0.5f));
 			}
@@ -42,7 +45,18 @@ void Map::draw() {
 	for (auto wall : walls) {
 		wall.second->draw();
 	}
+	
 	for (Actor* actor : actors) {
 		actor->draw();
+	}
+}
+
+void Map::update(float deltaTime) {
+	for (auto wall : walls) {
+		wall.second->update(deltaTime);
+	}
+	
+	for (Actor* actor : actors) {
+		actor->update(deltaTime);
 	}
 }

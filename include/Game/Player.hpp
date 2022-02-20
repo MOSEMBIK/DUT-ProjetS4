@@ -15,7 +15,7 @@ private:
 	int bombCount;
 
 public:
-	Player();
+	Player(Map* map);
 
 	inline float getSpeed() const { return speed; }
 

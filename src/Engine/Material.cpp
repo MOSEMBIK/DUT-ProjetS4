@@ -39,6 +39,12 @@ void Material::Use() const
     //cout << m_specularExponent << endl;
     //cout << m_diffuseTexture << " " << m_specularTexture << endl;
 
+    if(m_shader == nullptr)
+    {
+        cout << "Shader undefined" << endl;
+        return;
+    }
+
     m_shader->Use();
 
     m_shader->SetUniformValue("_material.color", m_ambientColor);

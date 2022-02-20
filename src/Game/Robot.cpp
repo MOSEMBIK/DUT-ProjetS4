@@ -1,14 +1,19 @@
 #include <Game/Robot.hpp>
+#include <Game/Map.hpp>
 
-Robot::Robot() {}
+Robot::Robot(Map* map) : Player(map) {
+	this->mapSize = map->getSize() - 1;
+	this->x = rand() % mapSize;
+	this->z = rand() % mapSize;
+}
 
 
 void Robot::update(float deltaTime) {
 	Transform& transform = getTransform();
 	glm::vec3 pos = transform.GetPosition();
 	if (int(pos.x) == x && int(pos.z) == z) {
-		x = rand() % 12;
-		z = rand() % 12;
+		x = rand() % mapSize;
+		z = rand() % mapSize;
 	}
 
 	if (int(pos.x) < x) {
