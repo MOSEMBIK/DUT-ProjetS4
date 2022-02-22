@@ -2,6 +2,7 @@
 
 #include <Engine/Mesh.hpp>
 #include <Engine/Material.hpp>
+#include <Engine/Texture.hpp>
 
 #include <vector>
 
@@ -20,17 +21,17 @@ namespace Resource {
      * @return true Loaded with success
      * @return false Failed to load
      */
-    bool LoadOBJ(const char* filename, std::vector<Mesh>& meshes, std::vector<Material>& materials);
+    bool LoadOBJ(const char* filename, std::vector<Mesh*>& meshes, std::vector<Material>& materials);
 
     /**
      * @brief Load texture file and give the textureId;
      * 
      * @param filename Path of the file
-     * @param textureID ID of the texture
+     * @param texture Texture information
      * @return true Loaded with success
      * @return false Failed to load
      */
-    bool LoadTexture(const char* filename, unsigned int& textureID);
+    bool LoadTexture(const char* filename, Texture& texture);
 
     /**
      * @brief Load an MTL (Material Template Library) file into materials

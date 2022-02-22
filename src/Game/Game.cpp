@@ -1,7 +1,8 @@
 #include <Game/Game.hpp>
 #include <Game/Robot.hpp>
 
-#include <Engine/Button.hpp>
+#include <Engine/UI/Button.hpp>
+#include <Engine/UI/Label.hpp>
 #include <Engine/Transform.hpp>
 #include <Engine/Camera.hpp>
 #include <Engine/ResourceLoader.hpp>
@@ -48,18 +49,20 @@ bool Game::init()
     mainCamera = new Camera();
 
     // Hide one useless faces
-	glEnable(GL_CULL_FACE); 
+	//glEnable(GL_CULL_FACE); 
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
 
     // Manage depth
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
     // Make the lights
-	DirectionalLight dirLight(vec3(-1.0f, -0.0f, -0.5f), vec3(0.1f), vec3(1.0f), vec3(1.0f));
+	m_directionalLight = DirectionalLight(vec3(+1.0f, -0.75f, -1.5f), vec3(0.1f), vec3(1.0f), vec3(1.0f));
 
-	vector<PointLight> pointLights;
 	for(int i = 0; i < 4; i++)
-		pointLights.push_back(PointLight(i));
+		m_pointsLights.push_back(PointLight(i));
 
     double posX, posY;
 	glfwGetCursorPos(mainWindow->GetWindow(), &posX, &posY);
@@ -78,7 +81,6 @@ bool Game::init()
 		map->addActor(bomb);
 	}
 
-
 	m_lastTime = m_currentTime - 1;
 
 	mainCamera->GetTransform().SetPosition(vec3(-5.86219f, -10.4262f, -20.7321f));
@@ -86,18 +88,18 @@ bool Game::init()
     return true;
 }
 
+Button* button;
+
 bool Game::loadRequieredResources()
 {
-    static unsigned int textureWhiteID;
-	if(!Resource::LoadTexture("assets/white_texture.png", textureWhiteID))
+	if(!Resource::LoadTexture("assets/white_texture.png", Textures::whiteTexture))
 	{
 		cout << "Failed to load white texture" << endl;
 		glfwTerminate();
 		return false;
 	}
 
-    static unsigned int textureBlackID;
-	if(!Resource::LoadTexture("assets/black_texture.png", textureBlackID))
+	if(!Resource::LoadTexture("assets/black_texture.png", Textures::blackTexture))
 	{
 		cout << "Failed to load black texture" << endl;
 		glfwTerminate();
@@ -106,7 +108,8 @@ bool Game::loadRequieredResources()
 
     //Load BasicShader
 	basicShader = new Shader("shader/vertex.glsl", "shader/fragment.glsl");
-	Shader::Register("Base", *basicShader);
+	Shader::Register("Base", basicShader);
+	button = new Button(vec2(50, 50), vec2(475, 75), "assets/button.png");
 
     return true;
 }
@@ -130,6 +133,7 @@ Game::~Game()
         delete mainCamera;
 }
 
+
 void Game::update()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -147,8 +151,9 @@ void Game::update()
 	map->draw();
 
 	// Test de bouton
-	Button button(0.5f, 0.2f, 0.0f, 0.0f, "Test", mainWindow->GetWindow());
-	button.draw();
+	button->draw();
+	Label label(vec2(50, 50), "Test du label");
+	label.draw();
 
 	if(m_currentTime - m_lastTime >= 1)
 	{

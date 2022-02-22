@@ -12,7 +12,7 @@ class Map;
 class Actor
 {
 protected:
-	std::vector<Mesh> m_meshes;
+	std::vector<Mesh*> m_meshes;
 	std::vector<Material> m_materials;
 	bool collision = true;
 	Transform m_transform;
@@ -34,7 +34,7 @@ public:
 	/**
 	 * @brief Draw the object
 	 */
-	void draw();
+	void draw() const;
 
 	/**
 	 * @brief Get the transform

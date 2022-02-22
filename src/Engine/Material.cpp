@@ -47,17 +47,17 @@ void Material::Use() const
 
     m_shader->Use();
 
-    m_shader->SetUniformValue("_material.color", m_ambientColor);
-    m_shader->SetUniformValue("_material.diffuseColor", m_diffuseColor);
-    m_shader->SetUniformValue("_material.specularColor", m_specularColor);
-    m_shader->SetUniformValue("_material.shininess", m_specularExponent);
+    m_shader->SetUniformValue("u_material.color", m_ambientColor);
+    m_shader->SetUniformValue("u_material.diffuseColor", m_diffuseColor);
+    m_shader->SetUniformValue("u_material.specularColor", m_specularColor);
+    m_shader->SetUniformValue("u_material.shininess", m_specularExponent);
 
     glActiveTexture(GL_TEXTURE0);
-    m_shader->SetUniformValue("_material.diffuse", 0);
+    m_shader->SetUniformValue("u_material.diffuse", 0);
     glBindTexture(GL_TEXTURE_2D, m_diffuseTexture);  
 
     glActiveTexture(GL_TEXTURE0 + 1);
-    m_shader->SetUniformValue("_material.specular", 1);
+    m_shader->SetUniformValue("u_material.specular", 1);
     glBindTexture(GL_TEXTURE_2D, m_specularTexture);
     
     glActiveTexture(GL_TEXTURE0);

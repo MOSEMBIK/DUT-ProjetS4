@@ -16,7 +16,7 @@ using namespace Resource;
 using namespace std;
 using namespace glm;
 
-bool Resource::LoadOBJ(const char* filename, vector<Mesh>& meshes, vector<Material>& materials)
+bool Resource::LoadOBJ(const char* filename, vector<Mesh*>& meshes, vector<Material>& materials)
 {
     FILE * file = fopen(filename, "r");
     if( file == NULL ){
@@ -29,9 +29,10 @@ bool Resource::LoadOBJ(const char* filename, vector<Mesh>& meshes, vector<Materi
     std::vector<glm::vec2> temp_uvs;
     std::vector<glm::vec3> temp_normals;
 
+    int meshCount = 0;
     while( 1 )
     {
-        
+
         char lineHeader[128];
         int res = fscanf(file, "%s", lineHeader);
         if (res == EOF)
@@ -68,7 +69,9 @@ bool Resource::LoadOBJ(const char* filename, vector<Mesh>& meshes, vector<Materi
                 uvIndices.clear();
                 normalIndices.clear();
 
-                meshes.push_back(Mesh(Mesh::CreateFromVectors(vertices, normals, uvs)));
+                Mesh* mesh = new Mesh(Mesh::CreateFromVectors(vertices, normals, uvs));
+                Mesh::Register(string(filename) + "_" + to_string(meshCount++), mesh);
+                meshes.push_back(mesh);
             }
         }
         else if (strcmp(lineHeader, "v") == 0)
@@ -146,7 +149,9 @@ bool Resource::LoadOBJ(const char* filename, vector<Mesh>& meshes, vector<Materi
         normals.push_back(normal);
     }
 
-    meshes.push_back(Mesh(Mesh::CreateFromVectors(vertices, normals, uvs)));
+    Mesh* mesh = new Mesh(Mesh::CreateFromVectors(vertices, normals, uvs));
+    Mesh::Register(string(filename) + "_" + to_string(meshCount), mesh);
+    meshes.push_back(mesh);
 
     return true;
 }
@@ -200,17 +205,17 @@ bool Resource::LoadMTL(const char* filename, vector<Material>& materials)
         {
             char diffuseMap[128]; 
             fscanf(file, "%s\n", diffuseMap);
-            unsigned int textureId = 0;
-            Resource::LoadTexture(diffuseMap, textureId);
-            materials.back().SetDiffuseTexture(textureId);
+            Texture texture;
+            Resource::LoadTexture(diffuseMap, texture);
+            materials.back().SetDiffuseTexture(texture.m_id);
         }
         else if (strcmp(lineHeader, "map_Ks") == 0)
         {
             char specularMap[128];
             fscanf(file, "%s\n", specularMap);
-            unsigned int textureId = 0;
-            Resource::LoadTexture(specularMap, textureId);
-            materials.back().SetSpecularTexture(textureId);
+            Texture texture;
+            Resource::LoadTexture(specularMap, texture);
+            materials.back().SetSpecularTexture(texture.m_id);
         }
     }
 
@@ -218,23 +223,23 @@ bool Resource::LoadMTL(const char* filename, vector<Material>& materials)
     return true;
 }
 
-bool Resource::LoadTexture(const char* filename, unsigned int& textureID)
+bool Resource::LoadTexture(const char* filename, Texture& texture)
 {
-    int width, height, nrChannel;
-    unsigned char* data = stbi_load(filename, &width, &height, &nrChannel, 0);
+    int nrChannel;
+    unsigned char* data = stbi_load(filename, &texture.m_width, &texture.m_height, &nrChannel, 0);
     if(!data)
     {
         cout << "Failed to load texture" << endl;
         return false;
     }
 
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);  
+    glGenTextures(1, &texture.m_id);
+    glBindTexture(GL_TEXTURE_2D, texture.m_id);  
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.m_width, texture.m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     stbi_image_free(data);

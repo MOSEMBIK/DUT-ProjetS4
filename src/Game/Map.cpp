@@ -22,7 +22,6 @@ void Map::generateMap(int size) {
 			if (i == 0 || i == sizeMax || j == 0 || j == sizeMax || (i%2 == 0 && j%2 == 0)) {
 				walls[pos] = new Wall(this, Wall::Type::Metal);
 				walls[pos]->getTransform().SetPosition(glm::vec3(i, 0, j));
-				walls[pos]->getTransform().SetScale(glm::vec3(0.5f));
 			}
 
 			/**
@@ -31,7 +30,6 @@ void Map::generateMap(int size) {
 			else if (rand() % 10 <= 6) {
 				walls[pos] = new Wall(this, (rand()%5 == 0) ? Wall::Type::Stone : Wall::Type::Wood);
 				walls[pos]->getTransform().SetPosition(glm::vec3(i, 0, j));
-				walls[pos]->getTransform().SetScale(glm::vec3(0.5f));
 			}
 		}
 	}
