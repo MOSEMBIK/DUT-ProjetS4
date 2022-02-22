@@ -1,5 +1,7 @@
 #include <utils.h>
 
+#include <map>
+
 #include <Engine/Window.hpp>
 #include <Engine/Shader.hpp>
 #include <Engine/Primitives.hpp>
@@ -26,6 +28,8 @@ int main(int argc, char **argv)
 	// Initialise la librairie GLFW
 	if (!glfwInit())
 		return -1;
+
+	//Text::init();
 
 	Game* game = Game::getInstance();
 

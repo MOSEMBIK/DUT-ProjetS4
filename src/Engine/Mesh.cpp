@@ -23,6 +23,42 @@ Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, GLenum drawTyp
     setupMesh();
 }
 
+map<string, Mesh*> Mesh::meshDict;
+
+void Mesh::Register(string name, Mesh* mesh)
+{
+    auto search = meshDict.find(name);
+    
+    if(search == meshDict.end())
+    {
+        meshDict.insert({name, mesh});
+        //cout << "Mesh registered as name : '" << name << "' successufully!" << endl;
+    }
+    else
+    {
+        //cout << "Can't add the mesh '" << name << "', there is already one existing with this name" << endl;
+    }
+}
+
+Mesh* Mesh::Find(string name)
+{
+    auto search = meshDict.find(name);
+
+    if(search != meshDict.end())
+        return search->second;
+
+    //cout << "Mesh named : '" << name << "' not found!" << endl;
+    return nullptr;
+}
+
+void Mesh::Clear()
+{
+    for(auto meshKVP : Mesh::meshDict)
+    {
+        delete meshKVP.second;
+    }
+}
+
 void Mesh::setupMesh()
 {
     glGenVertexArrays(1, &VAO);
@@ -39,8 +75,10 @@ void Mesh::setupMesh()
                 &m_indices[0], GL_STATIC_DRAW);
 
     // positions
-    glEnableVertexAttribArray(0);	
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+    unsigned int n_array = 0;
+
+    glEnableVertexAttribArray(n_array);	
+    glVertexAttribPointer(n_array++, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
     // normals
     glEnableVertexAttribArray(1);	
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_normal));
@@ -58,6 +96,26 @@ void Mesh::Draw() const
     glBindVertexArray(VAO);
     glDrawElements(this->drawType, m_indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+}
+
+vector<Vertex> Mesh::CreateFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec2> uvs, glm::vec3 color)
+{
+    vector<Vertex> vertices;
+    for(size_t i = 0; i < positions.size(); i++)
+    {
+        vertices.push_back({positions[i], vec3(0.0f), uvs[i], color});
+    }
+    return vertices;
+}
+
+vector<Vertex> Mesh::CreateFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec2> uvs, std::vector<glm::vec3> colors)
+{
+    vector<Vertex> vertices;
+    for(size_t i = 0; i < positions.size(); i++)
+    {
+        vertices.push_back({positions[i], vec3(0.0f), uvs[i], colors[i]});
+    }
+    return vertices;
 }
 
 vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vec3 color)

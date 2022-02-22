@@ -20,7 +20,7 @@
 class Shader
 {
 private:
-    static std::map<std::string, Shader&> shaderDict;
+    static std::map<std::string, Shader*> shaderDict;
 
 public:
     unsigned int m_ID;
@@ -31,7 +31,13 @@ public:
      * @param name Name of the shader
      * @param shader 
      */
-    static void Register(std::string name, Shader& shader);
+    static void Register(std::string name, Shader* shader);
+
+    /**
+     * @brief Clear pointers
+     * 
+     */
+    static void Clear();
 
     /**
      * @brief Find a shader in the dictionnary
