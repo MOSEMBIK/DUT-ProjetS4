@@ -21,7 +21,7 @@ namespace Resource {
      * @return true Loaded with success
      * @return false Failed to load
      */
-    bool LoadOBJ(const char* filename, std::vector<Mesh*>& meshes, std::vector<Material>& materials);
+    bool loadOBJ(const char* filename, std::vector<Mesh*>& meshes, std::vector<Material>& materials);
 
     /**
      * @brief Load texture file and give the textureId;
@@ -31,7 +31,7 @@ namespace Resource {
      * @return true Loaded with success
      * @return false Failed to load
      */
-    bool LoadTexture(const char* filename, Texture& texture);
+    bool loadTexture(const char* filename, Texture& texture);
 
     /**
      * @brief Load an MTL (Material Template Library) file into materials
@@ -42,5 +42,5 @@ namespace Resource {
      * @return false Failed to load
      */
     
-    bool LoadMTL(const char* filename, std::vector<Material>& material);
+    bool loadMTL(const char* filename, std::vector<Material>& material);
 }

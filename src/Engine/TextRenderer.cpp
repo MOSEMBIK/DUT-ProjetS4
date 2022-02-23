@@ -11,13 +11,13 @@
 using namespace std;
 using namespace glm;
 
-TextRenderer::TextRenderer(float width, float height) : TextShader(Shader("shader/ui/text/vertex.glsl", "shader/ui/text/fragment.glsl"))
+TextRenderer::TextRenderer(float width, float height) : textShader(Shader("shader/ui/text/vertex.glsl", "shader/ui/text/fragment.glsl"))
 {
     // configure shader
 	mat4 P = ortho(0.0f, width, 0.0f, height);
-	this->TextShader.Use();
-	this->TextShader.SetUniformValue("u_P", P);
-    this->TextShader.SetUniformValue("u_text", 0);
+	this->textShader.use();
+	this->textShader.setUniformValue("u_P", P);
+    this->textShader.setUniformValue("u_text", 0);
     // configure VAO/VBO for texture quads
     glGenVertexArrays(1, &this->VAO);
     glGenBuffers(1, &this->VBO);
@@ -30,10 +30,10 @@ TextRenderer::TextRenderer(float width, float height) : TextShader(Shader("shade
     glBindVertexArray(0);
 }
 
-void TextRenderer::Load(std::string font, unsigned int fontSize)
+void TextRenderer::loadFont(std::string font, unsigned int fontSize)
 {
     // first clear the previously loaded Characters
-    this->Characters.clear();
+    this->characters.clear();
     // then initialize and load the FreeType library
     FT_Library ft;    
     if (FT_Init_FreeType(&ft)) // all functions return a value different than 0 whenever an error occurred
@@ -83,7 +83,7 @@ void TextRenderer::Load(std::string font, unsigned int fontSize)
             glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
             face->glyph->advance.x
         };
-        Characters.insert(std::pair<char, Character>(c, character));
+        characters.insert(std::pair<char, Character>(c, character));
     }
     glBindTexture(GL_TEXTURE_2D, 0);
     // destroy FreeType once we're finished
@@ -91,11 +91,11 @@ void TextRenderer::Load(std::string font, unsigned int fontSize)
     FT_Done_FreeType(ft);
 }
 
-void TextRenderer::RenderText(std::string text, float x, float y, float scale, glm::vec3 color)
+void TextRenderer::renderText(std::string text, float x, float y, float scale, glm::vec3 color)
 {
     // activate corresponding render state	
-    this->TextShader.Use();
-    this->TextShader.SetUniformValue("u_textColor", color);
+    this->textShader.use();
+    this->textShader.setUniformValue("u_textColor", color);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(this->VAO);
 
@@ -103,13 +103,13 @@ void TextRenderer::RenderText(std::string text, float x, float y, float scale, g
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end(); c++)
     {
-        Character ch = Characters[*c];
+        Character ch = characters[*c];
 
-        float xpos = x + ch.Bearing.x * scale;
-        float ypos = y + (ch.Size.y - ch.Bearing.y) * scale;
+        float xpos = x + ch.m_bearing.x * scale;
+        float ypos = y + (ch.m_size.y - ch.m_bearing.y) * scale;
 
-        float w = ch.Size.x * scale;
-        float h = ch.Size.y * scale;
+        float w = ch.m_size.x * scale;
+        float h = ch.m_size.y * scale;
         // update VBO for each character
         float vertices[6][4] = {
             { xpos,     ypos + h,   0.0f, 1.0f },
@@ -121,7 +121,7 @@ void TextRenderer::RenderText(std::string text, float x, float y, float scale, g
             { xpos + w, ypos,       1.0f, 0.0f }
         };
         // render glyph texture over quad
-        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+        glBindTexture(GL_TEXTURE_2D, ch.m_textureID);
         // update content of VBO memory
         glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
@@ -129,7 +129,7 @@ void TextRenderer::RenderText(std::string text, float x, float y, float scale, g
         // render quad
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // now advance cursors for next glyph
-        x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (1/64th times 2^6 = 64)
+        x += (ch.m_advance >> 6) * scale; // bitshift by 6 to get value in pixels (1/64th times 2^6 = 64)
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);

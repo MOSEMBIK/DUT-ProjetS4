@@ -23,33 +23,33 @@ PointLight::PointLight(int index, float distance, glm::vec3 position, glm::vec3 
     this->m_enabled = false;
 }
 
-void DirectionalLight::SendToShader(const Shader& shader) const
+void DirectionalLight::sendToShader(const Shader& shader) const
 {
-	shader.Use();
-	shader.SetUniformValue("u_dirLight.direction", m_direction);
-	shader.SetUniformValue("u_dirLight.ambient", m_ambient);
-	shader.SetUniformValue("u_dirLight.diffuse", m_diffuse);
-	shader.SetUniformValue("u_dirLight.specular", m_specular);
+	shader.use();
+	shader.setUniformValue("u_dirLight.direction", m_direction);
+	shader.setUniformValue("u_dirLight.ambient", m_ambient);
+	shader.setUniformValue("u_dirLight.diffuse", m_diffuse);
+	shader.setUniformValue("u_dirLight.specular", m_specular);
 }
 
-void PointLight::SendToShader(const Shader& shader) const
+void PointLight::sendToShader(const Shader& shader) const
 {
-	shader.Use();
+	shader.use();
     string lightIndexStr = to_string(m_index);
-	shader.SetUniformValue(("u_pointLights[" + lightIndexStr + "].position").c_str(), m_position);
-	shader.SetUniformValue(("u_pointLights[" + lightIndexStr + "].range").c_str(), m_range);
+	shader.setUniformValue(("u_pointLights[" + lightIndexStr + "].position").c_str(), m_position);
+	shader.setUniformValue(("u_pointLights[" + lightIndexStr + "].range").c_str(), m_range);
     if(m_enabled)
     {
-        shader.SetUniformValue(("u_pointLights[" + lightIndexStr + "].ambient").c_str(), m_ambient);
-        shader.SetUniformValue(("u_pointLights[" + lightIndexStr + "].diffuse").c_str(), m_diffuse);
-        shader.SetUniformValue(("u_pointLights[" + lightIndexStr + "].specular").c_str(), m_specular);
+        shader.setUniformValue(("u_pointLights[" + lightIndexStr + "].ambient").c_str(), m_ambient);
+        shader.setUniformValue(("u_pointLights[" + lightIndexStr + "].diffuse").c_str(), m_diffuse);
+        shader.setUniformValue(("u_pointLights[" + lightIndexStr + "].specular").c_str(), m_specular);
     }
     else
     {
         vec3 noLight = vec3(0.0f);
-        shader.SetUniformValue(("u_pointLights[" + lightIndexStr + "].ambient").c_str(), noLight);
-        shader.SetUniformValue(("u_pointLights[" + lightIndexStr + "].diffuse").c_str(), noLight);
-        shader.SetUniformValue(("u_pointLights[" + lightIndexStr + "].specular").c_str(), noLight);
+        shader.setUniformValue(("u_pointLights[" + lightIndexStr + "].ambient").c_str(), noLight);
+        shader.setUniformValue(("u_pointLights[" + lightIndexStr + "].diffuse").c_str(), noLight);
+        shader.setUniformValue(("u_pointLights[" + lightIndexStr + "].specular").c_str(), noLight);
     }
 }
 

@@ -4,7 +4,7 @@ using namespace std;
 
 map<string, Shader*> Shader::shaderDict;
 
-void Shader::Register(string name, Shader* shader)
+void Shader::save(string name, Shader* shader)
 {
     auto search = shaderDict.find(name);
     
@@ -19,7 +19,7 @@ void Shader::Register(string name, Shader* shader)
     }
 }
 
-Shader* Shader::Find(string name)
+Shader* Shader::find(string name)
 {
     auto search = shaderDict.find(name);
 
@@ -30,7 +30,7 @@ Shader* Shader::Find(string name)
     return nullptr;
 }
 
-void Shader::Clear()
+void Shader::clear()
 {
     for(auto shaderKVP : Shader::shaderDict)
     {
@@ -94,7 +94,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 }
 // activate the shader
 // ------------------------------------------------------------------------
-void Shader::Use() const
+void Shader::use() const
 { 
     glUseProgram(m_ID); 
 }

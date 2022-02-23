@@ -35,7 +35,7 @@ class Mesh {
          * @brief Clear pointers
          * 
          */
-        static void Clear();
+        static void clear();
 
         /**
          * @brief Save the mesh in the dictionnary
@@ -43,7 +43,7 @@ class Mesh {
          * @param name Name of the mesh
          * @param mesh 
          */
-        static void Register(std::string name, Mesh* mesh);
+        static void save(std::string name, Mesh* mesh);
 
         /**
          * @brief Find a mesh in the dictionnary
@@ -51,7 +51,7 @@ class Mesh {
          * @param name Name of the mesh
          * @return Mesh* Pointer to the mesh, nullptr if not found
          */
-        static Mesh* Find(std::string name);
+        static Mesh* find(std::string name);
 
         /**
          * @brief Construct a new Mesh object from vertices and draw type
@@ -73,7 +73,7 @@ class Mesh {
         /**
          * @brief Draw the mesh according to the vertices, textures, etc...
          */
-        void Draw() const;
+        void draw() const;
 
         /**
          * @brief Create a std::vector of vertices from multiple std::vectors with an unique color
@@ -83,7 +83,7 @@ class Mesh {
          * @param color Color for all vertices
          * @return std::vector<Vertex> 
          */
-        static std::vector<Vertex> CreateFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec2> uvs, glm::vec3 color = glm::vec3(1.0f));
+        static std::vector<Vertex> createFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec2> uvs, glm::vec3 color = glm::vec3(1.0f));
 
         /**
          * @brief Create a std::vector of vertices from multiple std::vectors
@@ -93,7 +93,7 @@ class Mesh {
          * @param colors List of colors
          * @return std::vector<Vertex> 
          */
-        static std::vector<Vertex> CreateFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec2> uvs, std::vector<glm::vec3> colors);
+        static std::vector<Vertex> createFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec2> uvs, std::vector<glm::vec3> colors);
 
         /**
          * @brief Create a std::vector of vertices from multiple std::vectors with an unique color
@@ -103,7 +103,7 @@ class Mesh {
          * @param color Color for all vertices
          * @return std::vector<Vertex> 
          */
-        static std::vector<Vertex> CreateFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec3> normals, glm::vec3 color = glm::vec3(1.0f));
+        static std::vector<Vertex> createFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec3> normals, glm::vec3 color = glm::vec3(1.0f));
 
         /**
          * @brief Create a std::vector of vertices from multiple std::vectors
@@ -113,7 +113,7 @@ class Mesh {
          * @param colors List of colors
          * @return std::vector<Vertex> 
          */
-        static std::vector<Vertex> CreateFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec3> normals, std::vector<glm::vec3> colors);
+        static std::vector<Vertex> createFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec3> normals, std::vector<glm::vec3> colors);
         
         /**
          * @brief Create a std::vector of vertices from multiple std::vectors with texture and unique color
@@ -124,7 +124,7 @@ class Mesh {
          * @param color Color for all vertices
          * @return std::vector<Vertex> 
          */
-        static std::vector<Vertex> CreateFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec3> normals, std::vector<glm::vec2> uvs, glm::vec3 color = glm::vec3(1.0f));
+        static std::vector<Vertex> createFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec3> normals, std::vector<glm::vec2> uvs, glm::vec3 color = glm::vec3(1.0f));
         
         /**
          * @brief Create a std::vector of vertices from multiple std::vectors with texture and color
@@ -135,5 +135,5 @@ class Mesh {
          * @param colors List of colors
          * @return std::vector<Vertex> 
          */
-        static std::vector<Vertex> CreateFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec3> normals, std::vector<glm::vec2> uvs, std::vector<glm::vec3> colors);
+        static std::vector<Vertex> createFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec3> normals, std::vector<glm::vec2> uvs, std::vector<glm::vec3> colors);
 };  

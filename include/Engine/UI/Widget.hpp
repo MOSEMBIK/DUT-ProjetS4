@@ -1,13 +1,16 @@
 #pragma once
 
+#include <Engine/Window.hpp>
+
 #include <glm/vec2.hpp>
 
 class Widget {
 protected:
     glm::vec2 m_position;
+    Window* m_window;
 
 public:
-    Widget(glm::vec2 position);
+    Widget(Window* window, glm::vec2 position);
     
     inline void setPosition(glm::vec2 position) { m_position = position; }
     

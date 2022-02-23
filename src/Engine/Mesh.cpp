@@ -25,7 +25,7 @@ Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, GLenum drawTyp
 
 map<string, Mesh*> Mesh::meshDict;
 
-void Mesh::Register(string name, Mesh* mesh)
+void Mesh::save(string name, Mesh* mesh)
 {
     auto search = meshDict.find(name);
     
@@ -40,7 +40,7 @@ void Mesh::Register(string name, Mesh* mesh)
     }
 }
 
-Mesh* Mesh::Find(string name)
+Mesh* Mesh::find(string name)
 {
     auto search = meshDict.find(name);
 
@@ -51,7 +51,7 @@ Mesh* Mesh::Find(string name)
     return nullptr;
 }
 
-void Mesh::Clear()
+void Mesh::clear()
 {
     for(auto meshKVP : Mesh::meshDict)
     {
@@ -91,14 +91,14 @@ void Mesh::setupMesh()
     glBindVertexArray(0);
 }  
 
-void Mesh::Draw() const
+void Mesh::draw() const
 {
     glBindVertexArray(VAO);
     glDrawElements(this->drawType, m_indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 
-vector<Vertex> Mesh::CreateFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec2> uvs, glm::vec3 color)
+vector<Vertex> Mesh::createFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec2> uvs, glm::vec3 color)
 {
     vector<Vertex> vertices;
     for(size_t i = 0; i < positions.size(); i++)
@@ -108,7 +108,7 @@ vector<Vertex> Mesh::CreateFromVectors(std::vector<glm::vec3> positions, std::ve
     return vertices;
 }
 
-vector<Vertex> Mesh::CreateFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec2> uvs, std::vector<glm::vec3> colors)
+vector<Vertex> Mesh::createFromVectors(std::vector<glm::vec3> positions, std::vector<glm::vec2> uvs, std::vector<glm::vec3> colors)
 {
     vector<Vertex> vertices;
     for(size_t i = 0; i < positions.size(); i++)
@@ -118,7 +118,7 @@ vector<Vertex> Mesh::CreateFromVectors(std::vector<glm::vec3> positions, std::ve
     return vertices;
 }
 
-vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vec3 color)
+vector<Vertex> Mesh::createFromVectors(vector<vec3> positions, vector<vec3> normals, vec3 color)
 {
     vector<Vertex> vertices;
     for(size_t i = 0; i < positions.size(); i++)
@@ -128,7 +128,7 @@ vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> norm
     return vertices;
 }
 
-vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec3> colors)
+vector<Vertex> Mesh::createFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec3> colors)
 {
     vector<Vertex> vertices;
     for(size_t i = 0; i < positions.size(); i++)
@@ -138,7 +138,7 @@ vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> norm
     return vertices;
 }
 
-vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec2> uvs, vec3 color)
+vector<Vertex> Mesh::createFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec2> uvs, vec3 color)
 {
     vector<Vertex> vertices;
     for(size_t i = 0; i < positions.size(); i++)
@@ -148,7 +148,7 @@ vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> norm
     return vertices;
 }
 
-vector<Vertex> Mesh::CreateFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec2> uvs, vector<vec3> colors)
+vector<Vertex> Mesh::createFromVectors(vector<vec3> positions, vector<vec3> normals, vector<vec2> uvs, vector<vec3> colors)
 {
     vector<Vertex> vertices;
     for(size_t i = 0; i < positions.size(); i++)

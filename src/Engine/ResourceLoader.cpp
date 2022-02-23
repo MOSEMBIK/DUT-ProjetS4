@@ -16,7 +16,7 @@ using namespace Resource;
 using namespace std;
 using namespace glm;
 
-bool Resource::LoadOBJ(const char* filename, vector<Mesh*>& meshes, vector<Material>& materials)
+bool Resource::loadOBJ(const char* filename, vector<Mesh*>& meshes, vector<Material>& materials)
 {
     FILE * file = fopen(filename, "r");
     if( file == NULL ){
@@ -69,8 +69,8 @@ bool Resource::LoadOBJ(const char* filename, vector<Mesh*>& meshes, vector<Mater
                 uvIndices.clear();
                 normalIndices.clear();
 
-                Mesh* mesh = new Mesh(Mesh::CreateFromVectors(vertices, normals, uvs));
-                Mesh::Register(string(filename) + "_" + to_string(meshCount++), mesh);
+                Mesh* mesh = new Mesh(Mesh::createFromVectors(vertices, normals, uvs));
+                Mesh::save(string(filename) + "_" + to_string(meshCount++), mesh);
                 meshes.push_back(mesh);
             }
         }
@@ -88,7 +88,7 @@ bool Resource::LoadOBJ(const char* filename, vector<Mesh*>& meshes, vector<Mater
             string filenameS = string(filename);
             unsigned int lastSlash = filenameS.find_last_of('/');
         
-            Resource::LoadMTL((filenameS.substr(0, lastSlash + 1) + materialName).c_str(), materials);
+            Resource::loadMTL((filenameS.substr(0, lastSlash + 1) + materialName).c_str(), materials);
         }
         else if (strcmp(lineHeader, "vt") == 0)
         {
@@ -149,14 +149,14 @@ bool Resource::LoadOBJ(const char* filename, vector<Mesh*>& meshes, vector<Mater
         normals.push_back(normal);
     }
 
-    Mesh* mesh = new Mesh(Mesh::CreateFromVectors(vertices, normals, uvs));
-    Mesh::Register(string(filename) + "_" + to_string(meshCount), mesh);
+    Mesh* mesh = new Mesh(Mesh::createFromVectors(vertices, normals, uvs));
+    Mesh::save(string(filename) + "_" + to_string(meshCount), mesh);
     meshes.push_back(mesh);
 
     return true;
 }
 
-bool Resource::LoadMTL(const char* filename, vector<Material>& materials)
+bool Resource::loadMTL(const char* filename, vector<Material>& materials)
 {
     FILE * file = fopen(filename, "r");
     if( file == NULL ){
@@ -187,35 +187,35 @@ bool Resource::LoadMTL(const char* filename, vector<Material>& materials)
         {
             glm::vec3 diffuseColor;
             fscanf(file, "%f %f %f\n", &diffuseColor.x, &diffuseColor.y, &diffuseColor.z );
-            materials.back().SetDiffuseColor(diffuseColor);
+            materials.back().setDiffuseColor(diffuseColor);
         }
         else if (strcmp(lineHeader, "Ks") == 0)
         {
             glm::vec3 specularColor;
             fscanf(file, "%f %f %f\n", &specularColor.x, &specularColor.y, &specularColor.z );
-            materials.back().SetSpecularColor(specularColor);
+            materials.back().setSpecularColor(specularColor);
         }
         else if (strcmp(lineHeader, "Ns") == 0)
         {
             float specularExponent;
             fscanf(file, "%f\n", &specularExponent);
-            materials.back().SetSpecularExponent(specularExponent);
+            materials.back().setSpecularExponent(specularExponent);
         }
         else if (strcmp(lineHeader, "map_Kd") == 0)
         {
             char diffuseMap[128]; 
             fscanf(file, "%s\n", diffuseMap);
             Texture texture;
-            Resource::LoadTexture(diffuseMap, texture);
-            materials.back().SetDiffuseTexture(texture.m_id);
+            Resource::loadTexture(diffuseMap, texture);
+            materials.back().setDiffuseTexture(texture.m_id);
         }
         else if (strcmp(lineHeader, "map_Ks") == 0)
         {
             char specularMap[128];
             fscanf(file, "%s\n", specularMap);
             Texture texture;
-            Resource::LoadTexture(specularMap, texture);
-            materials.back().SetSpecularTexture(texture.m_id);
+            Resource::loadTexture(specularMap, texture);
+            materials.back().setSpecularTexture(texture.m_id);
         }
     }
 
@@ -223,7 +223,7 @@ bool Resource::LoadMTL(const char* filename, vector<Material>& materials)
     return true;
 }
 
-bool Resource::LoadTexture(const char* filename, Texture& texture)
+bool Resource::loadTexture(const char* filename, Texture& texture)
 {
     int nrChannel;
     unsigned char* data = stbi_load(filename, &texture.m_width, &texture.m_height, &nrChannel, 0);
