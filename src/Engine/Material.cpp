@@ -13,7 +13,7 @@ Material::Material() :
     m_specularColor(vec3(1.0f)),
     m_specularTexture(1),
     m_specularExponent(32.0f),
-    m_shader(Shader::Find("Base"))
+    m_shader(Shader::find("Base"))
 {
     
 }
@@ -30,7 +30,7 @@ Material::Material(const Shader& shader) :
     
 }
 
-void Material::Use() const
+void Material::use() const
 {
     //cout << "===" << endl;
     //cout << m_ambientColor.x << " " << m_ambientColor.y << " " << m_ambientColor.z << endl;
@@ -45,19 +45,19 @@ void Material::Use() const
         return;
     }
 
-    m_shader->Use();
+    m_shader->use();
 
-    m_shader->SetUniformValue("u_material.color", m_ambientColor);
-    m_shader->SetUniformValue("u_material.diffuseColor", m_diffuseColor);
-    m_shader->SetUniformValue("u_material.specularColor", m_specularColor);
-    m_shader->SetUniformValue("u_material.shininess", m_specularExponent);
+    m_shader->setUniformValue("u_material.color", m_ambientColor);
+    m_shader->setUniformValue("u_material.diffuseColor", m_diffuseColor);
+    m_shader->setUniformValue("u_material.specularColor", m_specularColor);
+    m_shader->setUniformValue("u_material.shininess", m_specularExponent);
 
     glActiveTexture(GL_TEXTURE0);
-    m_shader->SetUniformValue("u_material.diffuse", 0);
+    m_shader->setUniformValue("u_material.diffuse", 0);
     glBindTexture(GL_TEXTURE_2D, m_diffuseTexture);  
 
     glActiveTexture(GL_TEXTURE0 + 1);
-    m_shader->SetUniformValue("u_material.specular", 1);
+    m_shader->setUniformValue("u_material.specular", 1);
     glBindTexture(GL_TEXTURE_2D, m_specularTexture);
     
     glActiveTexture(GL_TEXTURE0);

@@ -15,7 +15,7 @@ protected:
     TextRenderer m_textRenderer;
 
 public:
-    Label(glm::vec2 position, std::string text, char* font = "assets/fonts/arial.ttf", float fontHeight = 24, glm::vec3 fontColor = glm::vec3(1.0f));
+    Label(Window* window, glm::vec2 position, std::string text, char* font = "assets/fonts/arial.ttf", float fontHeight = 24, glm::vec3 fontColor = glm::vec3(1.0f));
 
     inline void setText(std::string text) { m_text = text; }
     void setFont(char* font);

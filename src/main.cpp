@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 
 	Game* game = Game::getInstance();
 
-    while(!glfwWindowShouldClose(game->getMainWindow()->GetWindow()))
+    while(!glfwWindowShouldClose(game->getMainWindow()->getWindow()))
     {
         game->update();
     }

@@ -5,25 +5,25 @@ using namespace Primitives;
 using namespace std;
 using namespace glm;
 
-Mesh* Primitives::FastCube()
+Mesh* Primitives::fastCube()
 {
-    Mesh* fastCube = Mesh::Find("Primitives/FastCube");
+    Mesh* fastCube = Mesh::find("Primitives/FastCube");
     if(fastCube == nullptr)
     {
         vector<vec3> positions = { vec3(-1, -1, -1), vec3(+1, -1, -1), vec3(-1, +1, -1), vec3(+1, +1, -1), vec3(-1, -1, +1), vec3(+1, -1, +1), vec3(-1, +1, +1), vec3(+1, +1, +1) };
         vector<unsigned int> indices = { 3, 2, 7, 6, 4, 2, 0, 3, 1, 7, 5, 4, 1, 0};
 
-        vector<Vertex> vertices = Mesh::CreateFromVectors(positions, positions, vec3(1.0f));
+        vector<Vertex> vertices = Mesh::createFromVectors(positions, positions, vec3(1.0f));
 
         fastCube = new Mesh(vertices, indices, GL_TRIANGLE_STRIP);
-        Mesh::Register("Primitives/FastCube", fastCube);
+        Mesh::save("Primitives/FastCube", fastCube);
     }
     return fastCube;
 }
 
-Mesh* Primitives::Cube()
+Mesh* Primitives::cube()
 {
-    Mesh* cube = Mesh::Find("Primitives/Cube");
+    Mesh* cube = Mesh::find("Primitives/Cube");
     if(cube == nullptr)
     {
         vector<vec3> positions;
@@ -44,26 +44,26 @@ Mesh* Primitives::Cube()
             }
         }
 
-        vector<Vertex> vertices = Mesh::CreateFromVectors(positions, normals, texCoords, vec3(1.0f, 1.0f, 1.0f));
+        vector<Vertex> vertices = Mesh::createFromVectors(positions, normals, texCoords, vec3(1.0f, 1.0f, 1.0f));
 
         cube = new Mesh(vertices, indices, GL_TRIANGLES);
-        Mesh::Register("Primitives/Cube", cube);
+        Mesh::save("Primitives/Cube", cube);
     }
     return cube;
 }
 
-Mesh* Primitives::Quad()
+Mesh* Primitives::quad()
 {
-    Mesh* quad = Mesh::Find("Primitives/Quad");
+    Mesh* quad = Mesh::find("Primitives/Quad");
     if(quad == nullptr)
     {
         vector<vec3> positions = { vec3(-0.5, -0.5, 0), vec3(0.5, -0.5, 0), vec3(-0.5, 0.5, 0), vec3(0.5, 0.5, 0) };
         vector<vec2> uvs = { vec2(0, 0), vec2(1, 0), vec2(0, 1), vec2(1, 1) };
         
-        vector<Vertex> vertices = Mesh::CreateFromVectors(positions, positions, uvs, vec3(1.0f));
+        vector<Vertex> vertices = Mesh::createFromVectors(positions, positions, uvs, vec3(1.0f));
 
         quad = new Mesh(vertices, GL_TRIANGLE_STRIP);
-        Mesh::Register("Primitives/Quad", quad);
+        Mesh::save("Primitives/Quad", quad);
     }
     return quad;
 }

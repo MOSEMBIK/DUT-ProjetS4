@@ -29,13 +29,13 @@ protected:
     glm::vec3 m_highlightedColor;
 
 public:
-    Button(glm::vec2 position, glm::vec2 size, char* texture, char* clickedTexture, char* highlightedTexture,
+    Button(Window* window, glm::vec2 position, glm::vec2 size, char* texture, char* clickedTexture, char* highlightedTexture,
     glm::vec3 color = glm::vec3(1.0f), glm::vec3 clickedColor = glm::vec3(1.0f), glm::vec3 highlightedColor = glm::vec3(1.0f));
 
-    Button(glm::vec2 position, glm::vec2 size, char* texture, char* clickedTexture,
+    Button(Window* window, glm::vec2 position, glm::vec2 size, char* texture, char* clickedTexture,
     glm::vec3 color = glm::vec3(1.0f), glm::vec3 clickedColor = glm::vec3(1.0f), glm::vec3 highlightedColor = glm::vec3(1.0f));
 
-    Button(glm::vec2 position, glm::vec2 size, char* texture,
+    Button(Window* window, glm::vec2 position, glm::vec2 size, char* texture,
     glm::vec3 color = glm::vec3(1.0f), glm::vec3 clickedColor = glm::vec3(1.0f), glm::vec3 highlightedColor = glm::vec3(1.0f));
 
     inline void setSize(glm::vec2 size) { m_size = size; }
@@ -58,5 +58,7 @@ public:
     inline glm::vec3 getClickedColor() const { return m_clickedColor; }
     inline glm::vec3 getHighlightedColor() const { return m_highlightedColor; }
 
+    virtual void init();
     virtual void draw();
+    virtual void onClick();
 };

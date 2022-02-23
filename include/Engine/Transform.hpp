@@ -25,96 +25,96 @@ public:
      * 
      * @return glm::vec3 
      */
-    glm::vec3 GetPosition() const;
+    glm::vec3 getPosition() const;
 
     /**
      * @brief Set the Position of the object
      * 
      * @param position 
      */
-    void SetPosition(const glm::vec3& position);
+    void setPosition(const glm::vec3& position);
 
     /**
      * @brief Translate the object
      * 
      * @param translation 
      */
-    void Translate(const glm::vec3& translation);
+    void translate(const glm::vec3& translation);
     
     /**
      * @brief Get the Rotation of the objet as a Quaternion
      * 
      * @return glm::quat 
      */
-    glm::quat GetRotation() const;
+    glm::quat getRotation() const;
 
     /**
      * @brief Get the Euleur Angles of the object
      * 
      * @return glm::vec3 
      */
-    glm::vec3 GetEuleurAngles() const;
+    glm::vec3 getEuleurAngles() const;
 
     /**
      * @brief Set the Rotation of the objet using a Quaternion
      * 
      * @param rotation 
      */
-    void SetRotation(const glm::quat& rotation);
+    void setRotation(const glm::quat& rotation);
 
     /**
      * @brief Set the Euler Angle of the object
      * 
      * @param rotation 
      */
-    void SetEulerAngle(const glm::vec3& rotation);
+    void setEulerAngle(const glm::vec3& rotation);
 
     /**
      * @brief Rotate the objet on each axis (in radians)
      * 
      * @param rotation 
      */
-    void Rotate(const glm::vec3& rotation);
+    void rotate(const glm::vec3& rotation);
 
     /**
      * @brief Rotate the objet using a Quaternion
      * 
      * @param rotation 
      */
-    void Rotate(const glm::quat& rotation);
+    void rotate(const glm::quat& rotation);
 
     /**
      * @brief Get the Scale of the object
      * 
      * @return glm::vec3 
      */
-    glm::vec3 GetScale() const;
+    glm::vec3 getScale() const;
 
     /**
      * @brief Set the Scale of the object
      * 
      * @param scale 
      */
-    void SetScale(const glm::vec3& scale);
+    void setScale(const glm::vec3& scale);
     
     /**
      * @brief Multiply the current scale by each axis
      * 
      * @param scale 
      */
-    void ScaleMult(const glm::vec3& scale);
+    void scaleMult(const glm::vec3& scale);
 
     /**
      * @brief Increase the current scale by each axis
      * 
      * @param scale 
      */
-    void ScaleAdd(const glm::vec3& scale);
+    void scaleAdd(const glm::vec3& scale);
 
     /**
      * @brief Return the TRS (Translate, Rotation, Scale) Matrix of the Transform
      * 
      * @return mat4 
      */
-    glm::mat4 GetTRSMatrix() const;
+    glm::mat4 getTRSMatrix() const;
 };

@@ -51,19 +51,19 @@ namespace Primitives
      * 
      * @return Mesh 
      */
-    Mesh* FastCube();
+    Mesh* fastCube();
 
     /**
      * @brief Generate a cube with sharped edges
      * 
      * @return Mesh 
      */
-    Mesh* Cube();
+    Mesh* cube();
 
 	/**
 	 * @brief Generate a quad
 	 * 
 	 * @return Mesh 
 	 */
-	Mesh* Quad();
+	Mesh* quad();
 }

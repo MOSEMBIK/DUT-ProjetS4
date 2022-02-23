@@ -3,7 +3,7 @@
 using namespace glm;
 using namespace std;
 
-Widget::Widget(vec2 position) : m_position(position)
+Widget::Widget(Window* window, vec2 position) : m_window(window), m_position(position)
 {
 
 }
