@@ -57,7 +57,7 @@ public:
      * 
      * @return glm::vec3 
      */
-    inline glm::vec3 setSpecular() const { return m_specular; }
+    inline glm::vec3 getSpecular() const { return m_specular; }
 
     /**
      * @brief Send the light information to the shader
