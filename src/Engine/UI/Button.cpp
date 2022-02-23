@@ -50,10 +50,10 @@ void Button::init()
     // TODO : Créer un callback qui gère le click, et l'action du click etc...
     m_window->registerCallback([this](double xPos, double yPos, int click)
     {
-        if(xPos >= (m_position.x + (float)m_window->getSize().x * m_anchor.x) 
-        && xPos < (m_position.x + (float)m_window->getSize().x * m_anchor.x) + m_size.x 
-        && yPos >= (m_position.y + (float)m_window->getSize().y * m_anchor.y) 
-        && yPos < (m_position.y + (float)m_window->getSize().y * m_anchor.y)  + m_size.y)
+        if(xPos >= (m_position.x + (float)m_window->getSize().x * m_anchor.x) - m_anchor.x * m_size.x
+        && xPos < (m_position.x + (float)m_window->getSize().x * m_anchor.x) + (1.0f - m_anchor.x) * m_size.x
+        && yPos >= (m_position.y + (float)m_window->getSize().y * m_anchor.y) - m_anchor.y * m_size.y
+        && yPos < (m_position.y + (float)m_window->getSize().y * m_anchor.y) + (1.0f - m_anchor.y) * m_size.y)
         {
             if(click)
             {
