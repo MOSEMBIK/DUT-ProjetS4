@@ -22,49 +22,49 @@ public:
      * 
      * @param ambientColor 
      */
-    inline void SetAmbient(glm::vec3 ambientColor) { this->m_ambient = glm::vec3(ambientColor); }
+    inline void setAmbient(glm::vec3 ambientColor) { this->m_ambient = glm::vec3(ambientColor); }
 
     /**
      * @brief Get the Ambient color of the light
      * 
      * @return glm::vec3 
      */
-    inline glm::vec3 GetAmbient() const { return m_ambient; }
+    inline glm::vec3 getAmbient() const { return m_ambient; }
 
     /**
      * @brief Set the Diffuse color of the light
      * 
      * @param diffuseColor 
      */
-    inline void SetDiffuse(glm::vec3 diffuseColor) { this->m_diffuse = glm::vec3(diffuseColor); }
+    inline void setDiffuse(glm::vec3 diffuseColor) { this->m_diffuse = glm::vec3(diffuseColor); }
 
     /**
      * @brief Get the Diffuse color of the light
      * 
      * @return glm::vec3 
      */
-    inline glm::vec3 GetDiffuse() const{ return m_diffuse; }
+    inline glm::vec3 getDiffuse() const{ return m_diffuse; }
 
     /**
      * @brief Set the Specular color of the light
      * 
      * @param specularColor 
      */
-    inline void SetSpecular(glm::vec3 specularColor) { this->m_specular = glm::vec3(specularColor); }
+    inline void setSpecular(glm::vec3 specularColor) { this->m_specular = glm::vec3(specularColor); }
 
     /**
      * @brief Get the Specular color of the light
      * 
      * @return glm::vec3 
      */
-    inline glm::vec3 GetSpecular() const { return m_specular; }
+    inline glm::vec3 setSpecular() const { return m_specular; }
 
     /**
      * @brief Send the light information to the shader
      * 
      * @param shader 
      */
-    virtual void SendToShader(const Shader& shader) const = 0;
+    virtual void sendToShader(const Shader& shader) const = 0;
 };
 
 class DirectionalLight : public Light{
@@ -86,21 +86,21 @@ public:
      * 
      * @param direction 
      */
-    inline void SetDirection(glm::vec3 direction) { this->m_direction = glm::vec3(direction); }
+    inline void setDirection(glm::vec3 direction) { this->m_direction = glm::vec3(direction); }
 
     /**
      * @brief Get the Direction of the light
      * 
      * @return glm::vec3 
      */
-    inline glm::vec3 GetDirection() const { return m_direction; }
+    inline glm::vec3 getDirection() const { return m_direction; }
 
     /**
      * @brief Send the light information to the shader
      * 
      * @param shader 
      */
-    void SendToShader(const Shader& shader) const;
+    void sendToShader(const Shader& shader) const;
 };
 
 class PointLight : public Light{
@@ -140,36 +140,36 @@ public:
      * 
      * @param position 
      */
-    inline void SetPosition(glm::vec3 position) { this->m_position = glm::vec3(position); }
+    inline void setPosition(glm::vec3 position) { this->m_position = glm::vec3(position); }
 
     /**
      * @brief Get the Light Range of the light
      * 
      * @return float 
      */
-    inline float GetRange() const { return m_range; }
+    inline float getRange() const { return m_range; }
 
     /**
      * @brief Set the Light Distance object
      * 
      * @param range 
      */
-    inline void SetRange(float range) { this->m_range = range; }
+    inline void setRange(float range) { this->m_range = range; }
 
     /**
      * @brief Send the light information to the shader
      * 
      * @param shader 
      */
-    void SendToShader(const Shader& shader) const;
+    void sendToShader(const Shader& shader) const;
 
     /**
      * @brief Enable this point light
      */
-    inline void Enable() { this->m_enabled = true;}
+    inline void enable() { this->m_enabled = true;}
 
     /**
      * @brief Disable this point light
      */
-    inline void Disable() { this->m_enabled = false; }
+    inline void disable() { this->m_enabled = false; }
 };

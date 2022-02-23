@@ -5,47 +5,65 @@ using namespace Primitives;
 using namespace std;
 using namespace glm;
 
-Mesh Primitives::FastCube()
+Mesh* Primitives::fastCube()
 {
-    vector<vec3> positions = { vec3(-1, -1, -1), vec3(+1, -1, -1), vec3(-1, +1, -1), vec3(+1, +1, -1), vec3(-1, -1, +1), vec3(+1, -1, +1), vec3(-1, +1, +1), vec3(+1, +1, +1) };
-    vector<unsigned int> indices = { 3, 2, 7, 6, 4, 2, 0, 3, 1, 7, 5, 4, 1, 0};
-
-    vector<Vertex> vertices = Mesh::CreateFromVectors(positions, positions, vec3(1.0f));
-
-    return Mesh(vertices, indices, GL_TRIANGLE_STRIP);
-}
-
-Mesh Primitives::Cube()
-{
-    vector<vec3> positions;
-    vector<vec3> normals;
-    vector<vec2> texCoords;
-    vector<unsigned int> indices;
-    for (int f = 0; f < 6; f++)
+    Mesh* fastCube = Mesh::find("Primitives/FastCube");
+    if(fastCube == nullptr)
     {
-        for (int v = 0; v < 4; v++)
-        {
-            positions.push_back(VERTICES [FACES [f][v]]);
-            normals.push_back(NORMALS [f]);
-            texCoords.push_back(TEXTURE [v]);
-        }
-        for (int j = 0; j < 6; j++)
-        {
-            indices.push_back(FACE_INDEX_ORDER[j] + 4 * f);
-        }
+        vector<vec3> positions = { vec3(-1, -1, -1), vec3(+1, -1, -1), vec3(-1, +1, -1), vec3(+1, +1, -1), vec3(-1, -1, +1), vec3(+1, -1, +1), vec3(-1, +1, +1), vec3(+1, +1, +1) };
+        vector<unsigned int> indices = { 3, 2, 7, 6, 4, 2, 0, 3, 1, 7, 5, 4, 1, 0};
+
+        vector<Vertex> vertices = Mesh::createFromVectors(positions, positions, vec3(1.0f));
+
+        fastCube = new Mesh(vertices, indices, GL_TRIANGLE_STRIP);
+        Mesh::save("Primitives/FastCube", fastCube);
     }
-
-    vector<Vertex> vertices = Mesh::CreateFromVectors(positions, normals, texCoords, vec3(1.0f, 1.0f, 1.0f));
-
-    return Mesh(vertices, indices, GL_TRIANGLES);
+    return fastCube;
 }
 
-Mesh Primitives::Quad(vec2 size)
+Mesh* Primitives::cube()
 {
-    vector<vec3> positions = { vec3(0, 0, 0), vec3(size.x, 0, 0), vec3(0, size.y, 0), vec3(size.x, size.y, 0) };
-    vector<vec2> uvs = { vec2(0, 0), vec2(1, 0), vec2(0, 1), vec2(1, 1) };
-	
-    vector<Vertex> vertices = Mesh::CreateFromVectors(positions, positions, uvs, vec3(1.0f));
+    Mesh* cube = Mesh::find("Primitives/Cube");
+    if(cube == nullptr)
+    {
+        vector<vec3> positions;
+        vector<vec3> normals;
+        vector<vec2> texCoords;
+        vector<unsigned int> indices;
+        for (int f = 0; f < 6; f++)
+        {
+            for (int v = 0; v < 4; v++)
+            {
+                positions.push_back(VERTICES [FACES [f][v]]);
+                normals.push_back(NORMALS [f]);
+                texCoords.push_back(TEXTURE [v]);
+            }
+            for (int j = 0; j < 6; j++)
+            {
+                indices.push_back(FACE_INDEX_ORDER[j] + 4 * f);
+            }
+        }
 
-    return Mesh(vertices, GL_TRIANGLE_STRIP);
+        vector<Vertex> vertices = Mesh::createFromVectors(positions, normals, texCoords, vec3(1.0f, 1.0f, 1.0f));
+
+        cube = new Mesh(vertices, indices, GL_TRIANGLES);
+        Mesh::save("Primitives/Cube", cube);
+    }
+    return cube;
+}
+
+Mesh* Primitives::quad()
+{
+    Mesh* quad = Mesh::find("Primitives/Quad");
+    if(quad == nullptr)
+    {
+        vector<vec3> positions = { vec3(-0.5, -0.5, 0), vec3(0.5, -0.5, 0), vec3(-0.5, 0.5, 0), vec3(0.5, 0.5, 0) };
+        vector<vec2> uvs = { vec2(0, 0), vec2(1, 0), vec2(0, 1), vec2(1, 1) };
+        
+        vector<Vertex> vertices = Mesh::createFromVectors(positions, positions, uvs, vec3(1.0f));
+
+        quad = new Mesh(vertices, GL_TRIANGLE_STRIP);
+        Mesh::save("Primitives/Quad", quad);
+    }
+    return quad;
 }

@@ -2,32 +2,40 @@
 
 using namespace std;
 
-map<string, Shader&> Shader::shaderDict;
+map<string, Shader*> Shader::shaderDict;
 
-void Shader::Register(string name, Shader& shader)
+void Shader::save(string name, Shader* shader)
 {
     auto search = shaderDict.find(name);
     
     if(search == shaderDict.end())
     {
         shaderDict.insert({name, shader});
-        cout << "Shader registered as name : '" << name << "' successufully!" << endl;
+        //cout << "Shader registered as name : '" << name << "' successufully!" << endl;
     }
     else
     {
-        cout << "Can't add the shader, there is already one existing with this name" << endl;
+        //cout << "Can't add the shader, there is already one existing with this name" << endl;
     }
 }
 
-Shader* Shader::Find(string name)
+Shader* Shader::find(string name)
 {
     auto search = shaderDict.find(name);
 
     if(search != shaderDict.end())
-        return &search->second;
+        return search->second;
 
-    cout << "Shader named : '" << name << "' not found!" << endl;
+    //cout << "Shader named : '" << name << "' not found!" << endl;
     return nullptr;
+}
+
+void Shader::clear()
+{
+    for(auto shaderKVP : Shader::shaderDict)
+    {
+        delete shaderKVP.second;
+    }
 }
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
@@ -86,7 +94,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 }
 // activate the shader
 // ------------------------------------------------------------------------
-void Shader::Use() const
+void Shader::use() const
 { 
     glUseProgram(m_ID); 
 }
