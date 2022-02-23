@@ -13,9 +13,9 @@ Shader* Button::buttonShader;
 
 // TODO : Recentralisé cette partie du code
 
-Button::Button(Window* window, vec2 position, vec2 size, char* texture, char* clickedTexture, char* highlightedTexture,
+Button::Button(Window* window, vec2 position, vec2 anchor, vec2 size, char* texture, char* clickedTexture, char* highlightedTexture,
     vec3 color, vec3 clickedColor, vec3 highlightedColor)
-    : Widget(window, position), m_size(size), m_color(color), m_clickedColor(clickedColor), m_highlightedColor(highlightedColor), m_state(State::NONE)
+    : Widget(window, position, anchor), m_size(size), m_color(color), m_clickedColor(clickedColor), m_highlightedColor(highlightedColor), m_state(State::NONE)
 {
     Resource::loadTexture(texture, m_texture);
     Resource::loadTexture(clickedTexture, m_clickedTexture);
@@ -24,9 +24,9 @@ Button::Button(Window* window, vec2 position, vec2 size, char* texture, char* cl
     init();
 }
 
-Button::Button(Window* window, vec2 position, vec2 size, char* texture, char* clickedTexture,
+Button::Button(Window* window, vec2 position, vec2 anchor, vec2 size, char* texture, char* clickedTexture,
     vec3 color, vec3 clickedColor, vec3 highlightedColor)
-    : Widget(window, position), m_size(size), m_color(color), m_clickedColor(clickedColor), m_highlightedColor(highlightedColor), m_state(State::NONE)
+    : Widget(window, position, anchor), m_size(size), m_color(color), m_clickedColor(clickedColor), m_highlightedColor(highlightedColor), m_state(State::NONE)
 {
     Resource::loadTexture(texture, m_texture);
     Resource::loadTexture(clickedTexture, m_clickedTexture);
@@ -35,9 +35,9 @@ Button::Button(Window* window, vec2 position, vec2 size, char* texture, char* cl
     init();
 }
 
-Button::Button(Window* window, vec2 position, vec2 size, char* texture,
+Button::Button(Window* window, vec2 position, vec2 anchor, vec2 size, char* texture,
     vec3 color, vec3 clickedColor, vec3 highlightedColor)
-    : Widget(window, position), m_size(size), m_color(color), m_clickedColor(clickedColor), m_highlightedColor(highlightedColor), m_state(State::NONE)
+    : Widget(window, position, anchor), m_size(size), m_color(color), m_clickedColor(clickedColor), m_highlightedColor(highlightedColor), m_state(State::NONE)
 {
     Resource::loadTexture(texture, m_texture);
     m_clickedTexture = m_highlightedTexture = m_texture;
@@ -50,7 +50,10 @@ void Button::init()
     // TODO : Créer un callback qui gère le click, et l'action du click etc...
     m_window->registerCallback([this](double xPos, double yPos, int click)
     {
-        if(xPos >= m_position.x && xPos < m_position.x + m_size.x && yPos >= m_position.y && yPos < m_position.y + m_size.y)
+        if(xPos >= (m_position.x + (float)m_window->getSize().x * m_anchor.x) 
+        && xPos < (m_position.x + (float)m_window->getSize().x * m_anchor.x) + m_size.x 
+        && yPos >= (m_position.y + (float)m_window->getSize().y * m_anchor.y) 
+        && yPos < (m_position.y + (float)m_window->getSize().y * m_anchor.y)  + m_size.y)
         {
             if(click)
             {
@@ -83,8 +86,8 @@ void Button::draw()
         buttonQuad = Primitives::quad();
     }
 
-	mat4 M = translate(vec3(m_position.x + m_size.x / 2.0f, m_position.y + m_size.y / 2.0f, 0.0f)) * scale(vec3(m_size.x, m_size.y, 1));	
-	mat4 P = ortho(0.0f, 1280.0f, 0.0f, 720.0f);
+	mat4 M = translate(vec3(m_position.x + (0.5f - m_anchor.x) * m_size.x, m_position.y + (0.5f - m_anchor.y) * m_size.y, 0.0f)) * scale(vec3(m_size.x, m_size.y, 1));	
+	mat4 P = ortho(-(float)m_window->getSize().x * m_anchor.x, (float)m_window->getSize().x * (1 - m_anchor.x), -(float)m_window->getSize().y * m_anchor.y, (float)m_window->getSize().y * (1 - m_anchor.y));
 
 	buttonShader->use();
 	buttonShader->setUniformValue("u_M", M);

@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/geometric.hpp>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
@@ -11,13 +12,11 @@
 using namespace std;
 using namespace glm;
 
-TextRenderer::TextRenderer(float width, float height) : textShader(Shader("shader/ui/text/vertex.glsl", "shader/ui/text/fragment.glsl"))
+TextRenderer::TextRenderer(Window* window) : m_textShader(Shader("shader/ui/text/vertex.glsl", "shader/ui/text/fragment.glsl")), m_window(window)
 {
     // configure shader
-	mat4 P = ortho(0.0f, width, 0.0f, height);
-	this->textShader.use();
-	this->textShader.setUniformValue("u_P", P);
-    this->textShader.setUniformValue("u_text", 0);
+	m_textShader.use();
+    m_textShader.setUniformValue("u_text", 0);
     // configure VAO/VBO for texture quads
     glGenVertexArrays(1, &this->VAO);
     glGenBuffers(1, &this->VBO);
@@ -30,18 +29,18 @@ TextRenderer::TextRenderer(float width, float height) : textShader(Shader("shade
     glBindVertexArray(0);
 }
 
-void TextRenderer::loadFont(std::string font, unsigned int fontSize)
+void TextRenderer::loadFont(string font, unsigned int fontSize)
 {
     // first clear the previously loaded Characters
-    this->characters.clear();
+    m_characters.clear();
     // then initialize and load the FreeType library
     FT_Library ft;    
     if (FT_Init_FreeType(&ft)) // all functions return a value different than 0 whenever an error occurred
-        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+        cout << "ERROR::FREETYPE: Could not init FreeType Library" << endl;
     // load font as face
     FT_Face face;
     if (FT_New_Face(ft, font.c_str(), 0, &face))
-        std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+        cout << "ERROR::FREETYPE: Failed to load font" << endl;
     // set size to load glyphs as
     FT_Set_Pixel_Sizes(face, 0, fontSize);
     // disable byte-alignment restriction
@@ -52,7 +51,7 @@ void TextRenderer::loadFont(std::string font, unsigned int fontSize)
         // load character glyph 
         if (FT_Load_Char(face, c, FT_LOAD_RENDER))
         {
-            std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+            cout << "ERROR::FREETYTPE: Failed to load Glyph" << endl;
             continue;
         }
         // generate texture
@@ -79,11 +78,11 @@ void TextRenderer::loadFont(std::string font, unsigned int fontSize)
         // now store character for later use
         Character character = {
             texture,
-            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+            ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+            ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
             face->glyph->advance.x
         };
-        characters.insert(std::pair<char, Character>(c, character));
+        m_characters.insert(pair<char, Character>(c, character));
     }
     glBindTexture(GL_TEXTURE_2D, 0);
     // destroy FreeType once we're finished
@@ -91,22 +90,67 @@ void TextRenderer::loadFont(std::string font, unsigned int fontSize)
     FT_Done_FreeType(ft);
 }
 
-void TextRenderer::renderText(std::string text, float x, float y, float scale, glm::vec3 color)
+float TextRenderer::getTextWidth(string text)
+{
+    float width = 0.0f;
+    string::const_iterator c;
+    for (c = text.begin(); c != text.end(); c++)
+    {
+        Character ch = m_characters[*c];
+        width += (ch.m_advance >> 6);
+    }
+    return width;
+}
+
+float TextRenderer::getTextHeight(string text)
+{
+    float height = 0.0f;
+    string::const_iterator c;
+    for (c = text.begin(); c != text.end(); c++)
+    {
+        Character ch = m_characters[*c];
+        if(height < ch.m_size.y)
+            height = ch.m_size.y;
+    }
+    return height;
+}
+
+void TextRenderer::renderText(string text, vec2 position, vec2 anchor, int align, float scale, vec3 color)
 {
     // activate corresponding render state	
-    this->textShader.use();
-    this->textShader.setUniformValue("u_textColor", color);
+    m_textShader.use();
+	mat4 P = ortho(-(float)m_window->getSize().x * anchor.x, (float)m_window->getSize().x * (1 - anchor.x), -(float)m_window->getSize().y * anchor.y, (float)m_window->getSize().y * (1 - anchor.y));
+	m_textShader.setUniformValue("u_P", P);
+    m_textShader.setUniformValue("u_textColor", color);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(this->VAO);
 
+    if(align & ALIGN_CENTER)
+    {
+        position.x -= getTextWidth(text) / 2.0f;
+    }
+    else if(align & ALIGN_RIGHT)
+    {
+        position.x -= getTextWidth(text);
+    }
+
+    if(align & ALIGN_MIDDLE)
+    {
+        position.y -= getTextHeight(text) / 2.0f;
+    }
+    else if(align & ALIGN_TOP)
+    {
+        position.y -= getTextHeight(text);
+    }
+
     // iterate through all characters
-    std::string::const_iterator c;
+    string::const_iterator c;
     for (c = text.begin(); c != text.end(); c++)
     {
-        Character ch = characters[*c];
+        Character ch = m_characters[*c];
 
-        float xpos = x + ch.m_bearing.x * scale;
-        float ypos = y + (ch.m_size.y - ch.m_bearing.y) * scale;
+        float xpos = position.x + ch.m_bearing.x * scale;
+        float ypos = position.y + (ch.m_size.y - ch.m_bearing.y) * scale;
 
         float w = ch.m_size.x * scale;
         float h = ch.m_size.y * scale;
@@ -129,7 +173,7 @@ void TextRenderer::renderText(std::string text, float x, float y, float scale, g
         // render quad
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // now advance cursors for next glyph
-        x += (ch.m_advance >> 6) * scale; // bitshift by 6 to get value in pixels (1/64th times 2^6 = 64)
+        position.x += (ch.m_advance >> 6) * scale; // bitshift by 6 to get value in pixels (1/64th times 2^6 = 64)
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);

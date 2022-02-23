@@ -32,13 +32,6 @@ Material::Material(const Shader& shader) :
 
 void Material::use() const
 {
-    //cout << "===" << endl;
-    //cout << m_ambientColor.x << " " << m_ambientColor.y << " " << m_ambientColor.z << endl;
-    //cout << m_diffuseColor.x << " " << m_diffuseColor.y << " " << m_diffuseColor.z << endl;
-    //cout << m_specularColor.x << " " << m_specularColor.y << " " << m_specularColor.z << endl;
-    //cout << m_specularExponent << endl;
-    //cout << m_diffuseTexture << " " << m_specularTexture << endl;
-
     if(m_shader == nullptr)
     {
         cout << "Shader undefined" << endl;
