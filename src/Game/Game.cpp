@@ -110,7 +110,7 @@ bool Game::loadRequieredResources()
     //Load BasicShader
 	basicShader = new Shader("shader/vertex.glsl", "shader/fragment.glsl");
 	Shader::save("Base", basicShader);
-	button = new Button(mainWindow, vec2(50, 50), vec2(475, 75), "assets/button.png");
+	button = new Button(mainWindow, vec2(0, 25), vec2(0.5f, 0.0f), vec2(475, 75), "assets/button.png");
 
     return true;
 }
@@ -153,7 +153,7 @@ void Game::update()
 
 	// Test de bouton
 	button->draw();
-	Label label(mainWindow, vec2(75, 75), "Test du label", "assets/fonts/bomberman.ttf");
+	Label label(mainWindow, vec2(0, 62.5), vec2(0.5f, 0.0f), "Test Bouton", "assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE);
 	label.setFontColor(vec3(1.0f, 1.0f, 1.0f));
 	label.draw();
 

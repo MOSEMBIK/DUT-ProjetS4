@@ -4,37 +4,43 @@
 
 #include <gl/glew.h>
 #include <glm/glm.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 #include <Engine/Texture.hpp>
 #include <Engine/Shader.hpp>
+#include <Engine/Window.hpp>
 
-
-/// Holds all state information relevant to a character as loaded using FreeType
 struct Character {
-    unsigned int m_textureID; // ID handle of the glyph texture
-    glm::ivec2   m_size;      // size of glyph
-    glm::ivec2   m_bearing;   // offset from baseline to left/top of glyph
-    unsigned int m_advance;   // horizontal offset to advance to next glyph
+    unsigned int m_textureID;
+    glm::ivec2   m_size;     
+    glm::ivec2   m_bearing;  
+    unsigned int m_advance;  
 };
 
+enum TextAlignement
+{
+    ALIGN_LEFT = 1,
+    ALIGN_CENTER = 2,
+    ALIGN_RIGHT = 4,
+    ALIGN_TOP = 8,
+    ALIGN_MIDDLE = 16,
+    ALIGN_BOTTOM = 32
+};
 
-// A renderer class for rendering text displayed by a font loaded using the 
-// FreeType library. A single font is loaded, processed into a list of Character
-// items for later rendering.
 class TextRenderer
 {
-public:
-    // holds a list of pre-compiled Characters
-    std::map<char, Character> characters; 
-    // shader used for text rendering
-    Shader textShader;
-    // constructor
-    TextRenderer(float width, float height);
-    // pre-compiles a list of characters from the given font
-    void loadFont(std::string font, unsigned int fontSize);
-    // renders a string of text using the precompiled list of characters
-    void renderText(std::string text, float x, float y, float scale, glm::vec3 color = glm::vec3(1.0f));
 private:
-    // render state
+    Shader m_textShader;
+    std::map<char, Character> m_characters; 
+    Window* m_window;
     unsigned int VAO, VBO;
+    
+public:
+    TextRenderer(Window* window);
+    void loadFont(std::string font, unsigned int fontSize);
+    void renderText(std::string text, glm::vec2 position, glm::vec2 anchor, int alignment = (TextAlignement::ALIGN_LEFT | TextAlignement::ALIGN_BOTTOM), float scale = 1.0f, glm::vec3 color = glm::vec3(1.0f));
+
+    float getTextWidth(std::string text);
+    float getTextHeight(std::string text);
 };

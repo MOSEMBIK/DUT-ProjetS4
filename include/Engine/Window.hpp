@@ -24,6 +24,7 @@ public:
     void operator= (const Window&) = delete;
 
     inline GLFWwindow* getWindow() const { return m_window; } 
+    inline glm::ivec2 getSize() { return m_size; }
 
     void registerCallback(std::function<void(double, double, int)> callback);
     void update();
