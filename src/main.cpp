@@ -1,5 +1,7 @@
 #include <utils.h>
 
+#include <map>
+
 #include <Engine/Window.hpp>
 #include <Engine/Shader.hpp>
 #include <Engine/Primitives.hpp>
@@ -27,9 +29,11 @@ int main(int argc, char **argv)
 	if (!glfwInit())
 		return -1;
 
+	//Text::init();
+
 	Game* game = Game::getInstance();
 
-    while(!glfwWindowShouldClose(game->getMainWindow()->GetWindow()))
+    while(!glfwWindowShouldClose(game->getMainWindow()->getWindow()))
     {
         game->update();
     }

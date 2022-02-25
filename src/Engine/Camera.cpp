@@ -7,7 +7,7 @@ Camera::Camera() : m_transform(Transform()), m_fov(60), m_nearPlane(0.03f), m_fa
 
 }
 
-mat4 Camera::GetProjectionMatrix(GLFWwindow* window) const
+mat4 Camera::getProjectionMatrix(GLFWwindow* window) const
 {
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);

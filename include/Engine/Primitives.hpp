@@ -6,14 +6,14 @@ namespace Primitives
 {
     static std::vector<glm::vec3> VERTICES =
     {
-        glm::vec3(-1, -1, -1),
-        glm::vec3(+1, -1, -1),
-        glm::vec3(-1, +1, -1),
-        glm::vec3(+1, +1, -1),
-        glm::vec3(-1, -1, +1),
-        glm::vec3(+1, -1, +1),
-        glm::vec3(-1, +1, +1),
-        glm::vec3(+1, +1, +1) 
+        glm::vec3(-0.5, -0.5, -0.5),
+        glm::vec3(+0.5, -0.5, -0.5),
+        glm::vec3(-0.5, +0.5, -0.5),
+        glm::vec3(+0.5, +0.5, -0.5),
+        glm::vec3(-0.5, -0.5, +0.5),
+        glm::vec3(+0.5, -0.5, +0.5),
+        glm::vec3(-0.5, +0.5, +0.5),
+        glm::vec3(+0.5, +0.5, +0.5) 
     };
     
     static std::vector<std::vector<unsigned int>> FACES =
@@ -51,12 +51,19 @@ namespace Primitives
      * 
      * @return Mesh 
      */
-    Mesh FastCube();
+    Mesh* fastCube();
 
     /**
      * @brief Generate a cube with sharped edges
      * 
      * @return Mesh 
      */
-    Mesh Cube();
+    Mesh* cube();
+
+	/**
+	 * @brief Generate a quad
+	 * 
+	 * @return Mesh 
+	 */
+	Mesh* quad();
 }

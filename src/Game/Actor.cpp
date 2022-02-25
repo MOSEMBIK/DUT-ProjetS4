@@ -22,29 +22,30 @@ Actor::Actor(Map* map, const char* filename) : map(map) {
 }
 
 bool Actor::loadOBJ(const char* filename) {
-	return Resource::LoadOBJ(filename, this->m_meshes, this->m_materials);
+	return Resource::loadOBJ(filename, this->m_meshes, this->m_materials);
 }
 
-void Actor::draw() {
-	GLFWwindow* window = Game::getInstance()->getMainWindow()->GetWindow();
+void Actor::draw() const {
+	GLFWwindow* window = Game::getInstance()->getMainWindow()->getWindow();
 	for (unsigned int i = 0; i < this->m_meshes.size(); i++) {
 		const Shader * shader;
 		if (this->m_materials.size() > i) {
-			this->m_materials[i].Use();
-			shader = this->m_materials[i].GetShader();
+			this->m_materials[i].use();
+			shader = this->m_materials[i].getShader();
 		}
 		else {
 			Material mat;
-			mat.Use();
-			shader = mat.GetShader();
+			mat.use();
+			shader = mat.getShader();
 		}
 
-		glm::mat4 M = this->m_transform.GetTRSMatrix();
+		glm::mat4 M = this->m_transform.getTRSMatrix();
 
-		shader->SetUniformValue("_M", M);
-		shader->SetUniformValue("_iTM", glm::mat3(glm::transpose(glm::inverse(M))));
-		shader->SetUniformValue("_V", Game::getInstance()->getMainCamera()->GetViewMatrix());
-		shader->SetUniformValue("_P", Game::getInstance()->getMainCamera()->GetProjectionMatrix(window));
-		this->m_meshes[i].Draw();
+		shader->use();
+		shader->setUniformValue("u_M", M);
+		shader->setUniformValue("u_iTM", glm::mat3(glm::transpose(glm::inverse(M))));
+		shader->setUniformValue("u_V", Game::getInstance()->getMainCamera()->getViewMatrix());
+		shader->setUniformValue("u_P", Game::getInstance()->getMainCamera()->getProjectionMatrix(window));
+		this->m_meshes[i]->draw();
 	}
 }

@@ -58,7 +58,7 @@ endif
 INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
 
 # define the C libs
-LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%)) -lglfw3dll -lglfw3 -lopengl32 -lglew32 -lmingw32 -lSDL2main -lSDL2 -lSDL2_image
+LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%)) -lglfw3dll -lglfw3 -lopengl32 -lglew32 -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lfreetype
 
 # define the C source files
 SOURCES		:= $(call rwildcard,$(SOURCEDIRS),*.cpp)
