@@ -17,6 +17,12 @@ Le projet doit être réalisé en 8 semaines. Il est possible d'utiliser des ass
 - 🎃🐺 ρᎥ🅴ⓡⓇ€ 𝕓🅾ｕⓇ 😲💀
 
 # Comment compiler et lire le projet
+## Sous Linux
+1. Se rendre à la racine du projet avec la commande :
+\$ cd path/to/project/
+2. Lancer la commande :
+\$ make
+
 ## Sous Windows
 1. Installer MSys64
 2. Lancer msys2.exe dans `C:\msys64\msys2.exe` puis écrire :
@@ -29,4 +35,4 @@ Le projet doit être réalisé en 8 semaines. Il est possible d'utiliser des ass
 6. Aller dans `Terminal > Run Task > Build` ou `Build & Run`
 7. Ouvrir l'executable compilé dans `build/Game.exe` 
 
-*Il est possible que l'ajout à la variable d'environment "PATH" du dossier `MSys64/MGWin64/bin` et `MSys64/user/bin` soit nécessaire*
+*Il est possible que l'ajout à la variable d'environment "PATH" du dossier `C:\msys64\mingw64\bin` et `C:\msys64\usr\bin` soit nécessaire*
