@@ -21,6 +21,7 @@ private:
 
 public:
 	Map();
+	~Map();
 
 	void generateMap(int size = 13);
 	void addActor(Actor* actor);

@@ -1,5 +1,6 @@
 #include <Engine/UI/Button.hpp>
 
+#include <Game/Game.hpp>
 #include <Engine/Primitives.hpp>
 #include <Engine/ResourceLoader.hpp>
 
@@ -15,7 +16,7 @@ Shader* Button::buttonShader;
 
 Button::Button(Window* window, vec2 position, vec2 anchor, vec2 size, char* texture, char* clickedTexture, char* highlightedTexture,
     vec3 color, vec3 clickedColor, vec3 highlightedColor)
-    : Widget(window, position, anchor), m_size(size), m_color(color), m_clickedColor(clickedColor), m_highlightedColor(highlightedColor), m_state(State::NONE)
+    : Widget(window, position, anchor), m_state(State::NONE), m_label(window, vec2(0.0f), vec2(0.0f), ""), m_size(size), m_color(color), m_clickedColor(clickedColor), m_highlightedColor(highlightedColor)
 {
     Resource::loadTexture(texture, m_texture);
     Resource::loadTexture(clickedTexture, m_clickedTexture);
@@ -26,7 +27,7 @@ Button::Button(Window* window, vec2 position, vec2 anchor, vec2 size, char* text
 
 Button::Button(Window* window, vec2 position, vec2 anchor, vec2 size, char* texture, char* clickedTexture,
     vec3 color, vec3 clickedColor, vec3 highlightedColor)
-    : Widget(window, position, anchor), m_size(size), m_color(color), m_clickedColor(clickedColor), m_highlightedColor(highlightedColor), m_state(State::NONE)
+    : Widget(window, position, anchor), m_state(State::NONE), m_label(window, vec2(0.0f), vec2(0.0f), ""), m_size(size), m_color(color), m_clickedColor(clickedColor), m_highlightedColor(highlightedColor)
 {
     Resource::loadTexture(texture, m_texture);
     Resource::loadTexture(clickedTexture, m_clickedTexture);
@@ -37,7 +38,7 @@ Button::Button(Window* window, vec2 position, vec2 anchor, vec2 size, char* text
 
 Button::Button(Window* window, vec2 position, vec2 anchor, vec2 size, char* texture,
     vec3 color, vec3 clickedColor, vec3 highlightedColor)
-    : Widget(window, position, anchor), m_size(size), m_color(color), m_clickedColor(clickedColor), m_highlightedColor(highlightedColor), m_state(State::NONE)
+    : Widget(window, position, anchor), m_state(State::NONE), m_label(window, vec2(0.0f), vec2(0.0f), ""), m_size(size), m_color(color), m_clickedColor(clickedColor), m_highlightedColor(highlightedColor)
 {
     Resource::loadTexture(texture, m_texture);
     m_clickedTexture = m_highlightedTexture = m_texture;
@@ -55,18 +56,36 @@ void Button::init()
         && yPos >= (m_position.y + (float)m_window->getSize().y * m_anchor.y) - m_anchor.y * m_size.y
         && yPos < (m_position.y + (float)m_window->getSize().y * m_anchor.y) + (1.0f - m_anchor.y) * m_size.y)
         {
-            if(click)
-            {
-                onClick();
-            } 
-            cout << "Inside" << endl;
+            if(click) {
+				if (m_state != State::CLICKED)
+                	onClick();
+            }
+			else {
+				onHover();
+			}
         }
     });
 }
 
 void Button::onClick()
 {
-    cout << "Click" << endl;
+	m_state = State::CLICKED;
+	Game* game = Game::getInstance();
+	switch(game->getState())
+	{
+		case GameState::MAIN_MENU:
+			game->setState(GameState::GAME);
+			break;
+		case GameState::GAME:
+			game->setState(GameState::MAIN_MENU);
+			break;
+	}
+}
+
+void Button::onHover()
+{
+	m_state = State::HIGHLIGHTED;
+	//cout << "Hover" << endl;
 }
 
 void Button::draw()
@@ -101,4 +120,8 @@ void Button::draw()
     buttonShader->setUniformValue("u_border", vec2(0.25f, 0.25f));
 
 	buttonQuad->draw();
+
+	if (m_label.getText() != "") {
+		m_label.draw();
+	}
 }

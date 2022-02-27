@@ -6,6 +6,16 @@ using namespace std;
 
 Map::Map() {}
 
+Map::~Map() {
+	for (auto& actor : actors) {
+		delete actor;
+	}
+	
+	for (auto& wall : walls) {
+		delete wall.second;
+	}
+}
+
 void Map::generateMap(int size) {
 	if (size % 2 == 0) {
 		size++;

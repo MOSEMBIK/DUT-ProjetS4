@@ -12,6 +12,8 @@
 using namespace glm;
 using namespace std;
 
+vector<Button*> buttons;
+
 Game* Game::m_instance = nullptr;
 
 Game::Game() : m_currentTime(0), m_deltaTime(0), m_mousePos(vec2(0.0f)), m_directionalLight(vec3(-1.0f, -1.0f, -1.0f), vec3(0.1f), vec3(1.0f), vec3(1.0f)), m_gameState(GameState::MAIN_MENU), m_vsync(VSync::ONE_FRAME)
@@ -47,8 +49,6 @@ bool Game::init()
 
 	glfwSetKeyCallback(mainWindow->getWindow(), onKeyPressed);
 
-    mainCamera = new Camera();
-
     // Hide one useless faces
 	//glEnable(GL_CULL_FACE); 
 
@@ -59,37 +59,20 @@ bool Game::init()
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
-    // Make the lights
+	// Make the lights
 	m_directionalLight = DirectionalLight(vec3(+1.0f, -0.75f, -1.5f), vec3(0.1f), vec3(1.0f), vec3(1.0f));
 
-	for(int i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++)
 		m_pointsLights.push_back(PointLight(i));
 
-    double posX, posY;
+	double posX, posY;
 	glfwGetCursorPos(mainWindow->getWindow(), &posX, &posY);
-    m_mousePos = vec2(posX, posY);
-
-    map = new Map();
-	map->generateMap(13);
-	
-	// Test de robots
-	for (int i = 0; i < 10; i++) {
-		Robot* robot = new Robot(map);
-		Bomb* bomb = new Bomb(map, vec3(rand()%100/100.0f, rand()%100/100.0f, rand()%100/100.0f), 5, 5);
-		robot->getTransform().setPosition(vec3(6.0f, 0.0f, 6.0f));
-		bomb->getTransform().setPosition(vec3(rand()%11+1, 0, rand()%11+1));
-		map->addActor(robot);
-		map->addActor(bomb);
-	}
+	m_mousePos = vec2(posX, posY);
 
 	m_lastTime = m_currentTime - 1;
 
-	mainCamera->getTransform().setPosition(vec3(-5.86219f, -10.4262f, -20.7321f));
-	mainCamera->getTransform().setRotation(vec3(0.45f, 0.0f, 0.0f));
-    return true;
+	return true;
 }
-
-Button* button;
 
 bool Game::loadRequieredResources()
 {
@@ -110,7 +93,14 @@ bool Game::loadRequieredResources()
     //Load BasicShader
 	basicShader = new Shader("shader/vertex.glsl", "shader/fragment.glsl");
 	Shader::save("Base", basicShader);
-	button = new Button(mainWindow, vec2(0, 25), vec2(0.5f, 0.0f), vec2(475, 75), "assets/button.png");
+
+	//Load Buttons
+	Button *button = new Button(mainWindow, vec2(0, 25), vec2(0.5f, 0.0f), vec2(475, 75), (char *)"assets/button.png");
+	Label label(mainWindow, vec2(0, 62.5), vec2(0.5f, 0.0f), "Lancer la partie", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE);
+	button->setLabel(label);
+	buttons.push_back(button);
+
+	this->setState(GameState::MAIN_MENU);
 
     return true;
 }
@@ -134,6 +124,58 @@ Game::~Game()
         delete mainCamera;
 }
 
+void Game::setState(GameState state)
+{
+	switch (state)
+	{
+	/**
+	 * @brief Load the main menu
+	 */
+	case GameState::MAIN_MENU:
+		if (m_gameState == GameState::GAME) {
+			// Delete game content
+			delete map;
+			delete mainCamera;
+			map = nullptr;
+			mainCamera = nullptr;
+		}
+		buttons[0]->getLabel().setText("Lancer la partie");
+
+		cout << "Load main menu" << endl;
+		break;
+	
+	/**
+	 * @brief Launch the game
+	 */
+	case GameState::GAME:
+		if (m_gameState == GameState::MAIN_MENU) {
+			// Delete main menu content
+		}
+		buttons[0]->getLabel().setText("Quitter la partie");
+
+	    mainCamera = new Camera();
+		map = new Map();
+		map->generateMap(13);
+		
+		// Test de robots
+		for (int i=0; i < 10; i++) {
+			Robot* robot = new Robot(map);
+			Bomb* bomb = new Bomb(map, vec3(rand()%100/100.0f, rand()%100/100.0f, rand()%100/100.0f), 5, 5);
+			robot->getTransform().setPosition(vec3(6.0f, 0.0f, 6.0f));
+			bomb->getTransform().setPosition(vec3(rand()%11+1, 0, rand()%11+1));
+			map->addActor(robot);
+			map->addActor(bomb);
+		}
+		mainCamera->getTransform().setPosition(vec3(-6.0f, -8.0f, -20.0f));
+		mainCamera->getTransform().setRotation(vec3(0.60f, 0.0f, 0.0f));
+
+		cout << "Load game" << endl;
+		break;
+	}
+	
+	m_gameState = state;
+}
+
 
 void Game::update()
 {
@@ -143,19 +185,23 @@ void Game::update()
 	m_currentTime = glfwGetTime();
 
 	processInputs(mainWindow->getWindow());
-	
-	m_directionalLight.sendToShader(*basicShader);
-	for(PointLight pointLight : m_pointsLights)
-		pointLight.sendToShader(*basicShader);
 
-	map->update(m_deltaTime);
-	map->draw();
+	switch (m_gameState)
+	{
+		case GameState::GAME:
+			m_directionalLight.sendToShader(*basicShader);
+			for(PointLight pointLight : m_pointsLights) {
+				pointLight.sendToShader(*basicShader);
+			}
+			map->update(m_deltaTime);
+			map->draw();
+			buttons[0]->draw();
+			break;
 
-	// Test de bouton
-	button->draw();
-	Label label(mainWindow, vec2(0, 62.5), vec2(0.5f, 0.0f), "Test Bouton", "assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE);
-	label.setFontColor(vec3(1.0f, 1.0f, 1.0f));
-	label.draw();
+		case GameState::MAIN_MENU:
+			buttons[0]->draw();
+			break;
+	}
 
 	if(m_currentTime - m_lastTime >= 1)
 	{
@@ -203,12 +249,15 @@ void Game::processInputs(GLFWwindow* window)
 
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
-	float deltaX = xpos - m_mousePos.x, deltaY = ypos - m_mousePos.y;
+	float deltaX = xpos - m_mousePos.x,
+	deltaY = ypos - m_mousePos.y;
+	UNUSED(deltaX);
+	UNUSED(deltaY);
 
 	// Camera rotation
-	const float rotationSpeed = 0.007f;
-	cameraTransform->rotate(vec3(0.0f, 1.0f, 0.0f) * cameraTransform->getRotation() * rotationSpeed * deltaX);
-	cameraTransform->rotate(vec3(1.0f, 0.0f, 0.0f) * cameraTransform->getRotation() * rotationSpeed * deltaY);
+	//const float rotationSpeed = 0.007f;
+	//cameraTransform->rotate(vec3(0.0f, 1.0f, 0.0f) * rotationSpeed * deltaX);
+	//cameraTransform->rotate(vec3(1.0f, 0.0f, 0.0f) * rotationSpeed * deltaY);
 
 	m_mousePos = vec2(xpos, ypos);
 }
