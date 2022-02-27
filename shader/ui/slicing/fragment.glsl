@@ -1,8 +1,9 @@
 #version 330 core
 
-uniform sampler2D u_buttonTexture;
+uniform sampler2D u_imageTexture;
 uniform vec2 u_dimensions;
 uniform vec2 u_border;
+uniform vec3 u_color;
 
 in vec2 texCoords;
 
@@ -27,5 +28,5 @@ void main ()
         processAxis(texCoords.y, u_border.y, u_dimensions.y)
     );
 
-    FragColor = texture(u_buttonTexture, newUV);
+    FragColor = texture(u_imageTexture, newUV) * vec4(u_color, 1.0);
 }

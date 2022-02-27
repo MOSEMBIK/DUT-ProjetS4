@@ -95,8 +95,21 @@ bool Game::loadRequieredResources()
 	Shader::save("Base", basicShader);
 
 	//Load Buttons
-	Button *button = new Button(mainWindow, vec2(0, 25), vec2(0.5f, 0.0f), vec2(475, 75), (char *)"assets/button.png");
+	Button *button = new Button(mainWindow, vec2(0, 25), vec2(0.5f, 0.0f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
+	button->setNineSlice(true);
 	Label label(mainWindow, vec2(0, 62.5), vec2(0.5f, 0.0f), "Lancer la partie", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE);
+	button->setOnClickCallback([]() {
+		Game* game = Game::getInstance();
+		switch(game->getState())
+		{
+			case GameState::MAIN_MENU:
+				game->setState(GameState::GAME);
+				break;
+			case GameState::GAME:
+				game->setState(GameState::MAIN_MENU);
+				break;
+		}
+	});
 	button->setLabel(label);
 	buttons.push_back(button);
 
@@ -153,7 +166,7 @@ void Game::setState(GameState state)
 		}
 		buttons[0]->getLabel().setText("Quitter la partie");
 
-	    mainCamera = new Camera();
+		mainCamera = new Camera();
 		map = new Map();
 		map->generateMap(13);
 		
@@ -166,6 +179,7 @@ void Game::setState(GameState state)
 			map->addActor(robot);
 			map->addActor(bomb);
 		}
+		
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -8.0f, -20.0f));
 		mainCamera->getTransform().setRotation(vec3(0.60f, 0.0f, 0.0f));
 
@@ -219,6 +233,9 @@ void Game::processInputs(GLFWwindow* window)
 {
 	mainWindow->update();
 
+	if(mainCamera == nullptr)
+		return;
+
 	// Camera movement
 	Transform* cameraTransform =  &mainCamera->getTransform();
     const float cameraSpeed = 5.0f;
@@ -255,9 +272,9 @@ void Game::processInputs(GLFWwindow* window)
 	UNUSED(deltaY);
 
 	// Camera rotation
-	//const float rotationSpeed = 0.007f;
-	//cameraTransform->rotate(vec3(0.0f, 1.0f, 0.0f) * rotationSpeed * deltaX);
-	//cameraTransform->rotate(vec3(1.0f, 0.0f, 0.0f) * rotationSpeed * deltaY);
+	const float rotationSpeed = 0.007f;
+	cameraTransform->rotate(vec3(0.0f, 1.0f, 0.0f) * cameraTransform->getRotation() * rotationSpeed * deltaX);
+	cameraTransform->rotate(vec3(1.0f, 0.0f, 0.0f) * cameraTransform->getRotation() * rotationSpeed * deltaY);
 
 	m_mousePos = vec2(xpos, ypos);
 }
