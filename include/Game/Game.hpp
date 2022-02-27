@@ -137,4 +137,11 @@ public:
      * @return GameState 
      */
     inline GameState getState() { return m_gameState; }
+
+	/**
+	 * @brief Set a new state of the game
+	 * 
+	 * @param state 
+	 */
+    void setState(GameState state);
 };

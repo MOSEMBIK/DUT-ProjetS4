@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine/UI/Widget.hpp>
+#include <Engine/UI/Label.hpp>
 
 #include <Engine/Shader.hpp>
 #include <Engine/Texture.hpp>
@@ -18,6 +19,7 @@ protected:
     static Shader* buttonShader;
 
     State m_state;
+	Label m_label;
 
     glm::vec2 m_size;
 
@@ -39,6 +41,7 @@ public:
     glm::vec3 color = glm::vec3(1.0f), glm::vec3 clickedColor = glm::vec3(1.0f), glm::vec3 highlightedColor = glm::vec3(1.0f));
 
     inline void setSize(glm::vec2 size) { m_size = size; }
+    inline void setLabel(Label label) { m_label = label; }
 
     inline void setTexture(Texture texture) { m_texture = texture; }
     inline void setClickedTexture(Texture texture) { m_clickedTexture = texture; }
@@ -49,6 +52,7 @@ public:
     inline void setHighlightedColor(glm::vec3 color) { m_highlightedColor = color; } 
 
     inline glm::vec2 getSize() { return m_size; } 
+    inline Label& getLabel() { return m_label; } 
 
     inline Texture getTexture() const { return m_texture; }
     inline Texture getClickedTexture() const { return m_clickedTexture; }
@@ -60,5 +64,6 @@ public:
 
     virtual void init();
     virtual void draw();
-    virtual void onClick();
+	virtual void onClick();
+	virtual void onHover();
 };
