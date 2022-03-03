@@ -28,7 +28,7 @@ public:
      * 
      * @return glm::mat4 
      */
-    inline glm::mat4 getViewMatrix() const { return m_transform.getTRSMatrix(); }
+    glm::mat4 getViewMatrix() const;
 
     /**
      * @brief Get the Projection Matrix of the Camera

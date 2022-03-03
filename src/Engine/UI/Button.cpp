@@ -58,45 +58,44 @@ void Button::init()
         {
             if(click) {
 				if (m_state != State::CLICKED)
-                	onClick();
+                {
+                    m_state = State::CLICKED;
+                    onClick();
+                }
             }
 			else {
-				onHover();
+                m_state = State::HIGHLIGHTED;
+                // TODO : Send correct texture / colors
 			}
         }
+        else
+        {
+            m_state = State::NONE;
+        }
     });
-}
-
-void Button::onClick()
-{
-	m_state = State::CLICKED;
-	Game* game = Game::getInstance();
-	switch(game->getState())
-	{
-		case GameState::MAIN_MENU:
-			game->setState(GameState::GAME);
-			break;
-		case GameState::GAME:
-			game->setState(GameState::MAIN_MENU);
-			break;
-	}
-}
-
-void Button::onHover()
-{
-	m_state = State::HIGHLIGHTED;
-	//cout << "Hover" << endl;
 }
 
 void Button::draw()
 {
     if(buttonShader == nullptr)
     {
-        buttonShader = Shader::find("UI/Slicing");
-        if(buttonShader == nullptr)
+        if(m_nineSlice)
         {
-            buttonShader = new Shader("shader/ui/slicing/vertex.glsl", "shader/ui/slicing/fragment.glsl");
-            Shader::save("UI/Slicing", buttonShader);
+            buttonShader = Shader::find("UI/Slicing");
+            if(buttonShader == nullptr)
+            {
+                buttonShader = new Shader("shader/ui/slicing/vertex.glsl", "shader/ui/slicing/fragment.glsl");
+                Shader::save("UI/Slicing", buttonShader);
+            }
+        }
+        else
+        {
+            buttonShader = Shader::find("UI/Image");
+            if(buttonShader == nullptr)
+            {
+                buttonShader = new Shader("shader/ui/image/vertex.glsl", "shader/ui/image/fragment.glsl");
+                Shader::save("UI/Image", buttonShader);
+            }
         }
     }
 
@@ -113,11 +112,30 @@ void Button::draw()
 	buttonShader->setUniformValue("u_P", P);
 	
     glActiveTexture(GL_TEXTURE0);
-    buttonShader->setUniformValue("u_buttonTexture", 0);
-    glBindTexture(GL_TEXTURE_2D, m_texture.m_id);
+    buttonShader->setUniformValue("u_imageTexture", 0);
+    switch(m_state)
+    {
+        case State::NONE:
+            glBindTexture(GL_TEXTURE_2D, m_texture.m_id);
+            buttonShader->setUniformValue("u_color", m_color);
+            break;
 
-    buttonShader->setUniformValue("u_dimensions", vec2(1.0f / m_texture.m_width, 1.0f / m_texture.m_height * m_size.x / m_size.y));
-    buttonShader->setUniformValue("u_border", vec2(0.25f, 0.25f));
+        case State::HIGHLIGHTED:
+            glBindTexture(GL_TEXTURE_2D, m_highlightedTexture.m_id);
+            buttonShader->setUniformValue("u_color", m_highlightedColor);
+            break;
+
+        case State::CLICKED:
+            glBindTexture(GL_TEXTURE_2D, m_clickedTexture.m_id);
+            buttonShader->setUniformValue("u_color", m_clickedColor);
+            break;
+    }
+
+    if(m_nineSlice)
+    {
+        buttonShader->setUniformValue("u_dimensions", vec2(1.0f / m_texture.m_width, 1.0f / m_texture.m_height * m_size.x / m_size.y));
+        buttonShader->setUniformValue("u_border", vec2(0.25f, 0.25f));
+    }
 
 	buttonQuad->draw();
 
