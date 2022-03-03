@@ -26,6 +26,7 @@ Game::Game() : m_currentTime(0), m_deltaTime(0), m_mousePos(vec2(0.0f)), m_direc
 bool Game::init()
 {
 	mainWindow = new Window();
+	mainCamera = new Camera();
 
 	if (!mainWindow)
 	{
@@ -94,24 +95,33 @@ bool Game::loadRequieredResources()
 	basicShader = new Shader("shader/vertex.glsl", "shader/fragment.glsl");
 	Shader::save("Base", basicShader);
 
-	//Load Buttons
-	Button *button = new Button(mainWindow, vec2(0, 25), vec2(0.5f, 0.0f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
-	button->setNineSlice(true);
-	Label label(mainWindow, vec2(0, 62.5), vec2(0.5f, 0.0f), "Lancer la partie", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE);
-	button->setOnClickCallback([]() {
+	/** Load Buttons **/
+	Button *singleplayer = new Button(mainWindow, vec2(0, WINDOW_H*6/10), vec2(0.5f, 0.0f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
+	singleplayer->setNineSlice(true);
+	singleplayer->setLabel(Label(mainWindow, vec2(0, WINDOW_H*6/10 + 37.5), vec2(0.5f, 0.0f), "Singleplayer", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+	singleplayer->setOnClickCallback([]() {
 		Game* game = Game::getInstance();
-		switch(game->getState())
-		{
-			case GameState::MAIN_MENU:
-				game->setState(GameState::GAME);
-				break;
-			case GameState::GAME:
-				game->setState(GameState::MAIN_MENU);
-				break;
-		}
+		game->setState(GameState::GAME);
 	});
-	button->setLabel(label);
-	buttons.push_back(button);
+	buttons.push_back(singleplayer);
+
+	Button *multiplayer = new Button(mainWindow, vec2(0, WINDOW_H*4/10), vec2(0.5f, 0.0f), vec2(475, 75), (char *)"assets/button.png", vec3(0.25f), vec3(0.25f, 0.25f, 0.25f), vec3(0.25f));
+	multiplayer->setNineSlice(true);
+	multiplayer->setLabel(Label(mainWindow, vec2(0, WINDOW_H*4/10 + 37.5), vec2(0.5f, 0.0f), "Multiplayer", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+	multiplayer->setOnClickCallback([]() {
+		cout << "Multiplayer clicked" << endl;
+	});
+	buttons.push_back(multiplayer);
+
+	Button *exit = new Button(mainWindow, vec2(0, 25), vec2(0.5f, 0.0f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
+	exit->setNineSlice(true);
+	exit->setLabel(Label(mainWindow, vec2(0, 62.5), vec2(0.5f, 0.0f), "Exit", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+	exit->setOnClickCallback([]() {
+		Game* game = Game::getInstance();
+		game->setState(GameState::MAIN_MENU);
+	});
+	buttons.push_back(exit);
+	/** End of Buttons **/
 
 	this->setState(GameState::MAIN_MENU);
 
@@ -144,29 +154,23 @@ void Game::setState(GameState state)
 	/**
 	 * @brief Load the main menu
 	 */
-	case GameState::MAIN_MENU:
+	case GameState::MAIN_MENU: {
 		if (m_gameState == GameState::GAME) {
 			// Delete game content
 			delete map;
-			delete mainCamera;
 			map = nullptr;
-			mainCamera = nullptr;
 		}
-		buttons[0]->getLabel().setText("Lancer la partie");
-
-		cout << "Load main menu" << endl;
-		break;
+		cout << "Loaded main menu" << endl;
+	} break;
 	
 	/**
 	 * @brief Launch the game
 	 */
-	case GameState::GAME:
+	case GameState::GAME: {
+		cout << "Loading game..." << endl;
 		if (m_gameState == GameState::MAIN_MENU) {
-			// Delete main menu content
+			// Delete main menu content if necessary
 		}
-		buttons[0]->getLabel().setText("Quitter la partie");
-
-		mainCamera = new Camera();
 		map = new Map();
 		map->generateMap(13);
 		
@@ -183,13 +187,12 @@ void Game::setState(GameState state)
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -8.0f, -20.0f));
 		mainCamera->getTransform().setRotation(vec3(0.60f, 0.0f, 0.0f));
 
-		cout << "Load game" << endl;
-		break;
+		cout << "Loaded game" << endl;
+	} break;
 	}
 	
 	m_gameState = state;
 }
-
 
 void Game::update()
 {
@@ -202,19 +205,21 @@ void Game::update()
 
 	switch (m_gameState)
 	{
-		case GameState::GAME:
+		case GameState::GAME: {
 			m_directionalLight.sendToShader(*basicShader);
 			for(PointLight pointLight : m_pointsLights) {
 				pointLight.sendToShader(*basicShader);
 			}
 			map->update(m_deltaTime);
 			map->draw();
-			buttons[0]->draw();
-			break;
+			buttons[2]->draw();
+		} break;
 
-		case GameState::MAIN_MENU:
-			buttons[0]->draw();
-			break;
+		case GameState::MAIN_MENU: {
+			for (int i=0; i<2; i++) {
+				buttons[i]->draw();
+			}
+		} break;
 	}
 
 	if(m_currentTime - m_lastTime >= 1)
