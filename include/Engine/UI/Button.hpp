@@ -18,7 +18,7 @@ protected:
     static Mesh* buttonQuad;
     static Shader* buttonShader;
 
-    bool m_nineSlice = false;
+    bool m_nineSlice = true;
 
     State m_state;
 	Label m_label;

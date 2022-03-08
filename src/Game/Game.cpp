@@ -138,18 +138,17 @@ void Game::setState(GameState state)
 		}
 		/* Load Buttons */
 		for (auto button : buttons) { delete button; } buttons.clear();
-		Button* singleplayer = new Button(mainWindow, vec2(0, WINDOW_H*6/10), vec2(0.5f, 0.0f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
-		singleplayer->setNineSlice(true);
-		singleplayer->setLabel(Label(mainWindow, vec2(0, WINDOW_H*6/10 + 37.5), vec2(0.5f, 0.0f), "Singleplayer", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		// Create button(window, position, anchor, size, ...)
+		Button* singleplayer = new Button(mainWindow, vec2(0, 0), vec2(0.5f, 0.6f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
+		singleplayer->setLabel(Label(mainWindow, vec2(0, 0), vec2(0.5f, 0.6f), "Singleplayer", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
 		singleplayer->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::GAME);
 		});
 		buttons.push_back(singleplayer);
 
-		Button* multiplayer = new Button(mainWindow, vec2(0, WINDOW_H*4/10), vec2(0.5f, 0.0f), vec2(475, 75), (char *)"assets/button.png", vec3(0.25f), vec3(0.25f, 0.25f, 0.25f), vec3(0.25f));
-		multiplayer->setNineSlice(true);
-		multiplayer->setLabel(Label(mainWindow, vec2(0, WINDOW_H*4/10 + 37.5), vec2(0.5f, 0.0f), "Multiplayer", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		Button* multiplayer = new Button(mainWindow, vec2(0, 0), vec2(0.5f, 0.4f), vec2(475, 75), (char *)"assets/button.png", vec3(0.25f), vec3(0.25f, 0.25f, 0.25f), vec3(0.25f));
+		multiplayer->setLabel(Label(mainWindow, vec2(0, 0), vec2(0.5f, 0.4f), "Multiplayer", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
 		multiplayer->setOnClickCallback([]() {
 			cout << "Multiplayer clicked" << endl;
 		});
@@ -169,9 +168,8 @@ void Game::setState(GameState state)
 		}
 		/* Load Buttons */
 		for (auto button : buttons) { delete button; } buttons.clear();
-		Button* exit = new Button(mainWindow, vec2(0, 25), vec2(0.5f, 0.0f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
-		exit->setNineSlice(true);
-		exit->setLabel(Label(mainWindow, vec2(0, 62.5), vec2(0.5f, 0.0f), "Exit", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		Button* exit = new Button(mainWindow, vec2(250, 50), vec2(0.0f, 0.0f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
+		exit->setLabel(Label(mainWindow, vec2(250, 50), vec2(0.0f, 0.0f), "Exit", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
 		exit->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::MAIN_MENU);

@@ -51,10 +51,10 @@ void Button::init()
 {
     // TODO : Créer un callback qui gère le click, et l'action du click etc...
 	this->m_clickCallbackId = m_window->registerCallback([this](double xPos, double yPos, int click) {
-		if(xPos >= (m_position.x + (float)m_window->getSize().x * m_anchor.x) - m_anchor.x * m_size.x
-		&& xPos < (m_position.x + (float)m_window->getSize().x * m_anchor.x) + (1.0f - m_anchor.x) * m_size.x
-		&& yPos >= (m_position.y + (float)m_window->getSize().y * m_anchor.y) - m_anchor.y * m_size.y
-		&& yPos < (m_position.y + (float)m_window->getSize().y * m_anchor.y) + (1.0f - m_anchor.y) * m_size.y)
+		if(xPos >= (m_position.x + (float)m_window->getSize().x * m_anchor.x) - m_size.x * 0.5
+		&& xPos < (m_position.x + (float)m_window->getSize().x * m_anchor.x) + m_size.x * 0.5
+		&& yPos >= (m_position.y + (float)m_window->getSize().y * m_anchor.y) - m_size.y * 0.5
+		&& yPos < (m_position.y + (float)m_window->getSize().y * m_anchor.y) + m_size.y * 0.5)
 		{
 			if (click)
 			{
@@ -106,7 +106,7 @@ void Button::draw()
         buttonQuad = Primitives::quad();
     }
 
-	mat4 M = translate(vec3(m_position.x + (0.5f - m_anchor.x) * m_size.x, m_position.y + (0.5f - m_anchor.y) * m_size.y, 0.0f)) * scale(vec3(m_size.x, m_size.y, 1));	
+	mat4 M = translate(vec3(m_position.x, m_position.y, 0.0f)) * scale(vec3(m_size.x, m_size.y, 1));	
 	mat4 P = ortho(-(float)m_window->getSize().x * m_anchor.x, (float)m_window->getSize().x * (1 - m_anchor.x), -(float)m_window->getSize().y * m_anchor.y, (float)m_window->getSize().y * (1 - m_anchor.y));
 
 	buttonShader->use();
