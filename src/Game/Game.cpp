@@ -2,6 +2,7 @@
 #include <Game/Robot.hpp>
 
 #include <Engine/UI/Button.hpp>
+#include <Engine/UI/Image.hpp>
 #include <Engine/UI/Label.hpp>
 #include <Engine/Transform.hpp>
 #include <Engine/Camera.hpp>
@@ -13,6 +14,8 @@ using namespace glm;
 using namespace std;
 
 vector<Button*> buttons;
+vector<Image*> images;
+Actor* actor;
 
 Game* Game::m_instance = nullptr;
 
@@ -27,6 +30,7 @@ bool Game::init()
 {
 	mainWindow = new Window();
 	mainCamera = new Camera();
+	actor = new Actor(mainWindow);
 
 	if (!mainWindow)
 	{
@@ -38,7 +42,7 @@ bool Game::init()
 
 	if (glewInit() != GLEW_OK)
     {
-		cout << "ERROR!" << endl;
+		cerr << "ERROR!" << endl;
 		glfwTerminate();
 		return false;
     }
@@ -82,16 +86,23 @@ bool Game::loadRequieredResources()
 {
 	if(!Resource::loadTexture("assets/white_texture.png", Textures::whiteTexture))
 	{
-		cout << "Failed to load white texture" << endl;
+		cerr << "Failed to load white texture" << endl;
 		glfwTerminate();
 		return false;
 	}
 
 	if(!Resource::loadTexture("assets/black_texture.png", Textures::blackTexture))
 	{
-		cout << "Failed to load black texture" << endl;
+		cerr << "Failed to load black texture" << endl;
 		glfwTerminate();
         return false;
+	}
+
+	if(!Resource::loadTexture("assets/home-background.png", Textures::homeBackground))
+	{
+		cerr << "Failed to load home-background.png" << endl;
+		glfwTerminate();
+		return false;
 	}
 
     //Load BasicShader
@@ -107,7 +118,7 @@ Game* Game::getInstance()
 {
     if(m_instance == nullptr)
     {
-		cout << "New instance" << endl;
+		cerr << "New instance" << endl;
         m_instance = new Game();
     }
     return m_instance;
@@ -124,20 +135,21 @@ Game::~Game()
 
 void Game::setState(GameState state)
 {
+	for (auto image : images) { delete image; } images.clear();
+	for (auto button : buttons) { delete button; } buttons.clear();
 	switch (state)
 	{
 	/**
 	 * @brief Load the main menu
 	 */
 	case GameState::MAIN_MENU: {
-		cout << "Loaded main menu..." << endl;
+		cerr << "Loading main menu..." << endl;
 		if (m_gameState == GameState::GAME) {
 			// Delete game content
 			delete map;
 			map = nullptr;
 		}
 		/* Load Buttons */
-		for (auto button : buttons) { delete button; } buttons.clear();
 		// Create button(window, position, anchor, size, ...)
 		Button* singleplayer = new Button(mainWindow, vec2(0, 0), vec2(0.5f, 0.6f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
 		singleplayer->setLabel(Label(mainWindow, vec2(0, 0), vec2(0.5f, 0.6f), "Singleplayer", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
@@ -150,24 +162,23 @@ void Game::setState(GameState state)
 		Button* multiplayer = new Button(mainWindow, vec2(0, 0), vec2(0.5f, 0.4f), vec2(475, 75), (char *)"assets/button.png", vec3(0.25f), vec3(0.25f, 0.25f, 0.25f), vec3(0.25f));
 		multiplayer->setLabel(Label(mainWindow, vec2(0, 0), vec2(0.5f, 0.4f), "Multiplayer", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
 		multiplayer->setOnClickCallback([]() {
-			cout << "Multiplayer clicked" << endl;
+			cerr << "Multiplayer clicked" << endl;
 		});
 		buttons.push_back(multiplayer);
-		/** End of Buttons **/
 
-		cout << "Loaded main menu" << endl;
+		/* Load Images */
+		Image* background = new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(mainWindow->getSize().x), &Textures::homeBackground);
+		images.push_back(background);
+
+		cerr << "Loaded main menu" << endl;
 	} break;
 	
 	/**
 	 * @brief Launch the game
 	 */
 	case GameState::GAME: {
-		cout << "Loading game..." << endl;
-		if (m_gameState == GameState::MAIN_MENU) {
-			// Delete main menu content if necessary
-		}
+		cerr << "Loading game..." << endl;
 		/* Load Buttons */
-		for (auto button : buttons) { delete button; } buttons.clear();
 		Button* exit = new Button(mainWindow, vec2(250, 50), vec2(0.0f, 0.0f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
 		exit->setLabel(Label(mainWindow, vec2(250, 50), vec2(0.0f, 0.0f), "Exit", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
 		exit->setOnClickCallback([]() {
@@ -193,7 +204,7 @@ void Game::setState(GameState state)
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -8.0f, -20.0f));
 		mainCamera->getTransform().setRotation(vec3(0.60f, 0.0f, 0.0f));
 
-		cout << "Loaded game" << endl;
+		cerr << "Loaded game" << endl;
 	} break;
 	}
 
@@ -209,6 +220,7 @@ void Game::update()
 
 	processInputs(mainWindow->getWindow());
 
+	actor->draw();
 	switch (m_gameState)
 	{
 		case GameState::GAME: {
@@ -218,8 +230,12 @@ void Game::update()
 		} break;
 
 		case GameState::MAIN_MENU: {
+			Actor* actor = new Wall(map);
+			actor->draw();
 			buttons[0]->draw();
 			buttons[1]->draw();
+			images[0]->setSize(vec2(mainWindow->getSize().x));
+			images[0]->draw();
 		} break;
 	}
 
