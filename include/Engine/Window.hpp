@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include <functional>
+#include <map>
 
 #include <glm/vec2.hpp>
 
@@ -14,8 +15,9 @@ class Window
 {
 private:
     GLFWwindow* m_window;
-    std::vector<std::function<void(double, double, int)>> m_callbacks;
+	std::map<int, std::function<void(double, double, int)>> m_callbacks;
     glm::ivec2 m_size;
+	int CALLBACK_ID = 0;
 
 public:
     Window();
@@ -26,6 +28,7 @@ public:
     inline GLFWwindow* getWindow() const { return m_window; } 
     inline glm::ivec2 getSize() { return m_size; }
 
-    void registerCallback(std::function<void(double, double, int)> callback);
+    int registerCallback(std::function<void(double, double, int)> callback);
+	void unregisterCallback(int i);
     void update();
 };
