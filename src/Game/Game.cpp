@@ -30,7 +30,6 @@ bool Game::init()
 {
 	mainWindow = new Window();
 	mainCamera = new Camera();
-	actor = new Actor(mainWindow);
 
 	if (!mainWindow)
 	{
