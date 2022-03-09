@@ -9,4 +9,5 @@ struct Texture {
 namespace Textures {
     static Texture whiteTexture;
     static Texture blackTexture;
+	static Texture homeBackground;
 }

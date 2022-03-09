@@ -18,7 +18,7 @@ protected:
     static Mesh* buttonQuad;
     static Shader* buttonShader;
 
-    bool m_nineSlice = false;
+    bool m_nineSlice = true;
 
     State m_state;
 	Label m_label;
@@ -33,6 +33,7 @@ protected:
     glm::vec3 m_highlightedColor;
 
     std::function<void()> onClick;
+	int m_clickCallbackId;
 
 public:
     Button(Window* window, glm::vec2 position, glm::vec2 anchor, glm::vec2 size, char* texture, char* clickedTexture, char* highlightedTexture,
@@ -43,6 +44,8 @@ public:
 
     Button(Window* window, glm::vec2 position, glm::vec2 anchor, glm::vec2 size, char* texture,
     glm::vec3 color = glm::vec3(1.0f), glm::vec3 clickedColor = glm::vec3(1.0f), glm::vec3 highlightedColor = glm::vec3(1.0f));
+
+	inline ~Button() { m_window->unregisterCallback(m_clickCallbackId); }
 
     inline void setSize(glm::vec2 size) { m_size = size; }
     inline void setLabel(Label label) { m_label = label; }
@@ -68,7 +71,7 @@ public:
     inline glm::vec3 getClickedColor() const { return m_clickedColor; }
     inline glm::vec3 getHighlightedColor() const { return m_highlightedColor; }
 
-    inline void setOnClickCallback(std::function<void()> func) { onClick = func;}
+    inline void setOnClickCallback(std::function<void()> func) { onClick = func; }
 
     void init();
     void draw();

@@ -3,6 +3,7 @@
 #include <utils.h>
 
 #include <Engine/Mesh.hpp>
+#include <Engine/Window.hpp>
 #include <Engine/Material.hpp>
 #include <Engine/Transform.hpp>
 #include <Engine/ResourceLoader.hpp>
@@ -16,10 +17,12 @@ protected:
 	std::vector<Material> m_materials;
 	bool collision = true;
 	Transform m_transform;
+	Window* m_window;
 	Map* map;
 
 public:
 	Actor(Map* map);
+	Actor(Window* window);
 	Actor(Map* map, const char* filename);
 
 	/**

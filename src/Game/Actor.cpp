@@ -13,9 +13,11 @@
 
 using namespace std;
 
-Actor::Actor(Map* map) : map(map) {}
+Actor::Actor(Map* map) : map(map), m_window(Game::getInstance()->getMainWindow()) {}
 
-Actor::Actor(Map* map, const char* filename) : map(map) {
+Actor::Actor(Window* window) : m_window(window) {}
+
+Actor::Actor(Map* map, const char* filename) : map(map), m_window(Game::getInstance()->getMainWindow()) {
 	if (!loadOBJ(filename)) {
 		cout << "Failed to load " << filename << endl;
 	}
@@ -26,7 +28,6 @@ bool Actor::loadOBJ(const char* filename) {
 }
 
 void Actor::draw() const {
-	GLFWwindow* window = Game::getInstance()->getMainWindow()->getWindow();
 	for (unsigned int i = 0; i < this->m_meshes.size(); i++) {
 		const Shader * shader;
 		if (this->m_materials.size() > i) {
@@ -45,7 +46,7 @@ void Actor::draw() const {
 		shader->setUniformValue("u_M", M);
 		shader->setUniformValue("u_iTM", glm::mat3(glm::transpose(glm::inverse(M))));
 		shader->setUniformValue("u_V", Game::getInstance()->getMainCamera()->getViewMatrix());
-		shader->setUniformValue("u_P", Game::getInstance()->getMainCamera()->getProjectionMatrix(window));
+		shader->setUniformValue("u_P", Game::getInstance()->getMainCamera()->getProjectionMatrix(m_window->getWindow()));
 		this->m_meshes[i]->draw();
 	}
 }

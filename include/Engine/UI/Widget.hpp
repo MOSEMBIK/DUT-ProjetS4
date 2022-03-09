@@ -22,4 +22,5 @@ public:
     inline glm::vec2 getAnchor() const { return m_anchor; }
     
     virtual void draw() = 0;
+	virtual ~Widget() {}
 };
