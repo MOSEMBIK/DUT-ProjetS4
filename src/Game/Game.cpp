@@ -151,16 +151,16 @@ void Game::setState(GameState state)
 		}
 		/* Load Buttons */
 		// Create button(window, position, anchor, size, ...)
-		Button* singleplayer = new Button(mainWindow, vec2(0, 0), vec2(0.5f, 0.6f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
-		singleplayer->setLabel(Label(mainWindow, vec2(0, 0), vec2(0.5f, 0.6f), "Singleplayer", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		Button* singleplayer = new Button(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
+		singleplayer->setLabel(Label(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), "Singleplayer", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
 		singleplayer->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::GAME);
 		});
 		buttons.push_back(singleplayer);
 
-		Button* multiplayer = new Button(mainWindow, vec2(0, 0), vec2(0.5f, 0.4f), vec2(475, 75), (char *)"assets/button.png", vec3(0.25f), vec3(0.25f, 0.25f, 0.25f), vec3(0.25f));
-		multiplayer->setLabel(Label(mainWindow, vec2(0, 0), vec2(0.5f, 0.4f), "Multiplayer", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		Button* multiplayer = new Button(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(0.25f), vec3(0.25f, 0.25f, 0.25f), vec3(0.25f));
+		multiplayer->setLabel(Label(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), "Multiplayer", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
 		multiplayer->setOnClickCallback([]() {
 			cerr << "Multiplayer clicked" << endl;
 		});
