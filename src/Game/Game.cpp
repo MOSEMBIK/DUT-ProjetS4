@@ -19,7 +19,7 @@ Actor* actor;
 
 Game* Game::m_instance = nullptr;
 
-Game::Game() : m_currentTime(0), m_deltaTime(0), m_mousePos(vec2(0.0f)), m_directionalLight(vec3(-1.0f, -1.0f, -1.0f), vec3(0.1f), vec3(1.0f), vec3(1.0f)), m_gameState(GameState::MAIN_MENU), m_vsync(VSync::ONE_FRAME)
+Game::Game() : m_currentTime(0), m_deltaTime(0), m_scale(ivec2(WINDOW_W,WINDOW_H)), m_mousePos(vec2(0.0f)), m_directionalLight(vec3(-1.0f, -1.0f, -1.0f), vec3(0.1f), vec3(1.0f), vec3(1.0f)), m_gameState(GameState::MAIN_MENU), m_vsync(VSync::ONE_FRAME)
 {
     m_currentTime = glfwGetTime();
 	//glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
@@ -30,7 +30,6 @@ bool Game::init()
 {
 	mainWindow = new Window();
 	mainCamera = new Camera();
-	actor = new Actor(mainWindow);
 
 	if (!mainWindow)
 	{
@@ -137,6 +136,7 @@ void Game::setState(GameState state)
 {
 	for (auto image : images) { delete image; } images.clear();
 	for (auto button : buttons) { delete button; } buttons.clear();
+	float scale = m_scale.y / float(WINDOW_H);
 	switch (state)
 	{
 	/**
@@ -151,23 +151,23 @@ void Game::setState(GameState state)
 		}
 		/* Load Buttons */
 		// Create button(window, position, anchor, size, ...)
-		Button* singleplayer = new Button(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
-		singleplayer->setLabel(Label(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), "Singleplayer", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		Button* singleplayer = new Button(mainWindow, vec2(0, 50) * scale, vec2(0.5f, 0.5f), vec2(475, 75) * scale, (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
+		singleplayer->setLabel(Label(mainWindow, vec2(0, 50) * scale, vec2(0.5f, 0.5f), "Singleplayer", scale*24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
 		singleplayer->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::GAME);
 		});
 		buttons.push_back(singleplayer);
 
-		Button* multiplayer = new Button(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(0.25f), vec3(0.25f, 0.25f, 0.25f), vec3(0.25f));
-		multiplayer->setLabel(Label(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), "Multiplayer", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		Button* multiplayer = new Button(mainWindow, vec2(0, -50) * scale, vec2(0.5f, 0.5f), vec2(475, 75) * scale, (char *)"assets/button.png", vec3(0.25f), vec3(0.25f, 0.25f, 0.25f), vec3(0.25f));
+		multiplayer->setLabel(Label(mainWindow, vec2(0, -50) * scale, vec2(0.5f, 0.5f), "Multiplayer", scale*24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
 		multiplayer->setOnClickCallback([]() {
 			cerr << "Multiplayer clicked" << endl;
 		});
 		buttons.push_back(multiplayer);
 
 		/* Load Images */
-		Image* background = new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(mainWindow->getSize().x), &Textures::homeBackground);
+		Image* background = new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(m_scale.x), &Textures::homeBackground);
 		images.push_back(background);
 
 		cerr << "Loaded main menu" << endl;
@@ -179,8 +179,8 @@ void Game::setState(GameState state)
 	case GameState::GAME: {
 		cerr << "Loading game..." << endl;
 		/* Load Buttons */
-		Button* exit = new Button(mainWindow, vec2(250, 50), vec2(0.0f, 0.0f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
-		exit->setLabel(Label(mainWindow, vec2(250, 50), vec2(0.0f, 0.0f), "Exit", (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		Button* exit = new Button(mainWindow, vec2(187.5f, 37.5f) * scale, vec2(0.0f, 0.0f), vec2(475, 75) * scale * 0.75f, (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
+		exit->setLabel(Label(mainWindow, vec2(187.5f, 37.5f) * scale, vec2(0.0f, 0.0f), "Exit", scale*18, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
 		exit->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::MAIN_MENU);
@@ -220,24 +220,45 @@ void Game::update()
 
 	processInputs(mainWindow->getWindow());
 
-	actor->draw();
+	Actor* actor = new Wall(map); actor->draw(); delete actor;
+	ivec2 size = mainWindow->getSize();
+	bool scaleChanged = (m_scale.x != size.x) | (m_scale.y != size.y);
+	float scale = size.y / 720.0f;
 	switch (m_gameState)
 	{
 		case GameState::GAME: {
 			map->update(m_deltaTime);
 			map->draw();
+			if (scaleChanged) {
+				cerr << "Scale changed" << endl;
+				
+				buttons[0]->setPosition(vec2(187.5f, 37.5f) * scale);
+				buttons[0]->getLabel().setPosition(vec2(187.5f, 37.5f) * scale);
+				buttons[0]->setSize(vec2(475, 75) * scale * 0.75f);
+				buttons[0]->getLabel().setFontHeight(scale*18);
+			}
 			buttons[0]->draw();
 		} break;
 
 		case GameState::MAIN_MENU: {
-			Actor* actor = new Wall(map);
-			actor->draw();
+			if (scaleChanged) {
+				cerr << "Scale changed" << endl;
+				images[0]->setSize(vec2(mainWindow->getSize().x));
+				buttons[0]->setPosition(vec2(0, 50) * scale);
+				buttons[0]->getLabel().setPosition(vec2(0, 50) * scale);
+				buttons[1]->setPosition(vec2(0, -50) * scale);
+				buttons[1]->getLabel().setPosition(vec2(0, -50) * scale);
+				for (auto button : buttons) {
+					button->setSize(vec2(475, 75) * scale);
+					button->getLabel().setFontHeight(scale*24);
+				}
+			}
 			buttons[0]->draw();
 			buttons[1]->draw();
-			images[0]->setSize(vec2(mainWindow->getSize().x));
 			images[0]->draw();
 		} break;
 	}
+	m_scale = size;
 
 	if(m_currentTime - m_lastTime >= 1)
 	{

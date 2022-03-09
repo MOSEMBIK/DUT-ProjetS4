@@ -3,8 +3,8 @@
 using namespace glm;
 using namespace std;
 
-Label::Label(Window* window, vec2 position, vec2 anchor, string text, char* font, int alignment, float fontHeight, vec3 fontColor) : Widget(window, position, anchor),
-    m_text(text), m_alignment(alignment), m_fontHeight(fontHeight), m_fontColor(fontColor), m_textRenderer(TextRenderer(window))
+Label::Label(Window* window, vec2 position, vec2 anchor, string text, float fontHeight, char* font, int alignment, vec3 fontColor) : Widget(window, position, anchor),
+    m_text(text), m_fontHeight(fontHeight), m_font(font), m_alignment(alignment), m_fontColor(fontColor), m_textRenderer(TextRenderer(window))
 {
     m_textRenderer.loadFont(font, fontHeight);
 }
@@ -12,6 +12,12 @@ Label::Label(Window* window, vec2 position, vec2 anchor, string text, char* font
 void Label::setFont(char* font)
 {
     m_textRenderer.loadFont(font, m_fontHeight);
+}
+
+void Label::setFontHeight(float fontHeight)
+{
+	m_fontHeight = fontHeight;
+	m_textRenderer.loadFont(m_font, m_fontHeight);
 }
 
 void Label::draw()
