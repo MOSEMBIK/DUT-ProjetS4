@@ -21,6 +21,7 @@ void Window::unregisterCallback(int i)
 void Window::update()
 {
     glfwGetWindowSize(m_window, &m_size.x, &m_size.y);
+	m_scale = glm::vec2(m_size.x / float(WINDOW_W), m_size.y / float(WINDOW_H));
 
     double xPos, yPos;
     glfwGetCursorPos(m_window, &xPos, &yPos);

@@ -218,7 +218,6 @@ void Game::update()
 
 	m_deltaTime = glfwGetTime() - m_currentTime;
 	m_currentTime = glfwGetTime();
-	mainWindow->m_scale = vec2(mainWindow->getSize().y / float(WINDOW_H), mainWindow->getSize().x / float(WINDOW_W));
 
 	processInputs(mainWindow->getWindow());
 
