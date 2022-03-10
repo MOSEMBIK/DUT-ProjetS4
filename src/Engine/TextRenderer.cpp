@@ -142,7 +142,7 @@ void TextRenderer::renderText(string text, vec2 position, vec2 anchor, int align
     {
         position.y -= getTextHeight(text);
     }
-	position *= m_window->m_scale;
+	position *= m_window->m_scale.y;
 
     // iterate through all characters
     string::const_iterator c;

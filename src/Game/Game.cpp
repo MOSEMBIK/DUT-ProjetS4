@@ -167,6 +167,12 @@ void Game::setState(GameState state)
 		});
 		buttons.push_back(multiplayer);
 
+		Button* options = new Button(mainWindow, vec2(-50, 50), vec2(1.0f, 0.0f), vec2(79, 79), (char *)"assets/options.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
+		options->setOnClickCallback([]() {
+			cerr << "Options clicked" << endl;
+		});
+		buttons.push_back(options);
+
 		/* Load Images */
 		Image* background = new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::homeBackground);
 		images.push_back(background);
@@ -222,18 +228,16 @@ void Game::update()
 	processInputs(mainWindow->getWindow());
 
 	Wall* wall = new Wall(map); wall->draw(); delete wall;
+	for (auto button : buttons) { button->draw(); }
+	for (auto image : images) { image->draw(); }
 	switch (m_gameState)
 	{
 		case GameState::GAME: {
 			map->update(m_deltaTime);
 			map->draw();
-			buttons[0]->draw();
 		} break;
 
 		case GameState::MAIN_MENU: {
-			buttons[0]->draw();
-			buttons[1]->draw();
-			images[0]->draw();
 		} break;
 	}
 
