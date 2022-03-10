@@ -11,7 +11,7 @@
 #include <glm/vec2.hpp>
 
 enum VSync { OFF = 0, ONE_FRAME = 1, TWO_FRAME = 2};
-enum GameState { MAIN_MENU, GAME };
+enum GameState { MAIN_MENU, SINGLEPLAYER, GAME };
 
 void onKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mods);
 

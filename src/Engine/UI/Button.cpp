@@ -52,29 +52,20 @@ void Button::init()
     // TODO : Créer un callback qui gère le click, et l'action du click etc...
 	this->m_clickCallbackId = m_window->registerCallback([this](double xPos, double yPos, int click) {
 		float scale = m_window->m_scale.y;
-		if(xPos >= (m_position.x * scale + (float)m_window->getSize().x * m_anchor.x) - m_size.x * 0.5 * scale
-		&& xPos < (m_position.x * scale + (float)m_window->getSize().x * m_anchor.x) + m_size.x * 0.5 * scale
-		&& yPos >= (m_position.y * scale + (float)m_window->getSize().y * m_anchor.y) - m_size.y * 0.5 * scale
-		&& yPos < (m_position.y * scale + (float)m_window->getSize().y * m_anchor.y) + m_size.y * 0.5 * scale)
-		{
+		if(xPos >= (m_position.x * scale + (float)m_window->getSize().x * m_anchor.x) - m_size.x * 0.5f * scale
+		&& xPos < (m_position.x * scale + (float)m_window->getSize().x * m_anchor.x) + m_size.x * 0.5f * scale
+		&& yPos >= (m_position.y * scale + (float)m_window->getSize().y * m_anchor.y) - m_size.y * 0.5f * scale
+		&& yPos < (m_position.y * scale + (float)m_window->getSize().y * m_anchor.y) + m_size.y * 0.5f * scale) {
 			if (click)
-			{
-				if (m_state != State::CLICKED)
-				{
-					m_state = State::CLICKED;
+				m_state = State::CLICKED;
+			else {
+				if (m_state == State::CLICKED)
 					onClick();
-				}
-			}
-			else
-			{
 				m_state = State::HIGHLIGHTED;
-				// TODO : Send correct texture / colors
 			}
 		}
 		else
-		{
 			m_state = State::NONE;
-		}
 	});
 }
 

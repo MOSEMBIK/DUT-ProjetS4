@@ -152,26 +152,55 @@ void Game::setState(GameState state)
 		}
 		/* Load Buttons */
 		// Create button(window, position, anchor, size, ...)
-		Button* singleplayer = new Button(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
-		singleplayer->setLabel(Label(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), "Singleplayer", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
-		singleplayer->setOnClickCallback([]() {
+		buttons.push_back(new Button(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[0]->setLabel(Label(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), "Singleplayer", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[0]->setOnClickCallback([]() {
+			Game* game = Game::getInstance();
+			game->setState(GameState::SINGLEPLAYER);
+		});
+
+		buttons.push_back(new Button(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(0.25f), vec3(0.25f, 0.25f, 0.25f), vec3(0.25f)));
+		buttons[1]->setLabel(Label(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), "Multiplayer", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[1]->setOnClickCallback([]() {
+			cerr << "Multiplayer clicked" << endl;
+		});
+
+		buttons.push_back(new Button(mainWindow, vec2(-50, 50), vec2(1.0f, 0.0f), vec2(79, 79), (char *)"assets/options.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[2]->setNineSlice(false);
+		buttons[2]->setOnClickCallback([]() {
+			cerr << "Options clicked" << endl;
+		});
+
+		/* Load Images */
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::homeBackground));
+
+		cerr << "Loaded main menu" << endl;
+	} break;
+
+	/**
+	 * @brief Load the main menu
+	 */
+	case GameState::SINGLEPLAYER: {
+		cerr << "Loading singleplayer menu..." << endl;
+		/* Load Buttons */
+		buttons.push_back(new Button(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[0]->setLabel(Label(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), "Play", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[0]->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::GAME);
 		});
-		buttons.push_back(singleplayer);
 
-		Button* multiplayer = new Button(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(0.25f), vec3(0.25f, 0.25f, 0.25f), vec3(0.25f));
-		multiplayer->setLabel(Label(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), "Multiplayer", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
-		multiplayer->setOnClickCallback([]() {
-			cerr << "Multiplayer clicked" << endl;
+		buttons.push_back(new Button(mainWindow, vec2(112.5f, 50.0f), vec2(0.0f, 0.0f), vec2(200, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[1]->setLabel(Label(mainWindow, vec2(112.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[1]->setOnClickCallback([]() {
+			Game* game = Game::getInstance();
+			game->setState(GameState::MAIN_MENU);
 		});
-		buttons.push_back(multiplayer);
 
 		/* Load Images */
-		Image* background = new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::homeBackground);
-		images.push_back(background);
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::blackTexture));
 
-		cerr << "Loaded main menu" << endl;
+		cerr << "Loaded singleplayer menu" << endl;
 	} break;
 	
 	/**
@@ -180,14 +209,12 @@ void Game::setState(GameState state)
 	case GameState::GAME: {
 		cerr << "Loading game..." << endl;
 		/* Load Buttons */
-		Button* exit = new Button(mainWindow, vec2(187.5f, 37.5f), vec2(0.0f, 0.0f), vec2(475, 75) * 0.75f, (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f));
-		exit->setLabel(Label(mainWindow, vec2(187.5f, 37.5f), vec2(0.0f, 0.0f), "Exit", 18, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
-		exit->setOnClickCallback([]() {
+		buttons.push_back(new Button(mainWindow, vec2(162.5f, 50.0f), vec2(0.0f, 0.0f), vec2(300, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[0]->setLabel(Label(mainWindow, vec2(162.5f, 50.0f), vec2(0.0f, 0.0f), "Exit to main menu", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[0]->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::MAIN_MENU);
 		});
-		buttons.push_back(exit);
-		/* End of Buttons */
 
 		map = new Map();
 		map->generateMap(13);
@@ -218,23 +245,23 @@ void Game::update()
 
 	m_deltaTime = glfwGetTime() - m_currentTime;
 	m_currentTime = glfwGetTime();
-	mainWindow->m_scale = vec2(mainWindow->getSize().y / float(WINDOW_H), mainWindow->getSize().x / float(WINDOW_W));
 
 	processInputs(mainWindow->getWindow());
 
 	Wall* wall = new Wall(map); wall->draw(); delete wall;
+	for (auto button : buttons) { button->draw(); }
+	for (auto image : images) { image->draw(); }
 	switch (m_gameState)
 	{
+		case GameState::MAIN_MENU: {
+		} break;
+
+		case GameState::SINGLEPLAYER: {
+		} break;
+
 		case GameState::GAME: {
 			map->update(m_deltaTime);
 			map->draw();
-			buttons[0]->draw();
-		} break;
-
-		case GameState::MAIN_MENU: {
-			buttons[0]->draw();
-			buttons[1]->draw();
-			images[0]->draw();
 		} break;
 	}
 
