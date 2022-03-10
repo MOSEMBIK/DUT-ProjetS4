@@ -127,7 +127,7 @@ void TextRenderer::renderText(string text, vec2 position, vec2 anchor, int align
 
     if(align & ALIGN_CENTER)
     {
-        position.x -= getTextWidth(text) / 2.0f;
+        position.x -= getTextWidth(text) / 4.0f;
     }
     else if(align & ALIGN_RIGHT)
     {
@@ -136,12 +136,13 @@ void TextRenderer::renderText(string text, vec2 position, vec2 anchor, int align
 
     if(align & ALIGN_MIDDLE)
     {
-        position.y -= getTextHeight(text) / 2.0f;
+        position.y -= getTextHeight(text) / 4.0f;
     }
     else if(align & ALIGN_TOP)
     {
         position.y -= getTextHeight(text);
     }
+	position *= m_window->m_scale;
 
     // iterate through all characters
     string::const_iterator c;

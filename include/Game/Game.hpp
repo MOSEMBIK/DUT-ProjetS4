@@ -23,7 +23,6 @@ private:
     float m_currentTime;
     float m_deltaTime;
 
-    glm::ivec2 m_scale;
     glm::vec2 m_mousePos;
 
     DirectionalLight m_directionalLight;

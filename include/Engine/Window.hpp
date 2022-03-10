@@ -20,6 +20,8 @@ private:
 	int CALLBACK_ID = 0;
 
 public:
+	glm::vec2 m_scale;
+
     Window();
     // Suppression du clonage et de l'opÃ©rateur =
     Window(Window&) = delete;

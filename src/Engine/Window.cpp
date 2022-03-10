@@ -1,7 +1,7 @@
 #include <Engine/Window.hpp>
 #include <iostream>
 
-Window::Window() : m_window(glfwCreateWindow(WINDOW_W, WINDOW_H, "Game", NULL, NULL)), m_callbacks()
+Window::Window() : m_window(glfwCreateWindow(WINDOW_W, WINDOW_H, "Game", NULL, NULL)), m_callbacks(), m_scale(1.0f)
 {
     glfwSetInputMode(m_window, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
     glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GLFW_TRUE);
