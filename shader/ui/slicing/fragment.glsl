@@ -19,7 +19,7 @@ float processAxis(float coord, float textureBorder, float windowBorder) {
     if (coord < 1 - windowBorder) 
         return map(coord,  windowBorder, 1 - windowBorder, textureBorder, 1 - textureBorder);
     return map(coord, 1 - windowBorder, 1, 1 - textureBorder, 1);
-} 
+}
 
 void main ()
 {
@@ -27,6 +27,9 @@ void main ()
         processAxis(texCoords.x, u_border.x, u_dimensions.x),
         processAxis(texCoords.y, u_border.y, u_dimensions.y)
     );
+	vec4 texColor = texture(u_imageTexture, newUV);
+    if(texColor.a < 1.0)
+        discard;
 
-    FragColor = texture(u_imageTexture, newUV) * vec4(u_color, 1.0);
+    FragColor = texColor * vec4(u_color, 1.0);
 }

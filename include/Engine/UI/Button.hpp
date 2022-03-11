@@ -17,6 +17,7 @@ class Button : public Widget {
 protected:
     static Mesh* buttonQuad;
     static Shader* buttonShader;
+    static Shader* buttonSlicedShader;
 
     bool m_nineSlice = true;
 
