@@ -11,5 +11,5 @@ public:
 	Human(Map* map);
 	~Human();
 
-	void move();
+	std::vector<glm::ivec2> move(glm::ivec2);
 };

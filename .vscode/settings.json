@@ -63,7 +63,8 @@
 		"sstream": "cpp",
 		"numeric": "cpp",
 		"chrono": "cpp",
-		"ratio": "cpp"
+		"ratio": "cpp",
+		"xmemory0": "cpp"
 	},
     "cmake.configureOnOpen": false
 }

@@ -18,6 +18,9 @@ private:
 	std::vector<Actor*> actors;
 	std::map<glm::ivec2, Wall*, cmpVec> walls;
 	int mapSize;
+public:
+	std::unordered_map<glm::ivec2, std::vector<glm::ivec2>> edges_map;
+	
 
 public:
 	Map();
@@ -30,4 +33,6 @@ public:
 
 	void draw();
 	void update(float deltaTime);
+
+	bool isReachable(glm::ivec2);
 };
