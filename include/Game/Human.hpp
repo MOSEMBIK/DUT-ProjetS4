@@ -9,5 +9,7 @@ private:
 
 public:
 	Human(Map* map);
+	~Human();
 
+	void move();
 };

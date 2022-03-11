@@ -10,6 +10,7 @@ private:
 
 public:
 	Robot(Map* map);
+	~Robot();
 
 	void update(float deltaTime);
 
