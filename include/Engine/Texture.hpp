@@ -10,4 +10,7 @@ namespace Textures {
     static Texture whiteTexture;
     static Texture blackTexture;
 	static Texture homeBackground;
+	static Texture spaceBackground;
+	static Texture singleplayerLayer;
+	static Texture optionsLayer;
 }
