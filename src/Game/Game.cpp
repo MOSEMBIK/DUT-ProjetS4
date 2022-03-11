@@ -101,7 +101,28 @@ bool Game::loadRequieredResources()
 
 	if(!Resource::loadTexture("assets/home-background.png", Textures::homeBackground))
 	{
-		cerr << "Failed to load home-background.png" << endl;
+		cerr << "Failed to load Textures::homeBackground" << endl;
+		glfwTerminate();
+		return false;
+	}
+
+	if(!Resource::loadTexture("assets/space-background.png", Textures::spaceBackground))
+	{
+		cerr << "Failed to load Textures::spaceBackground" << endl;
+		glfwTerminate();
+		return false;
+	}
+
+	if(!Resource::loadTexture("assets/singleplayer-layer.png", Textures::singleplayerLayer))
+	{
+		cerr << "Failed to load Textures::singleplayerLayer" << endl;
+		glfwTerminate();
+		return false;
+	}
+
+	if(!Resource::loadTexture("assets/options-layer.png", Textures::optionsLayer))
+	{
+		cerr << "Failed to load Textures::optionsLayer" << endl;
 		glfwTerminate();
 		return false;
 	}
@@ -183,22 +204,23 @@ void Game::setState(GameState state)
 	case GameState::SINGLEPLAYER: {
 		cerr << "Loading singleplayer menu..." << endl;
 		/* Load Buttons */
-		buttons.push_back(new Button(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
-		buttons[0]->setLabel(Label(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), "Play", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons.push_back(new Button(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), vec2(220, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[0]->setLabel(Label(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), "Launch Game", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
 		buttons[0]->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::GAME);
 		});
 
-		buttons.push_back(new Button(mainWindow, vec2(112.5f, 50.0f), vec2(0.0f, 0.0f), vec2(200, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
-		buttons[1]->setLabel(Label(mainWindow, vec2(112.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons.push_back(new Button(mainWindow, vec2(122.5f, 50.0f), vec2(0.0f, 0.0f), vec2(220, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[1]->setLabel(Label(mainWindow, vec2(122.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
 		buttons[1]->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::MAIN_MENU);
 		});
 
 		/* Load Images */
-		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::blackTexture));
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::singleplayerLayer));
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::spaceBackground));
 
 		cerr << "Loaded singleplayer menu" << endl;
 	} break;
@@ -229,8 +251,8 @@ void Game::setState(GameState state)
 			map->addActor(bomb);
 		}
 		
-		mainCamera->getTransform().setPosition(vec3(-6.0f, -8.0f, -20.0f));
-		mainCamera->getTransform().setRotation(vec3(0.60f, 0.0f, 0.0f));
+		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
+		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
 
 		cerr << "Loaded game" << endl;
 	} break;
@@ -320,9 +342,14 @@ void Game::processInputs(GLFWwindow* window)
 	UNUSED(deltaY);
 
 	// Camera rotation
-	//const float rotationSpeed = 0.007f;
-	//cameraTransform->rotate(vec3(0.0f, 1.0f, 0.0f) * cameraTransform->getRotation() * rotationSpeed * deltaX);
-	//cameraTransform->rotate(vec3(1.0f, 0.0f, 0.0f) * cameraTransform->getRotation() * rotationSpeed * deltaY);
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+		const float rotationSpeed = 0.003f;
+		cameraTransform->rotate(vec3(0.0f, 1.0f, 0.0f) * cameraTransform->getRotation() * rotationSpeed * deltaX);
+		cameraTransform->rotate(vec3(1.0f, 0.0f, 0.0f) * cameraTransform->getRotation() * rotationSpeed * deltaY);
+	}
+	// Display camera transform
+	//cerr << "Camera position : " << cameraTransform->getPosition().x << " " << cameraTransform->getPosition().y << " " << cameraTransform->getPosition().z << endl;
+	//cerr << "Camera rotation : " << cameraTransform->getRotation().x << " " << cameraTransform->getRotation().y << " " << cameraTransform->getRotation().z << endl;
 
 	m_mousePos = vec2(xpos, ypos);
 }

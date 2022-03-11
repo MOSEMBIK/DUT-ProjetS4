@@ -27,7 +27,7 @@ void Map::generateMap(int size) {
 			glm::ivec2 pos = glm::ivec2(i, j);
 
 			/**
-			 * @brief Border Walls
+			 * @brief Metal Walls
 			 */
 			if (i == 0 || i == sizeMax || j == 0 || j == sizeMax || (i%2 == 0 && j%2 == 0)) {
 				walls[pos] = new Wall(this, Wall::Type::Metal);

@@ -108,10 +108,6 @@ void Button::draw()
 	shader->use();
 	shader->setUniformValue("u_M", M);
 	shader->setUniformValue("u_P", P);
-	if (m_nineSlice) {
-		shader->setUniformValue("u_dimensions", vec2(1.0f / m_texture.m_width, 1.0f / m_texture.m_height * m_size.x / m_size.y));
-		shader->setUniformValue("u_border", vec2(0.25f, 0.25f));
-	}
 
 	glActiveTexture(GL_TEXTURE0);
 	shader->setUniformValue("u_imageTexture", 0);
@@ -131,6 +127,11 @@ void Button::draw()
 			glBindTexture(GL_TEXTURE_2D, m_clickedTexture.m_id);
 			shader->setUniformValue("u_color", m_clickedColor);
 			break;
+	}
+
+	if (m_nineSlice) {
+		shader->setUniformValue("u_dimensions", vec2(1.0f / m_texture.m_width, 1.0f / m_texture.m_height * m_size.x / m_size.y));
+		shader->setUniformValue("u_border", vec2(0.25f, 0.25f));
 	}
 
 	buttonQuad->draw();
