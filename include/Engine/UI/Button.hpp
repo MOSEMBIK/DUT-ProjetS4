@@ -19,7 +19,7 @@ protected:
     static Shader* buttonShader;
     static Shader* buttonSlicedShader;
 
-    bool m_nineSlice = true;
+    unsigned int m_nineSlice = 16;
 
     State m_state;
 	Label m_label;
@@ -55,7 +55,7 @@ public:
     inline void setClickedTexture(Texture texture) { m_clickedTexture = texture; }
     inline void setHighlightedTexture(Texture texture) { m_highlightedTexture = texture; }
 
-    inline void setNineSlice(bool state) { m_nineSlice = state; }
+    inline void setNineSlice(int sliceSize) { m_nineSlice = sliceSize; }
 
     inline void setColor(glm::vec3 color) { m_color = color; } 
     inline void setClickedColor(glm::vec3 color) { m_clickedColor = color; } 
