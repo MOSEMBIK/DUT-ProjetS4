@@ -4,6 +4,7 @@
 #include <Engine/Primitives.hpp>
 #include <Engine/ResourceLoader.hpp>
 
+#include <glm/vec4.hpp>
 #include <glm/gtx/transform.hpp>
 
 using namespace glm;
@@ -76,7 +77,7 @@ void Button::draw()
 	mat4 P = ortho(-(float)m_window->getSize().x * m_anchor.x, (float)m_window->getSize().x * (1 - m_anchor.x), -(float)m_window->getSize().y * m_anchor.y, (float)m_window->getSize().y * (1 - m_anchor.y));
 
 	Shader* shader;
-	if(m_nineSlice)
+	if(m_nineSlice > 0)
 	{
 		if (buttonSlicedShader == nullptr) {
 			buttonSlicedShader = Shader::find("UI/Slicing");
@@ -129,9 +130,10 @@ void Button::draw()
 			break;
 	}
 
-	if (m_nineSlice) {
-		shader->setUniformValue("u_dimensions", vec2(1.0f / m_texture.m_width, 1.0f / m_texture.m_height * m_size.x / m_size.y));
-		shader->setUniformValue("u_border", vec2(0.25f, 0.25f));
+	if (m_nineSlice > 0) {
+		float slice = m_nineSlice;
+		shader->setUniformValue("u_dimensions", vec2(slice / m_size.x, slice / m_size.y));
+		shader->setUniformValue("u_border",  vec2(slice / m_texture.m_width, slice / m_texture.m_height));
 	}
 
 	buttonQuad->draw();
