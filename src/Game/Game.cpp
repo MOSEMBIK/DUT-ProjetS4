@@ -16,6 +16,7 @@ using std::cerr;
 using std::endl;
 
 vector<Button*> buttons;
+vector<Label*> labels;
 vector<Image*> images;
 Actor* actor;
 
@@ -90,13 +91,15 @@ bool Game::loadRequieredResources()
 	float time = glfwGetTime();
 	std::vector<string> assets = {
 		"white_texture.png", "black_texture.png", "home_background.png",
-		"space_background.png", "bomberboy_1.png", "bomberboy_2.png"
+		"space_background.png", "bomberboy_1.png", "bomberboy_2.png",
+		"blue_rectangle.png"
 	};
 	std::vector<Texture*> textures = {
 		&Textures::whiteTexture, &Textures::blackTexture, &Textures::homeBackground,
-		&Textures::spaceBackground, &Textures::bomberboy1, &Textures::bomberboy2
+		&Textures::spaceBackground, &Textures::bomberboy1, &Textures::bomberboy2,
+		&Textures::blueRectangle
 	};
-	for (int i = 0; i < assets.size(); i++) {
+	for (uint i = 0; i < assets.size(); i++) {
 		if (!Resource::loadTexture(("assets/"+assets[i]).c_str(), *textures[i])) {
 			cerr << "Failed to load " << assets[i] << endl;
 			glfwTerminate();
@@ -137,6 +140,7 @@ void Game::setState(GameState state)
 {
 	for (auto image : images) { delete image; } images.clear();
 	for (auto button : buttons) { delete button; } buttons.clear();
+	for (auto label : labels) { delete label; } labels.clear();
 	switch (state)
 	{
 	/**
@@ -177,7 +181,7 @@ void Game::setState(GameState state)
 	} break;
 
 	/**
-	 * @brief Load the main menu
+	 * @brief Load the singeplayer menu
 	 */
 	case GameState::SINGLEPLAYER: {
 		cerr << "Loading singleplayer menu..." << endl; float time = glfwGetTime();
@@ -196,7 +200,12 @@ void Game::setState(GameState state)
 			game->setState(GameState::MAIN_MENU);
 		});
 
+		/* Load Labels */
+		labels.push_back(new Label(mainWindow, vec2(150, 0), vec2(0.25f, 0.5f), "Taille de la map", 32, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+
 		/* Load Images */
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W/2), &Textures::blueRectangle));
+
 		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.0f, 0.5f), vec2(WINDOW_W/4), &Textures::bomberboy1));
 		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::spaceBackground));
 
@@ -249,6 +258,7 @@ void Game::update()
 	processInputs(mainWindow->getWindow());
 
 	Wall* wall = new Wall(map); wall->draw(); delete wall;
+	for (auto label : labels) { label->draw(); }
 	for (auto button : buttons) { button->draw(); }
 	for (auto image : images) { image->draw(); }
 	switch (m_gameState)

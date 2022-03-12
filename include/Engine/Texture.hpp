@@ -11,6 +11,7 @@ namespace Textures {
     static Texture blackTexture;
 	static Texture homeBackground;
 	static Texture spaceBackground;
+	static Texture blueRectangle;
 	static Texture bomberboy1;
 	static Texture bomberboy2;
 }
