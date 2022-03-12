@@ -48,7 +48,7 @@ std::vector<glm::ivec2> Robot::move(glm::ivec2 destination) {
 		
 		std::unordered_map<glm::ivec2, std::vector<glm::ivec2>> &edges = *&(map->edges_map);
 
-		if (map->whatIs(new_trajet[done]) != "road"){
+		if (map->whatIs(new_trajet[done]) != "void"){
 			new_trajet.push_back(edges[new_trajet[done]][0]);
 			done += 1;
 		}

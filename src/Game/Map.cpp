@@ -68,3 +68,11 @@ void Map::update(float deltaTime) {
 		actor->update(deltaTime);
 	}
 }
+
+bool Map::isReachable(glm::ivec2 coord){
+
+}
+
+std::string Map::whatIs(glm::ivec2 coord){
+
+}	
