@@ -33,7 +33,7 @@ protected:
     Texture m_highlightedTexture;
     glm::vec3 m_highlightedColor;
 
-    std::function<void()> onClick;
+    std::function<void()> onClick = []() {};
 	int m_clickCallbackId;
 
 public:

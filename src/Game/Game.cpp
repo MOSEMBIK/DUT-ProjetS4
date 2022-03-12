@@ -170,7 +170,7 @@ void Game::setState(GameState state)
 		});
 
 		buttons.push_back(new Button(mainWindow, vec2(-50, 50), vec2(1.0f, 0.0f), vec2(79, 79), (char *)"assets/options.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
-		buttons[2]->setNineSlice(false);
+		buttons[2]->setNineSlice(0);
 		buttons[2]->setOnClickCallback([]() {
 			cerr << "Options clicked" << endl;
 		});
@@ -201,16 +201,40 @@ void Game::setState(GameState state)
 			game->setState(GameState::MAIN_MENU);
 		});
 
+		char* arrow = (char*)"assets/arrow.png";
+		char* reverse_arrow = (char*)"assets/reverse_arrow.png";
+		buttons.push_back(new Button(mainWindow, vec2(-40, 120)	, vec2(0.75f, 0.5f), vec2(60), arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-40, 60)	, vec2(0.75f, 0.5f), vec2(60), arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-40, 0)	, vec2(0.75f, 0.5f), vec2(60), arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-40, -60)	, vec2(0.75f, 0.5f), vec2(60), arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-40, -120), vec2(0.75f, 0.5f), vec2(60), arrow, vec3(0.5f), vec3(0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-160, 120), vec2(0.75f, 0.5f), vec2(60), reverse_arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-160, 60)	, vec2(0.75f, 0.5f), vec2(60), reverse_arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-160, 0)	, vec2(0.75f, 0.5f), vec2(60), reverse_arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-160, -60), vec2(0.75f, 0.5f), vec2(60), reverse_arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-160, -120), vec2(0.75f, 0.5f), vec2(60), reverse_arrow, vec3(0.5f), vec3(0.5f), vec3(0.5f)));
+		for (int i=2; i<12; i++) {
+			buttons[i]->setNineSlice(0);
+			buttons[i]->setOnClickCallback([]() {
+				cerr << "Arrow clicked" << endl;
+			});
+		}
+
 		/* Load Labels */
-		labels.push_back(new Label(mainWindow, vec2(20, 120)	, vec2(0.25f, 0.5f), "Taille de la map"		, 32, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
-		labels.push_back(new Label(mainWindow, vec2(20, 60)		, vec2(0.25f, 0.5f), "Nombre de joueurs"	, 32, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
-		labels.push_back(new Label(mainWindow, vec2(20, 0)		, vec2(0.25f, 0.5f), "Pourcentage de murs"	, 32, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
-		labels.push_back(new Label(mainWindow, vec2(20, -60)	, vec2(0.25f, 0.5f), "Pourcentage de bonus"	, 32, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
-		labels.push_back(new Label(mainWindow, vec2(20, -120)	, vec2(0.25f, 0.5f), "Nombre de bots"		, 32, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, 120)	, vec2(0.25f, 0.5f), "Taille de la map"		, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, 60)		, vec2(0.25f, 0.5f), "Nombre de joueurs"	, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, 0)		, vec2(0.25f, 0.5f), "Pourcentage de murs"	, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, -60)	, vec2(0.25f, 0.5f), "Pourcentage de bonus"	, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, -120)	, vec2(0.25f, 0.5f), "Nombre de bots"		, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+
+		labels.push_back(new Label(mainWindow, vec2(-100, 120)	, vec2(0.75f, 0.5f), "13"	, 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(-100, 60)	, vec2(0.75f, 0.5f), "4"	, 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(-100, 0)	, vec2(0.75f, 0.5f), "90"	, 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(-100, -60)	, vec2(0.75f, 0.5f), "10"	, 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(-100, -120)	, vec2(0.75f, 0.5f), "3"	, 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE, vec3(0.5f, 0.5f, 0.5f)));
 
 		/* Load Images */
 		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W/2), &Textures::blueRectangle));
-
 		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.0f, 0.5f), vec2(WINDOW_W/4), &Textures::bomberboy1));
 		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::spaceBackground));
 
