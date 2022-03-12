@@ -34,5 +34,7 @@ public:
 	void draw();
 	void update(float deltaTime);
 
-	bool isReachable(glm::ivec2);
+	///--- Fonctions utiles au déplacement des Players
+	bool isReachable(glm::ivec2);									// Retourne true si le localisation passee est accessible
+	std::string whatIs(glm::ivec2);									// Retourne le type de l'Actor aux coordonnees passees
 };
