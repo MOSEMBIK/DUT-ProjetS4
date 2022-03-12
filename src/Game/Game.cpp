@@ -12,6 +12,8 @@
 
 using namespace glm;
 using namespace std;
+using std::cerr;
+using std::endl;
 
 vector<Button*> buttons;
 vector<Image*> images;
@@ -85,47 +87,23 @@ bool Game::init()
 bool Game::loadRequieredResources()
 {
 	cerr << "Loading resources..." << endl;
-	if(!Resource::loadTexture("assets/white_texture.png", Textures::whiteTexture))
-	{
-		cerr << "Failed to load white texture" << endl;
-		glfwTerminate();
-		return false;
+	float time = glfwGetTime();
+	std::vector<string> assets = {
+		"white_texture.png", "black_texture.png", "home_background.png",
+		"space_background.png", "bomberboy_1.png", "bomberboy_2.png"
+	};
+	std::vector<Texture*> textures = {
+		&Textures::whiteTexture, &Textures::blackTexture, &Textures::homeBackground,
+		&Textures::spaceBackground, &Textures::bomberboy1, &Textures::bomberboy2
+	};
+	for (int i = 0; i < assets.size(); i++) {
+		if (!Resource::loadTexture(("assets/"+assets[i]).c_str(), *textures[i])) {
+			cerr << "Failed to load " << assets[i] << endl;
+			glfwTerminate();
+			return false;
+		}
 	}
-
-	if(!Resource::loadTexture("assets/black_texture.png", Textures::blackTexture))
-	{
-		cerr << "Failed to load black texture" << endl;
-		glfwTerminate();
-        return false;
-	}
-
-	if(!Resource::loadTexture("assets/home-background.png", Textures::homeBackground))
-	{
-		cerr << "Failed to load Textures::homeBackground" << endl;
-		glfwTerminate();
-		return false;
-	}
-
-	if(!Resource::loadTexture("assets/space-background.png", Textures::spaceBackground))
-	{
-		cerr << "Failed to load Textures::spaceBackground" << endl;
-		glfwTerminate();
-		return false;
-	}
-
-	if(!Resource::loadTexture("assets/singleplayer-layer.png", Textures::singleplayerLayer))
-	{
-		cerr << "Failed to load Textures::singleplayerLayer" << endl;
-		glfwTerminate();
-		return false;
-	}
-
-	if(!Resource::loadTexture("assets/options-layer.png", Textures::optionsLayer))
-	{
-		cerr << "Failed to load Textures::optionsLayer" << endl;
-		glfwTerminate();
-		return false;
-	}
+	cerr << "Resources loaded in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 
     //Load BasicShader
 	basicShader = new Shader("shader/vertex.glsl", "shader/fragment.glsl");
@@ -165,7 +143,7 @@ void Game::setState(GameState state)
 	 * @brief Load the main menu
 	 */
 	case GameState::MAIN_MENU: {
-		cerr << "Loading main menu..." << endl;
+		cerr << "Loading main menu..." << endl; float time = glfwGetTime();
 		if (m_gameState == GameState::GAME) {
 			// Delete game content
 			delete map;
@@ -195,14 +173,14 @@ void Game::setState(GameState state)
 		/* Load Images */
 		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::homeBackground));
 
-		cerr << "Loaded main menu" << endl;
+		cerr << "Loaded main menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
 
 	/**
 	 * @brief Load the main menu
 	 */
 	case GameState::SINGLEPLAYER: {
-		cerr << "Loading singleplayer menu..." << endl;
+		cerr << "Loading singleplayer menu..." << endl; float time = glfwGetTime();
 		/* Load Buttons */
 		buttons.push_back(new Button(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), vec2(220, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[0]->setLabel(Label(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), "Launch Game", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
@@ -219,17 +197,17 @@ void Game::setState(GameState state)
 		});
 
 		/* Load Images */
-		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::singleplayerLayer));
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.0f, 0.5f), vec2(WINDOW_W/4), &Textures::bomberboy1));
 		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::spaceBackground));
 
-		cerr << "Loaded singleplayer menu" << endl;
+		cerr << "Loaded singleplayer menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
 	
 	/**
 	 * @brief Launch the game
 	 */
 	case GameState::GAME: {
-		cerr << "Loading game..." << endl;
+		cerr << "Loading game..." << endl; float time = glfwGetTime();
 		/* Load Buttons */
 		buttons.push_back(new Button(mainWindow, vec2(162.5f, 50.0f), vec2(0.0f, 0.0f), vec2(300, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[0]->setLabel(Label(mainWindow, vec2(162.5f, 50.0f), vec2(0.0f, 0.0f), "Exit to main menu", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
@@ -254,7 +232,7 @@ void Game::setState(GameState state)
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
 		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
 
-		cerr << "Loaded game" << endl;
+		cerr << "Loaded game in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
 	}
 
