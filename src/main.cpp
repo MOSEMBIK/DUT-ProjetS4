@@ -32,6 +32,7 @@ int main(int argc, char **argv)
 	//Text::init();
 
 	Game* game = Game::getInstance();
+	game->postInit();
 
     while(!glfwWindowShouldClose(game->getMainWindow()->getWindow()))
     {

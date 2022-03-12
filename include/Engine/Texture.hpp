@@ -14,4 +14,5 @@ namespace Textures {
 	static Texture blueRectangle;
 	static Texture bomberboy1;
 	static Texture bomberboy2;
+	static Texture bomberboy3;
 }

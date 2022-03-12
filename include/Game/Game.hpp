@@ -51,6 +51,7 @@ public:
 
     ~Game();
 
+	bool postInit();
     void update();
 
     /**

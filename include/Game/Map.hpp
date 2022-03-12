@@ -17,16 +17,16 @@ class Map
 private:
 	std::vector<Actor*> actors;
 	std::map<glm::ivec2, Wall*, cmpVec> walls;
-	int mapSize;
+	unsigned char mapSize;
 
 public:
 	Map();
 	~Map();
 
-	void generateMap(int size = 13);
+	void generateMap(unsigned char size = 13, unsigned char wallPercentage = 90);
 	void addActor(Actor* actor);
 
-	inline int getSize() { return mapSize; }
+	inline int getSize() { std::cerr << mapSize << std::endl; return mapSize; }
 
 	void draw();
 	void update(float deltaTime);

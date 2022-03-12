@@ -19,6 +19,8 @@ vector<Button*> buttons;
 vector<Label*> labels;
 vector<Image*> images;
 
+Wall* wall;
+
 Game* Game::m_instance = nullptr;
 
 Game::Game() : m_currentTime(0), m_deltaTime(0), m_mousePos(vec2(0.0f)), m_directionalLight(vec3(-1.0f, -1.0f, -1.0f), vec3(0.1f), vec3(1.0f), vec3(1.0f)), m_gameState(GameState::MAIN_MENU), m_vsync(VSync::ONE_FRAME)
@@ -48,7 +50,7 @@ bool Game::init()
 		return false;
     }
 
-    loadRequieredResources();
+	loadRequieredResources();
 
     glfwSwapInterval(m_vsync);
 	glClearColor(0, 0, 0, 1);
@@ -91,12 +93,12 @@ bool Game::loadRequieredResources()
 	std::vector<string> assets = {
 		"white_texture.png", "black_texture.png", "home_background.png",
 		"space_background.png", "bomberboy_1.png", "bomberboy_2.png",
-		"blue_rectangle.png"
+		"bomberboy_3.png", "blue_rectangle.png"
 	};
 	std::vector<Texture*> textures = {
 		&Textures::whiteTexture, &Textures::blackTexture, &Textures::homeBackground,
 		&Textures::spaceBackground, &Textures::bomberboy1, &Textures::bomberboy2,
-		&Textures::blueRectangle
+		&Textures::bomberboy3, &Textures::blueRectangle
 	};
 	for (uint i = 0; i < assets.size(); i++) {
 		if (!Resource::loadTexture(("assets/"+assets[i]).c_str(), *textures[i])) {
@@ -239,7 +241,8 @@ void Game::setState(GameState state)
 
 		/* Load Images */
 		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W/2), &Textures::blueRectangle));
-		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.0f, 0.5f), vec2(WINDOW_W/4), &Textures::bomberboy1));
+		images.push_back(new Image(mainWindow, vec2(40, 100), vec2(1.0f, 0.0f), vec2(WINDOW_W/4), &Textures::bomberboy2));
+		images.push_back(new Image(mainWindow, vec2(0, 100), vec2(0.0f, 0.5f), vec2(WINDOW_W/3), &Textures::bomberboy3));
 		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::spaceBackground));
 
 		cerr << "Loaded singleplayer menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
@@ -259,16 +262,15 @@ void Game::setState(GameState state)
 		});
 
 		map = new Map();
-		map->generateMap(m_gameSettings[0]);
+		map->generateMap(m_gameSettings[0], m_gameSettings[2]);
 		
 		// Test de robots
-		for (int i=0; i < 10; i++) {
+		for (int i=0; i < m_gameSettings[4]; i++) {
 			Robot* robot = new Robot(map);
-			Bomb* bomb = new Bomb(map, vec3(rand()%100/100.0f, rand()%100/100.0f, rand()%100/100.0f), 5, 5);
-			robot->getTransform().setPosition(vec3(6.0f, 0.0f, 6.0f));
-			bomb->getTransform().setPosition(vec3(rand()%11+1, 0, rand()%11+1));
+			robot->getTransform().setPosition(vec3(1.0f, 0.0f, 1.0f) * float(rand()%m_gameSettings[0]));
+			//Bomb* bomb = new Bomb(map, vec3(rand()%100/100.0f, rand()%100/100.0f, rand()%100/100.0f), 5, 5);
+			//bomb->getTransform().setPosition(vec3(rand()%11+1, 0, rand()%11+1));
 			map->addActor(robot);
-			map->addActor(bomb);
 		}
 		
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
@@ -281,6 +283,11 @@ void Game::setState(GameState state)
 	m_gameState = state;
 }
 
+bool Game::postInit() {
+	wall = new Wall(map);
+	return true;
+}
+
 void Game::update()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -290,7 +297,7 @@ void Game::update()
 
 	processInputs(mainWindow->getWindow());
 
-	Wall* wall = new Wall(map); wall->draw(); delete wall;
+	wall->draw();
 	for (auto label : labels) { label->draw(); }
 	for (auto button : buttons) { button->draw(); }
 	for (auto image : images) { image->draw(); }

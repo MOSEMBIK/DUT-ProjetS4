@@ -16,16 +16,14 @@ Map::~Map() {
 	}
 }
 
-void Map::generateMap(int size) {
-	if (size % 2 == 0) {
+void Map::generateMap(unsigned char size, unsigned char wallPercentage) {
+	if (size % 2 == 0)
 		size++;
-	}
-	this->mapSize = size;
-	int sizeMax = size-1;
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < size; j++) {
-			glm::ivec2 pos = glm::ivec2(i, j);
-
+	this->mapSize = size;;
+	unsigned char sizeMax = size-1;
+	for (unsigned char i = 0; i < size; i++) {
+		for (unsigned char j = 0; j < size; j++) {
+			glm::ivec2 pos(i, j);
 			/**
 			 * @brief Metal Walls
 			 */
@@ -33,11 +31,10 @@ void Map::generateMap(int size) {
 				walls[pos] = new Wall(this, Wall::Type::Metal);
 				walls[pos]->getTransform().setPosition(glm::vec3(i, 0, j));
 			}
-
 			/**
 			 * @brief Random Walls
 			 */
-			else if (rand() % 10 <= 6) {
+			else if (rand() % 100 < wallPercentage) {
 				walls[pos] = new Wall(this, (rand()%5 == 0) ? Wall::Type::Stone : Wall::Type::Wood);
 				walls[pos]->getTransform().setPosition(glm::vec3(i, 0, j));
 			}
