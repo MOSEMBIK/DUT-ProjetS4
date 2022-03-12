@@ -141,6 +141,7 @@ void Game::setState(GameState state)
 	for (auto image : images) { delete image; } images.clear();
 	for (auto button : buttons) { delete button; } buttons.clear();
 	for (auto label : labels) { delete label; } labels.clear();
+	char* bomberFont = (char*)"assets/fonts/bomberman.ttf";
 	switch (state)
 	{
 	/**
@@ -156,14 +157,14 @@ void Game::setState(GameState state)
 		/* Load Buttons */
 		// Create button(window, position, anchor, size, ...)
 		buttons.push_back(new Button(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
-		buttons[0]->setLabel(Label(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), "Singleplayer", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[0]->setLabel(Label(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), "Singleplayer", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 		buttons[0]->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::SINGLEPLAYER);
 		});
 
 		buttons.push_back(new Button(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(0.25f), vec3(0.25f, 0.25f, 0.25f), vec3(0.25f)));
-		buttons[1]->setLabel(Label(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), "Multiplayer", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[1]->setLabel(Label(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), "Multiplayer", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 		buttons[1]->setOnClickCallback([]() {
 			cerr << "Multiplayer clicked" << endl;
 		});
@@ -187,21 +188,25 @@ void Game::setState(GameState state)
 		cerr << "Loading singleplayer menu..." << endl; float time = glfwGetTime();
 		/* Load Buttons */
 		buttons.push_back(new Button(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), vec2(220, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
-		buttons[0]->setLabel(Label(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), "Launch Game", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[0]->setLabel(Label(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), "Launch Game", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 		buttons[0]->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::GAME);
 		});
 
 		buttons.push_back(new Button(mainWindow, vec2(122.5f, 50.0f), vec2(0.0f, 0.0f), vec2(220, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
-		buttons[1]->setLabel(Label(mainWindow, vec2(122.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[1]->setLabel(Label(mainWindow, vec2(122.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 		buttons[1]->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::MAIN_MENU);
 		});
 
 		/* Load Labels */
-		labels.push_back(new Label(mainWindow, vec2(150, 0), vec2(0.25f, 0.5f), "Taille de la map", 32, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, 120)	, vec2(0.25f, 0.5f), "Taille de la map"		, 32, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, 60)		, vec2(0.25f, 0.5f), "Nombre de joueurs"	, 32, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, 0)		, vec2(0.25f, 0.5f), "Pourcentage de murs"	, 32, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, -60)	, vec2(0.25f, 0.5f), "Pourcentage de bonus"	, 32, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, -120)	, vec2(0.25f, 0.5f), "Nombre de bots"		, 32, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
 
 		/* Load Images */
 		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W/2), &Textures::blueRectangle));
@@ -219,7 +224,7 @@ void Game::setState(GameState state)
 		cerr << "Loading game..." << endl; float time = glfwGetTime();
 		/* Load Buttons */
 		buttons.push_back(new Button(mainWindow, vec2(162.5f, 50.0f), vec2(0.0f, 0.0f), vec2(300, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
-		buttons[0]->setLabel(Label(mainWindow, vec2(162.5f, 50.0f), vec2(0.0f, 0.0f), "Exit to main menu", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[0]->setLabel(Label(mainWindow, vec2(162.5f, 50.0f), vec2(0.0f, 0.0f), "Exit to main menu", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 		buttons[0]->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::MAIN_MENU);
