@@ -19,7 +19,7 @@ private:
 	std::map<glm::ivec2, Wall*, cmpVec> walls;
 	int mapSize;
 public:
-	std::unordered_map<glm::ivec2, std::vector<glm::ivec2>> edges_map;
+	std::unordered_map<glm::ivec2, std::vector<glm::ivec2>> edges_map; 			// Graph des accessibilités pour chaque position
 	
 
 public:
@@ -35,6 +35,8 @@ public:
 	void update(float deltaTime);
 
 	///--- Fonctions utiles au déplacement des Players
-	bool isReachable(glm::ivec2);									// Retourne true si le localisation passee est accessible
-	std::string whatIs(glm::ivec2);									// Retourne le type de l'Actor aux coordonnees passees
+	void genEdgesMap();															// (Re)genere la edges map
+	bool isReachable(glm::ivec2);												// Retourne true si le localisation passee est accessible
+	std::string whatIs(glm::ivec2);												// Retourne le type de l'Actor aux coordonnees passees
+
 };

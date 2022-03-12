@@ -69,10 +69,24 @@ void Map::update(float deltaTime) {
 	}
 }
 
-bool Map::isReachable(glm::ivec2 coord){
+///-------------------------------------------------------
+///--- Fonctions utiles au déplacement des Players
 
+void Map::genEdgesMap(){
+	
+}
+
+bool Map::isReachable(glm::ivec2 coord){
+	// Check whatIs
+	// Return true if not a bomb or a wall
+	// Else ruturn false
+	return false;
 }
 
 std::string Map::whatIs(glm::ivec2 coord){
+	// Return as a string what is at this location
+	// Bomb ? Wall ? Void ? (if Player -> return Void)
+	return "void";
+}
 
-}	
+///-------------------------------------------------------
