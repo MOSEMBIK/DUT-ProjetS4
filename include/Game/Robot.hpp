@@ -10,6 +10,7 @@ private:
 
 public:
 	Robot(Map* map);
+	virtual ~Robot() {}
 
 	void update(float deltaTime);
 

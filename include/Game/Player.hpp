@@ -16,6 +16,7 @@ private:
 
 public:
 	Player(Map* map);
+	virtual ~Player() {}
 
 	inline float getSpeed() const { return speed; }
 

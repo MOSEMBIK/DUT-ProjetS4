@@ -10,6 +10,7 @@ private:
 
 public:
 	ObjectPerk(Map* map);
+	virtual ~ObjectPerk() {}
 	virtual void onPickUp(Player*) = 0;
 
 };

@@ -23,7 +23,7 @@ public:
 	Map();
 	~Map();
 
-	void generateMap(int size = 13);
+	void generateMap(int size = 13, int wallPercentage = 90);
 	void addActor(Actor* actor);
 
 	inline int getSize() { return mapSize; }

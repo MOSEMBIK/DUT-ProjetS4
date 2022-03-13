@@ -16,8 +16,10 @@ using std::cerr;
 using std::endl;
 
 vector<Button*> buttons;
+vector<Label*> labels;
 vector<Image*> images;
-Actor* actor;
+
+Wall* wall;
 
 Game* Game::m_instance = nullptr;
 
@@ -48,7 +50,7 @@ bool Game::init()
 		return false;
     }
 
-    loadRequieredResources();
+	loadRequieredResources();
 
     glfwSwapInterval(m_vsync);
 	glClearColor(0, 0, 0, 1);
@@ -90,14 +92,16 @@ bool Game::loadRequieredResources()
 	float time = glfwGetTime();
 	std::vector<string> assets = {
 		"white_texture.png", "black_texture.png", "home_background.png",
-		"space_background.png", "bomberboy_1.png", "bomberboy_2.png"
+		"space_background.png", "bomberboy_1.png", "bomberboy_2.png",
+		"bomberboy_3.png", "blue_rectangle.png"
 	};
-	std::vector<Texture*> textures = {
+	std::vector<Texture**> textures = {
 		&Textures::whiteTexture, &Textures::blackTexture, &Textures::homeBackground,
-		&Textures::spaceBackground, &Textures::bomberboy1, &Textures::bomberboy2
+		&Textures::spaceBackground, &Textures::bomberboy1, &Textures::bomberboy2,
+		&Textures::bomberboy3, &Textures::blueRectangle
 	};
-	for (int i = 0; i < assets.size(); i++) {
-		if (!Resource::loadTexture(("assets/"+assets[i]).c_str(), *textures[i])) {
+	for (uint i = 0; i < assets.size(); i++) {
+		if (!Resource::loadTexture(("assets/"+assets[i]).c_str(), (*textures[i]))) {
 			cerr << "Failed to load " << assets[i] << endl;
 			glfwTerminate();
 			return false;
@@ -108,8 +112,6 @@ bool Game::loadRequieredResources()
     //Load BasicShader
 	basicShader = new Shader("shader/vertex.glsl", "shader/fragment.glsl");
 	Shader::save("Base", basicShader);
-
-	this->setState(GameState::MAIN_MENU);
 
     return true;
 }
@@ -135,8 +137,11 @@ Game::~Game()
 
 void Game::setState(GameState state)
 {
+	cerr << endl;
 	for (auto image : images) { delete image; } images.clear();
 	for (auto button : buttons) { delete button; } buttons.clear();
+	for (auto label : labels) { delete label; } labels.clear();
+	char* bomberFont = (char*)"assets/fonts/bomberman.ttf";
 	switch (state)
 	{
 	/**
@@ -152,53 +157,92 @@ void Game::setState(GameState state)
 		/* Load Buttons */
 		// Create button(window, position, anchor, size, ...)
 		buttons.push_back(new Button(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
-		buttons[0]->setLabel(Label(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), "Singleplayer", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[0]->setLabel(Label(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), "Singleplayer", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 		buttons[0]->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::SINGLEPLAYER);
 		});
 
 		buttons.push_back(new Button(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(0.25f), vec3(0.25f, 0.25f, 0.25f), vec3(0.25f)));
-		buttons[1]->setLabel(Label(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), "Multiplayer", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[1]->setLabel(Label(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), "Multiplayer", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 		buttons[1]->setOnClickCallback([]() {
 			cerr << "Multiplayer clicked" << endl;
 		});
 
 		buttons.push_back(new Button(mainWindow, vec2(-50, 50), vec2(1.0f, 0.0f), vec2(79, 79), (char *)"assets/options.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
-		buttons[2]->setNineSlice(false);
+		buttons[2]->setNineSlice(0);
 		buttons[2]->setOnClickCallback([]() {
 			cerr << "Options clicked" << endl;
 		});
 
 		/* Load Images */
-		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::homeBackground));
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), Textures::homeBackground));
 
 		cerr << "Loaded main menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
 
 	/**
-	 * @brief Load the main menu
+	 * @brief Load the singeplayer menu
 	 */
 	case GameState::SINGLEPLAYER: {
 		cerr << "Loading singleplayer menu..." << endl; float time = glfwGetTime();
 		/* Load Buttons */
 		buttons.push_back(new Button(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), vec2(220, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
-		buttons[0]->setLabel(Label(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), "Launch Game", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[0]->setLabel(Label(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), "Launch Game", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 		buttons[0]->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::GAME);
 		});
 
 		buttons.push_back(new Button(mainWindow, vec2(122.5f, 50.0f), vec2(0.0f, 0.0f), vec2(220, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
-		buttons[1]->setLabel(Label(mainWindow, vec2(122.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[1]->setLabel(Label(mainWindow, vec2(122.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 		buttons[1]->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::MAIN_MENU);
 		});
 
+		char* arrow = (char*)"assets/arrow.png";
+		char* reverse_arrow = (char*)"assets/reverse_arrow.png";
+		buttons.push_back(new Button(mainWindow, vec2(-40, 120)	, vec2(0.75f, 0.5f), vec2(60), arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-40, 60)	, vec2(0.75f, 0.5f), vec2(60), arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-40, 0)	, vec2(0.75f, 0.5f), vec2(60), arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-40, -60)	, vec2(0.75f, 0.5f), vec2(60), arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-40, -120), vec2(0.75f, 0.5f), vec2(60), arrow, vec3(0.5f), vec3(0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-160, 120), vec2(0.75f, 0.5f), vec2(60), reverse_arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-160, 60)	, vec2(0.75f, 0.5f), vec2(60), reverse_arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-160, 0)	, vec2(0.75f, 0.5f), vec2(60), reverse_arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-160, -60), vec2(0.75f, 0.5f), vec2(60), reverse_arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-160, -120), vec2(0.75f, 0.5f), vec2(60), reverse_arrow, vec3(0.5f), vec3(0.5f), vec3(0.5f)));
+		for (int i=2; i<12; i++)
+			buttons[i]->setNineSlice(0);
+		buttons[2]->setOnClickCallback([this]() { m_gameSettings[0]++; labels[5]->setText(to_string(m_gameSettings[0])); });
+		buttons[7]->setOnClickCallback([this]() { m_gameSettings[0]--; labels[5]->setText(to_string(m_gameSettings[0])); });
+		buttons[3]->setOnClickCallback([this]() { m_gameSettings[4] = m_gameSettings[1]++; labels[6]->setText(to_string(m_gameSettings[1])); labels[9]->setText(to_string(m_gameSettings[4])); });
+		buttons[8]->setOnClickCallback([this]() { m_gameSettings[4] = --m_gameSettings[1] - 1; labels[6]->setText(to_string(m_gameSettings[1])); labels[9]->setText(to_string(m_gameSettings[4])); });
+		buttons[4]->setOnClickCallback([this]() { m_gameSettings[2]++; if (m_gameSettings[2] == 101) m_gameSettings[2] = 0; labels[7]->setText(to_string(m_gameSettings[2])); });
+		buttons[9]->setOnClickCallback([this]() { m_gameSettings[2]--; if (m_gameSettings[2] == 255) m_gameSettings[2] = 100; labels[7]->setText(to_string(m_gameSettings[2])); });
+		buttons[5]->setOnClickCallback([this]() { m_gameSettings[3]++; if (m_gameSettings[3] == 101) m_gameSettings[3] = 0; labels[8]->setText(to_string(m_gameSettings[3])); });
+		buttons[10]->setOnClickCallback([this]() { m_gameSettings[3]--; if (m_gameSettings[3] == 255) m_gameSettings[3] = 100; labels[8]->setText(to_string(m_gameSettings[3])); });
+
+		/* Load Labels */
+		labels.push_back(new Label(mainWindow, vec2(20, 120)	, vec2(0.25f, 0.5f), "Taille de la map"		, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, 60)		, vec2(0.25f, 0.5f), "Nombre de joueurs"	, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, 0)		, vec2(0.25f, 0.5f), "Pourcentage de murs"	, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, -60)	, vec2(0.25f, 0.5f), "Pourcentage de bonus"	, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, -120)	, vec2(0.25f, 0.5f), "Nombre de bots"		, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+
+		m_gameSettings[4] = m_gameSettings[1] - 1;
+		labels.push_back(new Label(mainWindow, vec2(-100, 120)	, vec2(0.75f, 0.5f), to_string(m_gameSettings[0]).c_str(), 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(-100, 60)	, vec2(0.75f, 0.5f), to_string(m_gameSettings[1]).c_str(), 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(-100, 0)	, vec2(0.75f, 0.5f), to_string(m_gameSettings[2]).c_str(), 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(-100, -60)	, vec2(0.75f, 0.5f), to_string(m_gameSettings[3]).c_str(), 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(-100, -120)	, vec2(0.75f, 0.5f), to_string(m_gameSettings[4]).c_str(), 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE, vec3(0.5f, 0.5f, 0.5f)));
+
 		/* Load Images */
-		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.0f, 0.5f), vec2(WINDOW_W/4), &Textures::bomberboy1));
-		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::spaceBackground));
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W/2), Textures::blueRectangle));
+		images.push_back(new Image(mainWindow, vec2(40, 100), vec2(1.0f, 0.0f), vec2(WINDOW_W/4), Textures::bomberboy2));
+		images.push_back(new Image(mainWindow, vec2(0, 100), vec2(0.0f, 0.5f), vec2(WINDOW_W/3), Textures::bomberboy3));
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), Textures::spaceBackground));
 
 		cerr << "Loaded singleplayer menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
@@ -210,25 +254,22 @@ void Game::setState(GameState state)
 		cerr << "Loading game..." << endl; float time = glfwGetTime();
 		/* Load Buttons */
 		buttons.push_back(new Button(mainWindow, vec2(162.5f, 50.0f), vec2(0.0f, 0.0f), vec2(300, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
-		buttons[0]->setLabel(Label(mainWindow, vec2(162.5f, 50.0f), vec2(0.0f, 0.0f), "Exit to main menu", 24, (char *)"assets/fonts/bomberman.ttf", ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[0]->setLabel(Label(mainWindow, vec2(162.5f, 50.0f), vec2(0.0f, 0.0f), "Exit to main menu", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 		buttons[0]->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
 			game->setState(GameState::MAIN_MENU);
 		});
 
 		map = new Map();
-		map->generateMap(13);
+		map->generateMap(m_gameSettings[0], m_gameSettings[2]);
 		
 		// Test de robots
-		for (int i=0; i < 10; i++) {
+		for (int i=0; i < m_gameSettings[4]; i++) {
 			Robot* robot = new Robot(map);
-			Bomb* bomb = new Bomb(map, vec3(rand()%100/100.0f, rand()%100/100.0f, rand()%100/100.0f), 5, 5);
-			robot->getTransform().setPosition(vec3(6.0f, 0.0f, 6.0f));
-			bomb->getTransform().setPosition(vec3(rand()%11+1, 0, rand()%11+1));
+			robot->getTransform().setPosition(vec3(1.0f, 0.0f, 1.0f) * float(rand()%m_gameSettings[0]));
 			map->addActor(robot);
-			map->addActor(bomb);
 		}
-		
+
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
 		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
 
@@ -237,6 +278,13 @@ void Game::setState(GameState state)
 	}
 
 	m_gameState = state;
+}
+
+bool Game::postInit() {
+	wall = new Wall(map);
+	wall->getTransform().setScale(vec3(0.0f));
+	this->setState(GameState::MAIN_MENU);
+	return true;
 }
 
 void Game::update()
@@ -248,7 +296,8 @@ void Game::update()
 
 	processInputs(mainWindow->getWindow());
 
-	Wall* wall = new Wall(map); wall->draw(); delete wall;
+	wall->draw();
+	for (auto label : labels) { label->draw(); }
 	for (auto button : buttons) { button->draw(); }
 	for (auto image : images) { image->draw(); }
 	switch (m_gameState)

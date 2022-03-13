@@ -10,5 +10,7 @@ out vec4 FragColor;
 void main ()
 {
     vec4 sampled = vec4(1.0, 1.0, 1.0, texture(u_text, texCoords).r);
+    if(sampled.a < 0.5)
+        discard;
     FragColor = vec4(u_textColor, 1.0) * sampled;
 }

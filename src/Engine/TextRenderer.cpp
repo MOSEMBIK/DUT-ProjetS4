@@ -80,7 +80,7 @@ void TextRenderer::loadFont(string font, unsigned int fontSize)
             texture,
             ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-            face->glyph->advance.x
+            (uint)face->glyph->advance.x
         };
         m_characters.insert(pair<char, Character>(c, character));
     }

@@ -7,6 +7,7 @@ class PowerupCount: public ObjectPerk
 {
 public:
 	PowerupCount(Map* map);
+	virtual ~PowerupCount() {}
 	virtual void onPickUp(Player*);
 
 };
