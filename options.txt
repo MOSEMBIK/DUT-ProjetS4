@@ -1,4 +1,0 @@
-username:PielleBoule
-windowWidth:1280
-fullscreen:false
-enableVSync:true
