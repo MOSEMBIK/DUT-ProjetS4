@@ -55,7 +55,6 @@ Game::Game() : m_currentTime(0), m_deltaTime(0), m_mousePos(vec2(0.0f)), m_direc
 bool Game::init()
 {
 	mainWindow = new Window();
-	updateWindowOptions();
 	mainCamera = new Camera();
 
 	if (!mainWindow)
@@ -105,6 +104,7 @@ bool Game::init()
 
 	m_lastTime = m_currentTime - 1;
 
+	updateWindowOptions();
 	cerr << "Game initialized" << endl;
 	return true;
 }
