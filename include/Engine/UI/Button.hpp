@@ -26,11 +26,11 @@ protected:
 
     glm::vec2 m_size;
 
-    Texture m_texture;
+    Texture* m_texture;
     glm::vec3 m_color;
-    Texture m_clickedTexture;
+    Texture* m_clickedTexture;
     glm::vec3 m_clickedColor;
-    Texture m_highlightedTexture;
+    Texture* m_highlightedTexture;
     glm::vec3 m_highlightedColor;
 
     std::function<void()> onClick = []() {};
@@ -51,9 +51,9 @@ public:
     inline void setSize(glm::vec2 size) { m_size = size; }
     inline void setLabel(Label label) { m_label = label; }
 
-    inline void setTexture(Texture texture) { m_texture = texture; }
-    inline void setClickedTexture(Texture texture) { m_clickedTexture = texture; }
-    inline void setHighlightedTexture(Texture texture) { m_highlightedTexture = texture; }
+    inline void setTexture(Texture* texture) { m_texture = texture; }
+    inline void setClickedTexture(Texture* texture) { m_clickedTexture = texture; }
+    inline void setHighlightedTexture(Texture* texture) { m_highlightedTexture = texture; }
 
     inline void setNineSlice(int sliceSize) { m_nineSlice = sliceSize; }
 
@@ -64,9 +64,9 @@ public:
     inline glm::vec2 getSize() { return m_size; } 
     inline Label& getLabel() { return m_label; } 
 
-    inline Texture getTexture() const { return m_texture; }
-    inline Texture getClickedTexture() const { return m_clickedTexture; }
-    inline Texture getHighlightedTexture() const { return m_highlightedTexture; }
+    inline Texture* getTexture() const { return m_texture; }
+    inline Texture* getClickedTexture() const { return m_clickedTexture; }
+    inline Texture* getHighlightedTexture() const { return m_highlightedTexture; }
 
     inline glm::vec3 getColor() const { return m_color; }
     inline glm::vec3 getClickedColor() const { return m_clickedColor; }

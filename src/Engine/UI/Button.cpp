@@ -115,17 +115,17 @@ void Button::draw()
 	switch(m_state)
 	{
 		case State::NONE:
-			glBindTexture(GL_TEXTURE_2D, m_texture.m_id);
+			glBindTexture(GL_TEXTURE_2D, m_texture->m_id);
 			shader->setUniformValue("u_color", m_color);
 			break;
 
 		case State::HIGHLIGHTED:
-			glBindTexture(GL_TEXTURE_2D, m_highlightedTexture.m_id);
+			glBindTexture(GL_TEXTURE_2D, m_highlightedTexture->m_id);
 			shader->setUniformValue("u_color", m_highlightedColor);
 			break;
 
 		case State::CLICKED:
-			glBindTexture(GL_TEXTURE_2D, m_clickedTexture.m_id);
+			glBindTexture(GL_TEXTURE_2D, m_clickedTexture->m_id);
 			shader->setUniformValue("u_color", m_clickedColor);
 			break;
 	}
@@ -133,7 +133,7 @@ void Button::draw()
 	if (m_nineSlice > 0) {
 		float slice = m_nineSlice;
 		shader->setUniformValue("u_dimensions", vec2(slice / m_size.x, slice / m_size.y));
-		shader->setUniformValue("u_border",  vec2(slice / m_texture.m_width, slice / m_texture.m_height));
+		shader->setUniformValue("u_border",  vec2(slice / m_texture->m_width, slice / m_texture->m_height));
 	}
 
 	buttonQuad->draw();

@@ -95,13 +95,13 @@ bool Game::loadRequieredResources()
 		"space_background.png", "bomberboy_1.png", "bomberboy_2.png",
 		"bomberboy_3.png", "blue_rectangle.png"
 	};
-	std::vector<Texture*> textures = {
+	std::vector<Texture**> textures = {
 		&Textures::whiteTexture, &Textures::blackTexture, &Textures::homeBackground,
 		&Textures::spaceBackground, &Textures::bomberboy1, &Textures::bomberboy2,
 		&Textures::bomberboy3, &Textures::blueRectangle
 	};
 	for (uint i = 0; i < assets.size(); i++) {
-		if (!Resource::loadTexture(("assets/"+assets[i]).c_str(), *textures[i])) {
+		if (!Resource::loadTexture(("assets/"+assets[i]).c_str(), (*textures[i]))) {
 			cerr << "Failed to load " << assets[i] << endl;
 			glfwTerminate();
 			return false;
@@ -177,7 +177,7 @@ void Game::setState(GameState state)
 		});
 
 		/* Load Images */
-		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::homeBackground));
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), Textures::homeBackground));
 
 		cerr << "Loaded main menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
@@ -240,10 +240,10 @@ void Game::setState(GameState state)
 		labels.push_back(new Label(mainWindow, vec2(-100, -120)	, vec2(0.75f, 0.5f), to_string(m_gameSettings[4]).c_str(), 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE, vec3(0.5f, 0.5f, 0.5f)));
 
 		/* Load Images */
-		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W/2), &Textures::blueRectangle));
-		images.push_back(new Image(mainWindow, vec2(40, 100), vec2(1.0f, 0.0f), vec2(WINDOW_W/4), &Textures::bomberboy2));
-		images.push_back(new Image(mainWindow, vec2(0, 100), vec2(0.0f, 0.5f), vec2(WINDOW_W/3), &Textures::bomberboy3));
-		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), &Textures::spaceBackground));
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W/2), Textures::blueRectangle));
+		images.push_back(new Image(mainWindow, vec2(40, 100), vec2(1.0f, 0.0f), vec2(WINDOW_W/4), Textures::bomberboy2));
+		images.push_back(new Image(mainWindow, vec2(0, 100), vec2(0.0f, 0.5f), vec2(WINDOW_W/3), Textures::bomberboy3));
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), Textures::spaceBackground));
 
 		cerr << "Loaded singleplayer menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
@@ -268,11 +268,9 @@ void Game::setState(GameState state)
 		for (int i=0; i < m_gameSettings[4]; i++) {
 			Robot* robot = new Robot(map);
 			robot->getTransform().setPosition(vec3(1.0f, 0.0f, 1.0f) * float(rand()%m_gameSettings[0]));
-			//Bomb* bomb = new Bomb(map, vec3(rand()%100/100.0f, rand()%100/100.0f, rand()%100/100.0f), 5, 5);
-			//bomb->getTransform().setPosition(vec3(rand()%11+1, 0, rand()%11+1));
 			map->addActor(robot);
 		}
-		
+
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
 		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
 

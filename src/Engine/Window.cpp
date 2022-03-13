@@ -28,8 +28,7 @@ void Window::update()
     yPos = m_size.y - yPos;
 
     int leftClick = glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-
-	int size = m_callbacks.size();
+	auto size = m_callbacks.size();
 	for (auto cb : m_callbacks) {
 		cb.second(xPos, yPos, leftClick);
 		if (size != m_callbacks.size())

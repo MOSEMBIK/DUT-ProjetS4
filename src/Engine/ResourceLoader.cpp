@@ -205,17 +205,17 @@ bool Resource::loadMTL(const char* filename, vector<Material>& materials)
         {
             char diffuseMap[128]; 
             fscanf(file, "%s\n", diffuseMap);
-            Texture texture;
+            Texture* texture;
             Resource::loadTexture(diffuseMap, texture);
-            materials.back().setDiffuseTexture(texture.m_id);
+            materials.back().setDiffuseTexture(texture->m_id);
         }
         else if (strcmp(lineHeader, "map_Ks") == 0)
         {
             char specularMap[128];
             fscanf(file, "%s\n", specularMap);
-            Texture texture;
+            Texture* texture;
             Resource::loadTexture(specularMap, texture);
-            materials.back().setSpecularTexture(texture.m_id);
+            materials.back().setSpecularTexture(texture->m_id);
         }
     }
 
@@ -223,25 +223,48 @@ bool Resource::loadMTL(const char* filename, vector<Material>& materials)
     return true;
 }
 
-bool Resource::loadTexture(const char* filename, Texture& texture)
+void Resource::save(string name, Texture* texture)
 {
-    int nrChannel;
-    unsigned char* data = stbi_load(filename, &texture.m_width, &texture.m_height, &nrChannel, 0);
-    if(!data)
-    {
-        cout << "Failed to load texture" << endl;
-        return false;
+    auto search = textureDict.find(name);
+    if(search == textureDict.end()) {
+        textureDict.insert({name, texture});
     }
+}
 
-    glGenTextures(1, &texture.m_id);
-    glBindTexture(GL_TEXTURE_2D, texture.m_id);  
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.m_width, texture.m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
+Texture* Resource::find(string name)
+{
+    auto search = textureDict.find(name);
+    if(search != textureDict.end())
+        return search->second;
+    return nullptr;
+}
 
-    stbi_image_free(data);
+bool Resource::loadTexture(const char* filename, Texture*& texture)
+{
+	texture = Resource::find(filename);
+	if(texture == nullptr)  {
+		texture = new Texture();
+		float time = glfwGetTime();
+		int nrChannel;
+		unsigned char* data = stbi_load(filename, &texture->m_width, &texture->m_height, &nrChannel, 0);
+		if(!data) {
+			cerr << "Failed to load texture" << endl;
+			return false;
+		}
+
+		glGenTextures(1, &texture->m_id);
+		glBindTexture(GL_TEXTURE_2D, texture->m_id);  
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->m_width, texture->m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		stbi_image_free(data);
+		cerr << "Texture " << filename << " loaded in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
+		Resource::save(filename, texture);
+	}
+  
     return true;
 }

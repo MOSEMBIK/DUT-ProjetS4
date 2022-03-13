@@ -7,22 +7,22 @@ using namespace std;
 Map::Map() {}
 
 Map::~Map() {
-	for (auto& actor : actors) {
+	for (Actor* actor : actors) {
 		delete actor;
 	}
 	
-	for (auto& wall : walls) {
+	for (auto wall : walls) {
 		delete wall.second;
 	}
 }
 
-void Map::generateMap(unsigned char size, unsigned char wallPercentage) {
+void Map::generateMap(int size, int wallPercentage) {
 	if (size % 2 == 0)
 		size++;
 	this->mapSize = size;;
-	unsigned char sizeMax = size-1;
-	for (unsigned char i = 0; i < size; i++) {
-		for (unsigned char j = 0; j < size; j++) {
+	int sizeMax = size-1;
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < size; j++) {
 			glm::ivec2 pos(i, j);
 			/**
 			 * @brief Metal Walls
