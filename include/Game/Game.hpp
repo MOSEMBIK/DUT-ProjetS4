@@ -11,7 +11,7 @@
 #include <glm/vec2.hpp>
 
 enum VSync { OFF = 0, ONE_FRAME = 1, TWO_FRAME = 2};
-enum GameState { MAIN_MENU, SINGLEPLAYER, GAME };
+enum GameState { MAIN_MENU, OPTIONS, SINGLEPLAYER, GAME };
 
 void onKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mods);
 
@@ -34,7 +34,13 @@ private:
     Shader* basicShader;
 
     GameState m_gameState;
-    VSync m_vsync;
+
+    // Options
+	std::string m_username;
+	bool m_fullscreen;
+	glm::ivec2 m_windowSize;
+	VSync m_vsync;
+
 
     // Singleton
     static Game* m_instance;
@@ -53,6 +59,7 @@ public:
 
 	bool postInit();
     void update();
+	bool updateWindowOptions();
 
     /**
      * @brief Get the Singleton instance of Game

@@ -27,12 +27,35 @@ Game::Game() : m_currentTime(0), m_deltaTime(0), m_mousePos(vec2(0.0f)), m_direc
 {
     m_currentTime = glfwGetTime();
 	//glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+
+	//Load options
+	fstream file("options.txt");
+	if (!file.is_open()) {
+		ofstream outfile("options.txt");
+		outfile << "username:PielleBoule" << endl << "windowWidth:1280" << endl
+			<< "fullscreen:false" << endl << "enableVSync:true" << endl;
+		outfile.close();
+	}
+	cerr << "Loading options..." << endl;
+	string line;
+	string value;
+	std::size_t i;
+	ifstream optionsFile("options.txt");
+	if (optionsFile.is_open()) {
+		getline(optionsFile, line); i = line.find(':'); value = line.substr(i + 1, line.length() - i + 1); m_username = value;
+		getline(optionsFile, line); i = line.find(':'); value = line.substr(i + 1, line.length() - i + 1); m_windowSize = vec2(stoi(value), stoi(value)/16*9);
+		getline(optionsFile, line); i = line.find(':'); value = line.substr(i + 1, line.length() - i + 1); m_fullscreen = (value == "true");
+		getline(optionsFile, line); i = line.find(':'); value = line.substr(i + 1, line.length() - i + 1); m_vsync = (value == "true") ? VSync::ONE_FRAME : VSync::OFF;
+		optionsFile.close();
+	}
+	
     init();
 }
 
 bool Game::init()
 {
 	mainWindow = new Window();
+	updateWindowOptions();
 	mainCamera = new Camera();
 
 	if (!mainWindow)
@@ -83,6 +106,38 @@ bool Game::init()
 	m_lastTime = m_currentTime - 1;
 
 	cerr << "Game initialized" << endl;
+	return true;
+}
+
+bool Game::updateWindowOptions() {
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+	glfwSetWindowAttrib(mainWindow->getWindow(), GLFW_RED_BITS, mode->redBits);
+	glfwSetWindowAttrib(mainWindow->getWindow(), GLFW_GREEN_BITS, mode->greenBits);
+	glfwSetWindowAttrib(mainWindow->getWindow(), GLFW_BLUE_BITS, mode->blueBits);
+	glfwSetWindowAttrib(mainWindow->getWindow(), GLFW_REFRESH_RATE, mode->refreshRate);
+
+	if (m_fullscreen) {
+		glfwSetWindowAttrib(mainWindow->getWindow(), GLFW_DECORATED, GLFW_FALSE);
+		glfwSetWindowSize(mainWindow->getWindow(), mode->width, mode->height);
+		glfwSetWindowPos(mainWindow->getWindow(), 0, 0);
+	}
+	else {
+		glfwSetWindowAttrib(mainWindow->getWindow(), GLFW_DECORATED, GLFW_TRUE);
+		glfwSetWindowSize(mainWindow->getWindow(), m_windowSize.x, m_windowSize.y);
+		if (mode->width != m_windowSize.x)
+			glfwSetWindowPos(mainWindow->getWindow(), (mode->width-m_windowSize.x)/2, (mode->height-m_windowSize.y)/2);
+	}
+	glfwSwapInterval(m_vsync);
+
+	ofstream file("options.txt", ofstream::out | ofstream::trunc);
+	if (file.is_open()) {
+		file << "username:" << m_username << endl
+		<< "windowWidth:" << m_windowSize.x << endl
+		<< "fullscreen:" << (m_fullscreen ? "true" : "false") << endl
+		<< "enableVSync:" << ((m_vsync == VSync::ONE_FRAME) ? "true" : "false") << endl;
+		file.close();
+	}
 	return true;
 }
 
@@ -172,7 +227,8 @@ void Game::setState(GameState state)
 		buttons.push_back(new Button(mainWindow, vec2(-50, 50), vec2(1.0f, 0.0f), vec2(79, 79), (char *)"assets/options.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[2]->setNineSlice(0);
 		buttons[2]->setOnClickCallback([]() {
-			cerr << "Options clicked" << endl;
+			Game* game = Game::getInstance();
+			game->setState(GameState::OPTIONS);
 		});
 
 		/* Load Images */
@@ -182,7 +238,62 @@ void Game::setState(GameState state)
 	} break;
 
 	/**
-	 * @brief Load the singeplayer menu
+	 * @brief Load the option menu
+	 */
+	case GameState::OPTIONS: {
+		cerr << "Loading options menu..." << endl; float time = glfwGetTime();
+		/* Load Buttons */
+		buttons.push_back(new Button(mainWindow, vec2(-137.5f, 50.0f), vec2(1.0f, 0.0f), vec2(250, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[0]->setLabel(Label(mainWindow, vec2(-137.5f, 50.0f), vec2(1.0f, 0.0f), "Apply changes", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[0]->setOnClickCallback([]() {
+			Game* game = Game::getInstance();
+			game->updateWindowOptions();
+		});
+
+		buttons.push_back(new Button(mainWindow, vec2(137.5f, 50.0f), vec2(0.0f, 0.0f), vec2(250, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[1]->setLabel(Label(mainWindow, vec2(137.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[1]->setOnClickCallback([]() {
+			Game* game = Game::getInstance();
+			game->setState(GameState::MAIN_MENU);
+		});
+
+		char* arrow = (char*)"assets/arrow.png";
+		char* reverse_arrow = (char*)"assets/reverse_arrow.png";
+		buttons.push_back(new Button(mainWindow, vec2(-40, 120)	, vec2(0.75f, 0.5f), vec2(60), arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-40, 60)	, vec2(0.75f, 0.5f), vec2(60), arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(-40, 0)	, vec2(0.75f, 0.5f), vec2(60), arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(0, 120)	, vec2(0.50f, 0.5f), vec2(60), reverse_arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(0, 60)	, vec2(0.50f, 0.5f), vec2(60), reverse_arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons.push_back(new Button(mainWindow, vec2(0, 0)		, vec2(0.50f, 0.5f), vec2(60), reverse_arrow, vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		for (int i=2; i<8; i++)
+			buttons[i]->setNineSlice(0);
+		buttons[2]->setOnClickCallback([this]() { m_fullscreen = !m_fullscreen; labels[3]->setText(m_fullscreen ? "ON" : "OFF"); });
+		buttons[5]->setOnClickCallback([this]() { m_fullscreen = !m_fullscreen; labels[3]->setText(m_fullscreen ? "ON" : "OFF"); });
+		buttons[3]->setOnClickCallback([this]() { m_windowSize += ivec2(320,180); labels[4]->setText(to_string(m_windowSize.x) + "x" + to_string(m_windowSize.y)); });
+		buttons[6]->setOnClickCallback([this]() { m_windowSize -= ivec2(320,180); labels[4]->setText(to_string(m_windowSize.x) + "x" + to_string(m_windowSize.y)); });
+		buttons[4]->setOnClickCallback([this]() { m_vsync = (m_vsync == VSync::ONE_FRAME) ? VSync::OFF : VSync::ONE_FRAME; labels[5]->setText((m_vsync == VSync::ONE_FRAME) ? "ON" : "OFF"); });
+		buttons[7]->setOnClickCallback([this]() { m_vsync = (m_vsync == VSync::ONE_FRAME) ? VSync::OFF : VSync::ONE_FRAME; labels[5]->setText((m_vsync == VSync::ONE_FRAME) ? "ON" : "OFF"); });
+
+		/* Load Labels */
+		labels.push_back(new Label(mainWindow, vec2(20, 120)	, vec2(0.25f, 0.5f), "Fullscreen"	, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, 60)		, vec2(0.25f, 0.5f), "Window size"	, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, 0)		, vec2(0.25f, 0.5f), "VSync"		, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+
+		labels.push_back(new Label(mainWindow, vec2(-20, 120)	, vec2(0.625f, 0.5f), m_fullscreen ? "ON" : "OFF", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(-20, 60)	, vec2(0.625f, 0.5f), to_string(m_windowSize.x) + "x" + to_string(m_windowSize.y), 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(-20, 0)		, vec2(0.625f, 0.5f), (m_vsync == VSync::ONE_FRAME) ? "ON" : "OFF", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+
+		/* Load Images */
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W/2), Textures::blueRectangle));
+		images.push_back(new Image(mainWindow, vec2(40, 100), vec2(1.0f, 0.0f), vec2(WINDOW_W/4), Textures::bomberboy2));
+		images.push_back(new Image(mainWindow, vec2(0, 100), vec2(0.0f, 0.5f), vec2(WINDOW_W/3), Textures::bomberboy3));
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(WINDOW_W), Textures::spaceBackground));
+
+		cerr << "Loaded singleplayer menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
+	} break;
+
+	/**
+	 * @brief Load the singleplayer menu
 	 */
 	case GameState::SINGLEPLAYER: {
 		cerr << "Loading singleplayer menu..." << endl; float time = glfwGetTime();
@@ -225,11 +336,11 @@ void Game::setState(GameState state)
 		buttons[10]->setOnClickCallback([this]() { m_gameSettings[3]--; if (m_gameSettings[3] == 255) m_gameSettings[3] = 100; labels[8]->setText(to_string(m_gameSettings[3])); });
 
 		/* Load Labels */
-		labels.push_back(new Label(mainWindow, vec2(20, 120)	, vec2(0.25f, 0.5f), "Taille de la map"		, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
-		labels.push_back(new Label(mainWindow, vec2(20, 60)		, vec2(0.25f, 0.5f), "Nombre de joueurs"	, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
-		labels.push_back(new Label(mainWindow, vec2(20, 0)		, vec2(0.25f, 0.5f), "Pourcentage de murs"	, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
-		labels.push_back(new Label(mainWindow, vec2(20, -60)	, vec2(0.25f, 0.5f), "Pourcentage de bonus"	, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
-		labels.push_back(new Label(mainWindow, vec2(20, -120)	, vec2(0.25f, 0.5f), "Nombre de bots"		, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, 120)	, vec2(0.25f, 0.5f), "Size of the map"		, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, 60)		, vec2(0.25f, 0.5f), "Number of players"	, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, 0)		, vec2(0.25f, 0.5f), "Wall percentage"		, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, -60)	, vec2(0.25f, 0.5f), "Bonus percentage"		, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(20, -120)	, vec2(0.25f, 0.5f), "Number of bots"		, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
 
 		m_gameSettings[4] = m_gameSettings[1] - 1;
 		labels.push_back(new Label(mainWindow, vec2(-100, 120)	, vec2(0.75f, 0.5f), to_string(m_gameSettings[0]).c_str(), 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
@@ -305,6 +416,9 @@ void Game::update()
 		case GameState::MAIN_MENU: {
 		} break;
 
+		case GameState::OPTIONS: {
+		} break;
+
 		case GameState::SINGLEPLAYER: {
 		} break;
 
@@ -316,7 +430,7 @@ void Game::update()
 
 	if(m_currentTime - m_lastTime >= 1)
 	{
-		std::string fpsCount = "FPS :";
+		std::string fpsCount = "FPS: ";
 		fpsCount += std::to_string((int)(1 / m_deltaTime));
 		glfwSetWindowTitle(mainWindow->getWindow(), fpsCount.c_str());
 		m_lastTime = m_currentTime;
