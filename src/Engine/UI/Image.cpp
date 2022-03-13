@@ -38,7 +38,7 @@ void Image::draw()
 	float w_scale = m_window->getScale().x;
 	if (w_scale < m_window->getScale().y)
 		w_scale = m_window->getScale().y;
-	mat4 M = translate(vec3(m_position.x + (0.5f - m_anchor.x) * m_size.x, m_position.y + (0.5f - m_anchor.y) * m_size.y, 0.0f) * w_scale) * scale(vec3(m_size.x, -m_size.y, 1) * w_scale);
+	mat4 M = translate(vec3(m_position.x + (0.5f - m_anchor.x) * m_size.x, m_position.y + (0.5f - m_anchor.y) * m_size.y, 0.0f) * w_scale) * scale(vec3(m_size.x, m_size.y, 1) * w_scale);
 	mat4 P = ortho(-(float)m_window->getWidth() * m_anchor.x, (float)m_window->getWidth() * (1 - m_anchor.x), -(float)m_window->getHeight() * m_anchor.y, (float)m_window->getHeight() * (1 - m_anchor.y));
 
 	imageShader->use();

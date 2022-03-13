@@ -63,7 +63,7 @@ void Window::Init(const WindowProps& props)
     }
 	
     // Hide one useless faces
-	//glEnable(GL_CULL_FACE); 
+	glEnable(GL_CULL_FACE); 
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
@@ -123,7 +123,7 @@ void Window::Init(const WindowProps& props)
 	glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods)
 	{
 		UNUSED(mods);
-		
+
 		WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 		switch (action)

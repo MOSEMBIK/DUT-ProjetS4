@@ -61,7 +61,7 @@ void Button::onEvent(Event& e)
 
 void Button::draw()
 {
-	mat4 M = translate(vec3(m_position.x, m_position.y, 0.0f) * m_window->getScale().y) * scale(vec3(m_size.x, -m_size.y, 1) * m_window->getScale().y);	
+	mat4 M = translate(vec3(m_position.x, m_position.y, 0.0f) * m_window->getScale().y) * scale(vec3(m_size.x, m_size.y, 1) * m_window->getScale().y);	
 	mat4 P = ortho(-(float)m_window->getWidth() * m_anchor.x, (float)m_window->getWidth() * (1 - m_anchor.x), -(float)m_window->getHeight() * m_anchor.y, (float)m_window->getHeight() * (1 - m_anchor.y));
 
 	Shader* shader;

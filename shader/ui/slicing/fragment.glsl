@@ -27,7 +27,7 @@ float processAxis(float coord, float textureBorder, float windowBorder) {
 void main(void) {
     vec2 newUV = vec2(
         processAxis(texCoords.x, u_border.x, u_dimensions.x),
-        processAxis(texCoords.y, u_border.y, u_dimensions.y)
+        processAxis(1 - texCoords.y, u_border.y, u_dimensions.y)
     );
     
     vec4 textureColor = texture2D(u_imageTexture, newUV);
