@@ -7,6 +7,7 @@
 #include <Engine/Transform.hpp>
 #include <Engine/Camera.hpp>
 #include <Engine/ResourceLoader.hpp>
+#include <Engine/Utils.hpp>
 
 #include <iostream>
 
@@ -50,6 +51,7 @@ void Game::onEvent(Event& e)
 
 bool Game::onClose(WindowCloseEvent& e)
 {
+	UNUSED(e);
 	m_running = false;
 	return true;
 }
@@ -92,11 +94,6 @@ bool Game::init()
 bool Game::updateWindowOptions() {
 	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-	glfwSetWindowAttrib(mainWindow->getWindow(), GLFW_RED_BITS, mode->redBits);
-	glfwSetWindowAttrib(mainWindow->getWindow(), GLFW_GREEN_BITS, mode->greenBits);
-	glfwSetWindowAttrib(mainWindow->getWindow(), GLFW_BLUE_BITS, mode->blueBits);
-	glfwSetWindowAttrib(mainWindow->getWindow(), GLFW_REFRESH_RATE, mode->refreshRate);
-
 	if (m_fullscreen) {
 		glfwSetWindowAttrib(mainWindow->getWindow(), GLFW_DECORATED, GLFW_FALSE);
 		glfwSetWindowSize(mainWindow->getWindow(), mode->width, mode->height);
@@ -433,4 +430,6 @@ bool Game::onUpdate(AppUpdateEvent& e)
 		mainWindow->setTitle(fpsCount);
 		m_lastTime = m_currentTime;
 	}
+
+	return false;
 }

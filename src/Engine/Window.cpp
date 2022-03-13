@@ -4,6 +4,8 @@
 #include <Engine/Event/KeyEvent.hpp>
 #include <Engine/Event/MouseEvent.hpp>
 
+#include <Engine/Utils.hpp>
+
 static bool s_GLFWInitialized = false;
 
 static void GLFWErrorCallback(int error, const char* description)
@@ -50,6 +52,7 @@ void Window::Init(const WindowProps& props)
 	m_window = glfwCreateWindow((int)props.Width, (int)props.Height, m_data.Title.c_str(), nullptr, nullptr);
 	glfwMakeContextCurrent(m_window);
 	glfwSetWindowUserPointer(m_window, &m_data);
+	glfwSetWindowAspectRatio(m_window, 16, 9);
 	setVSync(true);
 
 	if (glewInit() != GLEW_OK)
@@ -89,6 +92,9 @@ void Window::Init(const WindowProps& props)
 
 	glfwSetKeyCallback(m_window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
+		UNUSED(scancode);
+		UNUSED(mods);
+
 		WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 		switch (action)
@@ -116,6 +122,8 @@ void Window::Init(const WindowProps& props)
 
 	glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods)
 	{
+		UNUSED(mods);
+		
 		WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 		switch (action)

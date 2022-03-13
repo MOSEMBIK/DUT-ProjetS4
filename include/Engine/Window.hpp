@@ -91,7 +91,12 @@ class Window
 
         void setTitle(std::string title);
 
-        glm::vec2 getScale() { return glm::vec2( DEFAULT_WINDOW_W / m_data.Width, DEFAULT_WINDOW_H / m_data.Height );}
+        glm::vec2 getScale() 
+        { 
+            return glm::vec2
+            ( m_data.Width / float(DEFAULT_WINDOW_W) ,
+            m_data.Height / float(DEFAULT_WINDOW_H) );
+        }
 
 		static Window* create(const WindowProps& props = WindowProps());
 
