@@ -19,6 +19,8 @@ private:
 public:
     Camera();
 
+    virtual ~Camera() = default;
+
     /**
      * @brief Get the Transform of the Camera
      * 

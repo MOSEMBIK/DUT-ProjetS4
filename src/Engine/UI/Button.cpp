@@ -169,7 +169,7 @@ bool Button::onMouseButtonPressed(MouseButtonPressedEvent& e)
 bool Button::onMouseButtonReleased(MouseButtonReleasedEvent& e)
 {
 	bool catched = false;
-	if(m_clicked && m_state == State::HOVERED)
+	if(m_clicked && m_state == State::HOVERED && e.GetMouseButton() == 0)
 	{
 		catched = true;
 		onClick();
