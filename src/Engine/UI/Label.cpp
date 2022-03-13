@@ -22,5 +22,5 @@ void Label::setFontHeight(float fontHeight)
 
 void Label::draw()
 {
-    m_textRenderer.renderText(m_text, m_position, m_anchor, m_alignment, 0.5f * m_window->m_scale.y, m_fontColor);
+    m_textRenderer.renderText(m_text, m_position, m_anchor, m_alignment, 0.5f * m_window->getScale().y, m_fontColor);
 }

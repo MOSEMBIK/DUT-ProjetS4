@@ -6,13 +6,14 @@
 #include <Engine/Shader.hpp>
 #include <Engine/Texture.hpp>
 #include <Engine/Mesh.hpp>
+#include <Engine/Event/EventReceiver.hpp>
 
 #include <glm/vec3.hpp>
 
 #include <functional>
 
-class Button : public Widget {
-    enum State { NONE, HIGHLIGHTED, CLICKED};
+class Button : public Widget, public IEventReceiver {
+    enum State { NONE, HOVERED};
 
 protected:
     static Mesh* buttonQuad;
@@ -20,6 +21,8 @@ protected:
     static Shader* buttonSlicedShader;
 
     unsigned int m_nineSlice = 16;
+
+    bool m_clicked;
 
     State m_state;
 	Label m_label;
@@ -34,7 +37,6 @@ protected:
     glm::vec3 m_highlightedColor;
 
     std::function<void()> onClick = []() {};
-	int m_clickCallbackId;
 
 public:
     Button(Window* window, glm::vec2 position, glm::vec2 anchor, glm::vec2 size, char* texture, char* clickedTexture, char* highlightedTexture,
@@ -46,7 +48,7 @@ public:
     Button(Window* window, glm::vec2 position, glm::vec2 anchor, glm::vec2 size, char* texture,
     glm::vec3 color = glm::vec3(1.0f), glm::vec3 clickedColor = glm::vec3(1.0f), glm::vec3 highlightedColor = glm::vec3(1.0f));
 
-	inline ~Button() { m_window->unregisterCallback(m_clickCallbackId); }
+    ~Button();
 
     inline void setSize(glm::vec2 size) { m_size = size; }
     inline void setLabel(Label label) { m_label = label; }
@@ -74,7 +76,11 @@ public:
 
     inline void setOnClickCallback(std::function<void()> func) { onClick = func; }
 
-    void init();
+    virtual void onEvent(Event& event);
+
     void draw();
-	void onHover();
+    
+	bool onMouseMoved(MouseMovedEvent& e);
+	bool onMouseButtonPressed(MouseButtonPressedEvent& e);
+	bool onMouseButtonReleased(MouseButtonReleasedEvent& e);
 };

@@ -119,7 +119,7 @@ void TextRenderer::renderText(string text, vec2 position, vec2 anchor, int align
 {
     // activate corresponding render state	
     m_textShader.use();
-	mat4 P = ortho(-(float)m_window->getSize().x * anchor.x, (float)m_window->getSize().x * (1 - anchor.x), -(float)m_window->getSize().y * anchor.y, (float)m_window->getSize().y * (1 - anchor.y));
+	mat4 P = ortho(-(float)m_window->getWidth() * anchor.x, (float)m_window->getWidth() * (1 - anchor.x), -(float)m_window->getHeight() * anchor.y, (float)m_window->getHeight() * (1 - anchor.y));
 	m_textShader.setUniformValue("u_P", P);
     m_textShader.setUniformValue("u_textColor", color);
     glActiveTexture(GL_TEXTURE0);
@@ -142,7 +142,7 @@ void TextRenderer::renderText(string text, vec2 position, vec2 anchor, int align
     {
         position.y -= getTextHeight(text);
     }
-	position *= m_window->m_scale.y;
+	position *= m_window->getScale().y;
 
     // iterate through all characters
     string::const_iterator c;
