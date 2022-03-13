@@ -20,61 +20,49 @@ Button::Button(Window* window, vec2 position, vec2 anchor, vec2 size, char* text
 	vec3 color, vec3 clickedColor, vec3 highlightedColor)
 	: Widget(window, position, anchor), m_state(State::NONE), m_label(window, vec2(0.0f), vec2(0.0f), ""), m_size(size), m_color(color), m_clickedColor(clickedColor), m_highlightedColor(highlightedColor)
 {
+	window->attachEventReceiver(*this);
 	Resource::loadTexture(texture, m_texture);
 	Resource::loadTexture(clickedTexture, m_clickedTexture);
 	Resource::loadTexture(highlightedTexture, m_highlightedTexture);
-
-	init();
 }
 
 Button::Button(Window* window, vec2 position, vec2 anchor, vec2 size, char* texture, char* clickedTexture,
 	vec3 color, vec3 clickedColor, vec3 highlightedColor)
 	: Widget(window, position, anchor), m_state(State::NONE), m_label(window, vec2(0.0f), vec2(0.0f), ""), m_size(size), m_color(color), m_clickedColor(clickedColor), m_highlightedColor(highlightedColor)
 {
+	window->attachEventReceiver(*this);
 	Resource::loadTexture(texture, m_texture);
 	Resource::loadTexture(clickedTexture, m_clickedTexture);
 	m_highlightedTexture = m_texture;
-
-	init();
 }
 
 Button::Button(Window* window, vec2 position, vec2 anchor, vec2 size, char* texture,
 	vec3 color, vec3 clickedColor, vec3 highlightedColor)
 	: Widget(window, position, anchor), m_state(State::NONE), m_label(window, vec2(0.0f), vec2(0.0f), ""), m_size(size), m_color(color), m_clickedColor(clickedColor), m_highlightedColor(highlightedColor)
 {
+	window->attachEventReceiver(*this);
 	Resource::loadTexture(texture, m_texture);
 	m_clickedTexture = m_highlightedTexture = m_texture;
+}
 
-	init();
+Button::~Button()
+{
+	m_window->detachEventReceiver(*this);
 }
 
 
-void Button::init()
+void Button::onEvent(Event& e)
 {
-	// TODO : Créer un callback qui gère le click, et l'action du click etc...
-	this->m_clickCallbackId = m_window->registerCallback([this](double xPos, double yPos, int click) {
-		float scale = m_window->m_scale.y;
-		if(xPos >= (m_position.x * scale + (float)m_window->getSize().x * m_anchor.x) - m_size.x * 0.5f * scale
-		&& xPos < (m_position.x * scale + (float)m_window->getSize().x * m_anchor.x) + m_size.x * 0.5f * scale
-		&& yPos >= (m_position.y * scale + (float)m_window->getSize().y * m_anchor.y) - m_size.y * 0.5f * scale
-		&& yPos < (m_position.y * scale + (float)m_window->getSize().y * m_anchor.y) + m_size.y * 0.5f * scale) {
-			if (click)
-				m_state = State::CLICKED;
-			else {
-				if (m_state == State::CLICKED)
-					onClick();
-				m_state = State::HIGHLIGHTED;
-			}
-		}
-		else
-			m_state = State::NONE;
-	});
+	EventDispatcher dispatcher(e);
+	dispatcher.Dispatch<MouseMovedEvent>(std::bind(&Button::onMouseMoved, this, std::placeholders::_1));
+	dispatcher.Dispatch<MouseButtonPressedEvent>(std::bind(&Button::onMouseButtonPressed, this, std::placeholders::_1));
+	dispatcher.Dispatch<MouseButtonReleasedEvent>(std::bind(&Button::onMouseButtonReleased, this, std::placeholders::_1));
 }
 
 void Button::draw()
 {
-	mat4 M = translate(vec3(m_position.x, m_position.y, 0.0f) * m_window->m_scale.y) * scale(vec3(m_size.x, -m_size.y, 1) * m_window->m_scale.y);	
-	mat4 P = ortho(-(float)m_window->getSize().x * m_anchor.x, (float)m_window->getSize().x * (1 - m_anchor.x), -(float)m_window->getSize().y * m_anchor.y, (float)m_window->getSize().y * (1 - m_anchor.y));
+	mat4 M = translate(vec3(m_position.x, m_position.y, 0.0f) * m_window->getScale().y) * scale(vec3(m_size.x, -m_size.y, 1) * m_window->getScale().y);	
+	mat4 P = ortho(-(float)m_window->getWidth() * m_anchor.x, (float)m_window->getWidth() * (1 - m_anchor.x), -(float)m_window->getHeight() * m_anchor.y, (float)m_window->getHeight() * (1 - m_anchor.y));
 
 	Shader* shader;
 	if(m_nineSlice > 0)
@@ -119,14 +107,17 @@ void Button::draw()
 			shader->setUniformValue("u_color", m_color);
 			break;
 
-		case State::HIGHLIGHTED:
-			glBindTexture(GL_TEXTURE_2D, m_highlightedTexture->m_id);
-			shader->setUniformValue("u_color", m_highlightedColor);
-			break;
-
-		case State::CLICKED:
-			glBindTexture(GL_TEXTURE_2D, m_clickedTexture->m_id);
-			shader->setUniformValue("u_color", m_clickedColor);
+		case State::HOVERED:
+			if(!m_clicked)
+			{
+				glBindTexture(GL_TEXTURE_2D, m_highlightedTexture->m_id);
+				shader->setUniformValue("u_color", m_highlightedColor);
+			}
+			else
+			{
+				glBindTexture(GL_TEXTURE_2D, m_clickedTexture->m_id);
+				shader->setUniformValue("u_color", m_clickedColor);
+			}
 			break;
 	}
 
@@ -141,4 +132,49 @@ void Button::draw()
 	if (m_label.getText() != "") {
 		m_label.draw();
 	}
+}
+
+bool Button::onMouseMoved(MouseMovedEvent& e)
+{
+	float scale = m_window->getScale().y;
+
+	if(e.GetX() >= (m_position.x * scale + (float)m_window->getWidth() * m_anchor.x) - m_size.x * 0.5f * scale
+	&& e.GetX() < (m_position.x * scale + (float)m_window->getWidth() * m_anchor.x) + m_size.x * 0.5f * scale
+	&& m_window->getHeight() - e.GetY() >= (m_position.y * scale + (float)m_window->getHeight() * m_anchor.y) - m_size.y * 0.5f * scale
+	&& m_window->getHeight() - e.GetY() < (m_position.y * scale + (float)m_window->getHeight() * m_anchor.y) + m_size.y * 0.5f * scale) 
+	{
+		m_state = State::HOVERED;
+	}
+	else
+	{
+		m_state = State::NONE;
+	}
+
+	return false;
+}
+
+bool Button::onMouseButtonPressed(MouseButtonPressedEvent& e)
+{
+	if(m_state == State::HOVERED)
+	{
+		if(e.GetMouseButton() == 0)
+		{
+			m_clicked = true;
+		}
+	}
+
+	return false;
+}
+
+bool Button::onMouseButtonReleased(MouseButtonReleasedEvent& e)
+{
+	bool catched = false;
+	if(m_clicked && m_state == State::HOVERED)
+	{
+		catched = true;
+		onClick();
+	}
+	m_clicked = false;
+
+	return catched;
 }

@@ -26,19 +26,9 @@ int main(int argc, char **argv)
 	UNUSED(argv);
 	std::cerr << "---------------------------" << std::endl;
 
-	// Initialise la librairie GLFW
-	if (!glfwInit())
-		return -1;
-
-	//Text::init();
-
 	Game* game = Game::getInstance();
 	game->postInit();
-
-    while(!glfwWindowShouldClose(game->getMainWindow()->getWindow()))
-    {
-        game->update();
-    }
+	game->run();
 
 	glfwTerminate();
 

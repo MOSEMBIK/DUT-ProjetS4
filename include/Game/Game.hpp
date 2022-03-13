@@ -8,9 +8,13 @@
 #include <Engine/Lights.hpp>
 #include <Engine/Window.hpp>
 
+#include <Engine/Event/Event.hpp>
+#include <Engine/Event/MouseEvent.hpp>
+#include <Engine/Event/KeyEvent.hpp>
+#include <Engine/Event/ApplicationEvent.hpp>
+
 #include <glm/vec2.hpp>
 
-enum VSync { OFF = 0, ONE_FRAME = 1, TWO_FRAME = 2};
 enum GameState { MAIN_MENU, OPTIONS, SINGLEPLAYER, GAME };
 
 void onKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -23,7 +27,7 @@ private:
     float m_currentTime;
     float m_deltaTime;
 
-    glm::vec2 m_mousePos;
+    bool m_running = true;
 
     DirectionalLight m_directionalLight;
     std::vector<PointLight> m_pointsLights;
@@ -39,14 +43,13 @@ private:
 	std::string m_username;
 	bool m_fullscreen;
 	glm::ivec2 m_windowSize;
-	VSync m_vsync;
 
 
     // Singleton
     static Game* m_instance;
 
     bool init();
-    bool loadRequieredResources();
+    bool loadRequiredResources();
     void processInputs(GLFWwindow* window);
 
 public:
@@ -58,8 +61,11 @@ public:
     ~Game();
 
 	bool postInit();
-    void update();
 	bool updateWindowOptions();
+    void onEvent(Event& e);
+    bool onUpdate(AppUpdateEvent& e);
+    bool onClose(WindowCloseEvent& e);
+    void run();
 
     /**
      * @brief Get the Singleton instance of Game
@@ -105,13 +111,6 @@ public:
     inline Map* getMap() { return map; }
 
     /**
-     * @brief Get the Mouse Position
-     * 
-     * @return glm::vec2 
-     */
-    inline glm::vec2 getMousePosition() { return m_mousePos; }
-
-    /**
      * @brief Get the time elapsed since the start of the software
      * 
      * @return float 
@@ -124,21 +123,6 @@ public:
      * @return float 
      */
     inline float getDeltaTime() { return m_deltaTime; }
-
-    /**
-     * @brief Get the VSync setting
-     * 
-     * @return VSync 
-     */
-    inline VSync getVSync() { return m_vsync; }
-
-    /**
-     * @brief Set the VSync setting
-     * 
-     * @param v 
-     * @return VSync 
-     */
-    inline void setVSync(VSync v) { m_vsync = v; }
 
     /**
      * @brief Get the current state of the game
