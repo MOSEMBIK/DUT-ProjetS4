@@ -59,6 +59,7 @@ public:
 
 	bool postInit();
     void update();
+	bool updateWindowOptions();
 
     /**
      * @brief Get the Singleton instance of Game
