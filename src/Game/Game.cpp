@@ -113,8 +113,6 @@ bool Game::loadRequieredResources()
 	basicShader = new Shader("shader/vertex.glsl", "shader/fragment.glsl");
 	Shader::save("Base", basicShader);
 
-	this->setState(GameState::MAIN_MENU);
-
     return true;
 }
 
@@ -139,6 +137,7 @@ Game::~Game()
 
 void Game::setState(GameState state)
 {
+	cerr << endl;
 	for (auto image : images) { delete image; } images.clear();
 	for (auto button : buttons) { delete button; } buttons.clear();
 	for (auto label : labels) { delete label; } labels.clear();
@@ -283,6 +282,8 @@ void Game::setState(GameState state)
 
 bool Game::postInit() {
 	wall = new Wall(map);
+	wall->getTransform().setScale(vec3(0.0f));
+	this->setState(GameState::MAIN_MENU);
 	return true;
 }
 

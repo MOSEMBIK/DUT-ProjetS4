@@ -24,6 +24,7 @@ int main(int argc, char **argv)
 {
 	UNUSED(argc);
 	UNUSED(argv);
+	std::cerr << "---------------------------" << std::endl;
 
 	// Initialise la librairie GLFW
 	if (!glfwInit())

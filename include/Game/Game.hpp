@@ -44,7 +44,7 @@ private:
     void processInputs(GLFWwindow* window);
 
 public:
-	std::vector<int> m_gameSettings = {13, 4, 90, 10, 3};
+	std::vector<unsigned char> m_gameSettings = {13, 4, 90, 10, 3};
     // Suppression du clonage et de l'opérateur =
     Game(Game&) = delete;
     void operator= (const Game&) = delete;
