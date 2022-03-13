@@ -13,6 +13,7 @@ private:
 public:
 	enum Type { Metal, Stone, Wood };
 	Wall(Map* map, int type = Metal);
+	virtual ~Wall() {}
 
 	inline int getType() { return type; }
 	inline int getHealth() { return health; }

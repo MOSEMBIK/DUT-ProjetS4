@@ -9,5 +9,6 @@ private:
 
 public:
 	Human(Map* map);
+	virtual ~Human() {}
 
 };
