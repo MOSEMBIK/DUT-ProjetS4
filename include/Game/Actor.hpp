@@ -10,6 +10,9 @@
 
 class Map;
 
+class Player;
+class Bomb;
+
 class Actor
 {
 protected:
@@ -24,7 +27,7 @@ public:
 	Actor(Map* map);
 	Actor(Window* window);
 	Actor(Map* map, const char* filename);
-	virtual ~Actor() {}
+virtual ~Actor() {}
 
 	/**
 	 * @brief 

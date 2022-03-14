@@ -15,7 +15,7 @@
 
 #include <glm/vec2.hpp>
 
-enum GameState { MAIN_MENU, OPTIONS, SINGLEPLAYER, GAME };
+enum GameState { MAIN_MENU, OPTIONS, SINGLEPLAYER, GAME_LOADING, PLAYING, PAUSED };
 
 void onKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mods);
 
@@ -28,6 +28,7 @@ private:
     float m_deltaTime;
 
     bool m_running = true;
+	unsigned int keyPressed = 0;
 
     DirectionalLight m_directionalLight;
     std::vector<PointLight> m_pointsLights;

@@ -64,6 +64,7 @@
 		"numeric": "cpp",
 		"chrono": "cpp",
 		"ratio": "cpp",
+		"xmemory0": "cpp"
 		"format": "cpp",
 		"array": "cpp",
 		"charconv": "cpp",

@@ -180,10 +180,13 @@ void Game::setState(GameState state)
 	 */
 	case GameState::MAIN_MENU: {
 		cerr << "Loading main menu..." << endl; float time = glfwGetTime();
-		if (m_gameState == GameState::GAME) {
+		if (m_gameState == GameState::GAME_LOADING) {
 			// Delete game content
-			delete map;
-			map = nullptr;
+			if(map != nullptr)
+			{
+				delete map;
+				map = nullptr;
+			}
 		}
 		/* Load Buttons */
 		// Create button(window, position, anchor, size, ...)
@@ -228,10 +231,18 @@ void Game::setState(GameState state)
 
 		buttons.push_back(new Button(mainWindow, vec2(137.5f, 50.0f), vec2(0.0f, 0.0f), vec2(250, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[1]->setLabel(Label(mainWindow, vec2(137.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		buttons[1]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->setState(GameState::MAIN_MENU);
-		});
+		if (m_gameState == GameState::PAUSED) {
+			buttons[1]->setOnClickCallback([]() {
+				Game* game = Game::getInstance();
+				game->setState(GameState::PAUSED);
+			});
+		}
+		else {
+			buttons[1]->setOnClickCallback([]() {
+				Game* game = Game::getInstance();
+				game->setState(GameState::MAIN_MENU);
+			});
+		}
 
 		char* arrow = (char*)"assets/arrow.png";
 		char* reverse_arrow = (char*)"assets/reverse_arrow.png";
@@ -278,7 +289,7 @@ void Game::setState(GameState state)
 		buttons[0]->setLabel(Label(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), "Launch Game", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 		buttons[0]->setOnClickCallback([]() {
 			Game* game = Game::getInstance();
-			game->setState(GameState::GAME);
+			game->setState(GameState::GAME_LOADING);
 		});
 
 		buttons.push_back(new Button(mainWindow, vec2(122.5f, 50.0f), vec2(0.0f, 0.0f), vec2(220, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
@@ -337,15 +348,8 @@ void Game::setState(GameState state)
 	/**
 	 * @brief Launch the game
 	 */
-	case GameState::GAME: {
+	case GameState::GAME_LOADING: {
 		cerr << "Loading game..." << endl; float time = glfwGetTime();
-		/* Load Buttons */
-		buttons.push_back(new Button(mainWindow, vec2(162.5f, 50.0f), vec2(0.0f, 0.0f), vec2(300, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
-		buttons[0]->setLabel(Label(mainWindow, vec2(162.5f, 50.0f), vec2(0.0f, 0.0f), "Exit to main menu", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		buttons[0]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->setState(GameState::MAIN_MENU);
-		});
 
 		map = new Map();
 		map->generateMap(m_gameSettings[0], m_gameSettings[2]);
@@ -361,6 +365,53 @@ void Game::setState(GameState state)
 		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
 
 		cerr << "Loaded game in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
+	} break;
+
+	/**
+	 * @brief Playing game
+	 */
+	case GameState::PLAYING: {
+		cerr << "Loading Playing..." << endl; float time = glfwGetTime();
+		/* Load labels */
+
+		cerr << "Loaded Playing in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
+	} break;
+
+	/**
+	 * @brief Paused game
+	 */
+	case GameState::PAUSED: {
+		cerr << "Loading Paused menu..." << endl; float time = glfwGetTime();
+		/* Load Buttons */
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, 185.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[0]->setLabel(Label(mainWindow, vec2(0.0f, 185.0f), vec2(0.5f, 0.5f), "Resume", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[0]->setOnClickCallback([]() {
+			Game* game = Game::getInstance();
+			game->setState(GameState::PLAYING);
+		});
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, 62.5f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[1]->setLabel(Label(mainWindow, vec2(0.0f, 62.5f), vec2(0.5f, 0.5f), "Restart", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[1]->setOnClickCallback([]() {
+			Game* game = Game::getInstance();
+			game->setState(GameState::GAME_LOADING);
+		});
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, -62.5f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[2]->setLabel(Label(mainWindow, vec2(0.0f, -62.5f), vec2(0.5f, 0.5f), "Options", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[2]->setOnClickCallback([]() {
+			Game* game = Game::getInstance();
+			game->setState(GameState::OPTIONS);
+		});
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, -185.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[3]->setLabel(Label(mainWindow, vec2(0.0f, -185.0f), vec2(0.5f, 0.5f), "Exit to main menu", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[3]->setOnClickCallback([]() {
+			Game* game = Game::getInstance();
+			game->setState(GameState::MAIN_MENU);
+		});
+
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, 0.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2, DEFAULT_WINDOW_H/1.5), (char *)"assets/graytton.png", vec3(1.0f), vec3(1.0f), vec3(1.0f)));
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, 0.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2, DEFAULT_WINDOW_H/1.5)+10.0f, (char *)"assets/bluetton.png", vec3(1.0f), vec3(1.0f), vec3(1.0f)));
+		
+		cerr << "Loaded Paused menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
 	}
 
@@ -425,8 +476,27 @@ bool Game::onUpdate(AppUpdateEvent& e)
 				);
 			}
 			
+		case GameState::GAME_LOADING: {
+			setState(GameState::PLAYING);
+		} break;
+
+		case GameState::PLAYING: {
 			map->update(m_deltaTime);
 			map->draw();
+			if (keyPressed == GLFW_KEY_ESCAPE && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE) {
+        		setState(GameState::PAUSED); keyPressed = 0;
+			}
+			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        		keyPressed = GLFW_KEY_ESCAPE;
+		} break;
+
+		case GameState::PAUSED: {
+			map->draw();
+			if (keyPressed == GLFW_KEY_ESCAPE && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE) {
+        		setState(GameState::PLAYING); keyPressed = 0;
+			}
+			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        		keyPressed = GLFW_KEY_ESCAPE;
 		} break;
 	}
 
