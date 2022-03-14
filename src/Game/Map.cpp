@@ -12,12 +12,16 @@
 using namespace std;
 using namespace glm;
 
-Map::Map() : mapMaterial(*Shader::find("Base"))
+Map::Map() : mapMaterial(*Shader::find("Base")), mapActor(this)
 {
 	Resource::loadTexture("assets/map_texture.png", mapTexture);
 	Resource::loadTexture("assets/map_texture_specular.png", mapTextureSpecular);
 	mapMaterial.setDiffuseTexture(mapTexture->m_id);
 	mapMaterial.setSpecularTexture(mapTextureSpecular->m_id);
+
+	mapActor.m_meshes = { &mapMesh };
+	mapActor.m_materials = { mapMaterial };
+	mapActor.getTransform().setPosition(vec3(-0.5f, -0.5f, -0.5f));
 }
 
 Map::~Map() {
@@ -72,7 +76,7 @@ void Map::addPlayer(Player* player) {
 }
 
 void Map::addBomb(Bomb* bomb, glm::ivec2 pos) {
-	bomb->getTransform().setPosition(glm::vec3(pos.x, 1, pos.y));
+	bomb->getTransform().setPosition(glm::vec3(pos.x, 2, pos.y));
 	bombs[pos] = bomb;
 }
 	
@@ -87,13 +91,7 @@ void Map::draw() {
 			bomb.second->draw();
 	}
 
-	mapMaterial.use();
-	const Shader* shader = mapMaterial.getShader();
-	shader->use();
-	mat4 M = glm::translate(glm::vec3(0.5,-0.5f,0.5));
-	shader->setUniformValue("u_M", M);
-	shader->setUniformValue("u_iTM", glm::mat3(glm::transpose(glm::inverse(M))));
-	mapMesh.draw();
+	mapActor.draw();
 }
 
 void Map::update(float deltaTime) {	
@@ -286,6 +284,7 @@ void Map::calculateWallMesh()
 		}
 	}
 	mapMesh = Mesh(vertices);
+	mapActor.m_meshes = { &mapMesh };
 }
 
 ///-------------------------------------------------------
