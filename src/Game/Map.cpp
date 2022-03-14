@@ -52,6 +52,11 @@ void Map::addPlayer(Player* player) {
 	players.push_back(player);
 }
 
+void Map::addBomb(Bomb* bomb, glm::ivec2 pos) {
+	bomb->getTransform().setPosition(glm::vec3(pos.x, 0, pos.y));
+	bombs[pos] = bomb;
+}
+
 
 void Map::draw() {
 	for (auto wall : walls) {
@@ -62,6 +67,11 @@ void Map::draw() {
 	for (Actor* actor : actors) {
 		if (actor != nullptr)
 			actor->draw();
+	}
+
+	for (auto bomb : bombs) {
+		if (bomb.second != nullptr)
+			bomb.second->draw();
 	}
 }
 
@@ -75,7 +85,11 @@ void Map::update(float deltaTime) {
 		if (actor != nullptr)
 			actor->update(deltaTime);
 	}
-	
+
+	for (auto bomb : bombs) {
+		if (bomb.second != nullptr)
+			bomb.second->update(deltaTime);
+	}
 }
 
 
@@ -141,9 +155,4 @@ void Map::onExplosion(int x, int z, int range) {
 			player = nullptr;
 		}
 	}
-}
-
-
-void Map::removeWall(glm::ivec2 pos) {
-	walls[pos] = nullptr;
 }

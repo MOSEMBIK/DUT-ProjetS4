@@ -31,7 +31,9 @@ public:
 	void addPlayer(Player* player);
 	void addBomb(Bomb*, glm::ivec2);
 
-	void removeWall(glm::ivec2);
+	inline void removeWall(glm::ivec2 pos) { walls[pos] = nullptr; }
+	inline void removeBomb(glm::ivec2 pos) { bombs[pos] = nullptr; }
+
 	//void removePlayer()
 
 	inline int getSize() { return mapSize; }
