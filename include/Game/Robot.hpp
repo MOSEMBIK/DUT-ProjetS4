@@ -13,7 +13,7 @@ private:
 
 public:
 	Robot(Map* map);
-	~Robot();
+	~Robot() {};
 
 	void update(float deltaTime);
 	std::vector<glm::ivec2> move(glm::ivec2);

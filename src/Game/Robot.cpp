@@ -79,7 +79,7 @@ std::vector<glm::ivec2> Robot::move(glm::ivec2 destination) {
 			// Generation du trajet
 			for (glm::ivec2 next : edges[current]){
 				int nClout = clout[current];
-				if ( (find(clout.begin(), clout.end(), next) != clout.end()) || (nClout < clout[next]) ) {
+				if ( (clout.find(next) != clout.end()) || (nClout < clout[next]) ) {
 					clout[next] = nClout;
 					glm::ivec2 nCXY = current;
 					int prio = nClout + abs(destination[0] - nCXY[0]) + abs(destination[1] - nCXY[1]);

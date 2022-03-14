@@ -27,6 +27,7 @@ public:
 	Actor(Map* map);
 	Actor(Window* window);
 	Actor(Map* map, const char* filename);
+	~Actor() {};
 
 	/**
 	 * @brief 
