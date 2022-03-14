@@ -76,13 +76,13 @@ std::vector<glm::ivec2> Map::nearRoads(glm::ivec2 coord) {
 	std::vector<glm::ivec2> nearR;
 
 	glm::ivec2 cordTest (coord[0]-1, coord[1]);
-	if (whatIs(cordTest) == "void") nearR.push_back(cordTest);
+	if (whatIs(cordTest) == 0) nearR.push_back(cordTest);
 	cordTest = glm::ivec2(coord[0], coord[1]-1);
-	if (whatIs(cordTest) == "void") nearR.push_back(cordTest);
+	if (whatIs(cordTest) == 0) nearR.push_back(cordTest);
 	cordTest = glm::ivec2(coord[0]+1, coord[1]);
-	if (whatIs(cordTest) == "void") nearR.push_back(cordTest);
+	if (whatIs(cordTest) == 0) nearR.push_back(cordTest);
 	cordTest = glm::ivec2(coord[0], coord[1]+1);
-	if (whatIs(cordTest) == "void") nearR.push_back(cordTest);
+	if (whatIs(cordTest) == 0) nearR.push_back(cordTest);
 }
 
 void Map::genEdgesMap(){
@@ -90,7 +90,7 @@ void Map::genEdgesMap(){
 	for (int i=1; i < mapSize; i++) {
 		for (int j=1; j < mapSize; j++) {
 			glm::ivec2 checkCoord (i, j);
-			if (whatIs(checkCoord) == "void") roads.push_back(checkCoord);
+			if (whatIs(checkCoord) == 0) roads.push_back(checkCoord);
 		}
 	}
 	for (glm::ivec2 rCase : roads) {
@@ -100,16 +100,16 @@ void Map::genEdgesMap(){
 }
 
 bool Map::isReachable(glm::ivec2 coord){
-	if (whatIs(coord) == "void") return true;
+	if (whatIs(coord) == 0) return true;
 
 	return false;
 }
 
-std::string Map::whatIs(glm::ivec2 coord){
-	if (walls[coord] != nullptr) return "wall";
-	if (bombs[coord] != nullptr) return "bomb";
+int Map::whatIs(glm::ivec2 coord){
+	if (walls[coord] != nullptr) return 1;
+	if (bombs[coord] != nullptr) return 2;
 
-	return "void";
+	return 0;
 }
 
 ///-------------------------------------------------------

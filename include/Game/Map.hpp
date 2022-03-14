@@ -40,6 +40,6 @@ public:
 	std::vector<glm::ivec2> nearRoads(glm::ivec2);								// Retourne le vecteur de toute les coordonées voisine accessible depuis celles données
 	void genEdgesMap();															// (Re)genere la edges map
 	bool isReachable(glm::ivec2);												// Retourne true si le localisation passee est accessible
-	std::string whatIs(glm::ivec2);												// Retourne le type de l'Actor aux coordonnees passees
+	int whatIs(glm::ivec2);												// Retourne le type de l'Actor aux coordonnees passees
 
 };

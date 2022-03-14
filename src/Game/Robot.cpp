@@ -48,13 +48,13 @@ std::vector<glm::ivec2> Robot::move(glm::ivec2 destination) {
 		
 		std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> &edges = *&(map->edges_map);
 
-		if (map->whatIs(new_trajet[done]) != "void"){
+		if (map->whatIs(new_trajet[done]) != 0){
 			new_trajet.push_back(edges[new_trajet[done]][0]);
 			done += 1;
 		}
 
-		std::vector<std::pair<int, glm::ivec2>> queue;
-		queue[0] = (std::pair<int, glm::ivec2> (0, new_trajet.back()));
+		std::vector<std::pair<glm::ivec2, int>> queue;
+		queue[0] = std::pair<glm::ivec2, int> (new_trajet.back(), 0);
 
 		std::map<glm::ivec2, int, cmpVec> clout;
 		clout[new_trajet[done]] = 0;
@@ -65,9 +65,9 @@ std::vector<glm::ivec2> Robot::move(glm::ivec2 destination) {
 			// Recuperation de la case optimale
 			int idx = 0;
 			for (int i=1; i < queue.size(); i++){
-				if (queue[idx].first > queue[i].first) idx = i;
+				if (queue[idx].second > queue[i].second) idx = i;
 			}
-			glm::ivec2 current = queue[idx].second;
+			glm::ivec2 current = queue[idx].first;
 			queue.erase(queue.begin() + idx);
 
 			// Gestion de l'arrivee
@@ -83,7 +83,8 @@ std::vector<glm::ivec2> Robot::move(glm::ivec2 destination) {
 					clout[next] = nClout;
 					glm::ivec2 nCXY = current;
 					int prio = nClout + abs(destination[0] - nCXY[0]) + abs(destination[1] - nCXY[1]);
-					queue.push_back(std::pair(prio, next));
+					std::pair tuple (next, prio);
+					queue.push_back(tuple);
 					new_trajet.push_back(current);
 					done++;
 				}
