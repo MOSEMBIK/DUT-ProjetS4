@@ -66,7 +66,7 @@ void Map::draw() {
 
 void Map::update(float deltaTime) {
 	for (auto wall : walls) {
-		if (wall.second != nullptr) 
+		if (wall.second != nullptr)
 			wall.second->update(deltaTime);
 	}
 	
@@ -86,14 +86,12 @@ void Map::update(float deltaTime) {
  * @param range 
  */
 void Map::onExplosion(int x, int z, int range) {
-	std::vector<glm::vec3> touched;
+	std::vector<glm::ivec2> touched;
 	for (int i = x; i < x+range; ++i) { //Droite
-		glm::vec3 pos(i, 0, z);
+		glm::ivec2 pos(i, z);
 		Wall* m = this->walls[pos];
 
-		std::cout << m->getType() << std::endl;
-
-		if (m != nullptr) {
+		if (m != nullptr && m->getType() != Wall::Type::Metal) {
 			m->removeHealth();
 			break;
 		}
@@ -102,12 +100,10 @@ void Map::onExplosion(int x, int z, int range) {
 	}
 
 	for (int i = x; i > x-range; --i) { //Gauche
-		glm::vec3 pos(i, 0, z);
+		glm::ivec2 pos(i, z);
 		Wall* m = this->walls[pos];
 
-		std::cout << m->getType() << std::endl;
-
-		if (m != nullptr) {
+		if (m != nullptr && m->getType() != Wall::Type::Metal) {
 			m->removeHealth();
 			break;
 		}
@@ -115,12 +111,10 @@ void Map::onExplosion(int x, int z, int range) {
 	}
 
 	for (int i = z; i < z-range; --z) { //Haut
-		glm::vec3 pos(i, 0, z);
+		glm::ivec2 pos(i, z);
 		Wall* m = this->walls[pos];
 
-		std::cout << m->getType() << std::endl;
-
-		if (m != nullptr) {
+		if (m != nullptr && m->getType() != Wall::Type::Metal) {
 			m->removeHealth();
 			break;
 		}
@@ -128,12 +122,10 @@ void Map::onExplosion(int x, int z, int range) {
 	}
 
 	for (int i = z; i > z+range; ++z) { //Bas
-		glm::vec3 pos(i, 0, z);
+		glm::ivec2 pos(i, z);
 		Wall* m = this->walls[pos];
 
-		std::cout << m->getType() << std::endl;
-
-		if (m != nullptr) {
+		if (m != nullptr && m->getType() != Wall::Type::Metal) {
 			m->removeHealth();
 			break;
 		}
@@ -141,14 +133,15 @@ void Map::onExplosion(int x, int z, int range) {
 	}
 
 	for (Player* player : players) {
-		if (std::find(touched.begin(), touched.end(), player->getTransform().getPosition()) != touched.end()) {
-			player = nullptr;
+		glm::ivec3 pos(player->getTransform().getPosition());
+		if (std::find(touched.begin(), touched.end(), glm::ivec2(pos.x,pos.z)) != touched.end()) {
 			delete player;
+			player = nullptr;
 		}
 	}
 }
 
 
 void Map::removeWall(glm::ivec2 pos) {
-	this->walls[pos] = nullptr;
+	walls[pos] = nullptr;
 }

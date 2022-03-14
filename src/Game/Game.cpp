@@ -418,7 +418,7 @@ bool Game::onUpdate(AppUpdateEvent& e)
 		} break;
 
 		case GameState::GAME: {
-			if (rand() % 100 == 1) {
+			if (rand() % 10 == 1) {
 				map->onExplosion(rand()%20, rand()%20, 2);
 			}
 			

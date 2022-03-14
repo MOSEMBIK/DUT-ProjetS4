@@ -30,18 +30,18 @@ Wall::Wall(Map* map, int type): Actor(map), type(type) {
 void Wall::onDestroy() {
 	// summon un bonus ?
 	// Destroy le wall
-	std::cout << "Mur explosé" << std::endl;
 	glm::ivec2 pos(m_transform.getPosition().x, m_transform.getPosition().z);
 	map->removeWall(pos);
 	delete this;
 }
 
 void Wall::removeHealth() {
-	std::cout << "Vie en moins" << std::endl;	
-	this->health -= 1;
-	if (this->health >= 0)
-		std::cout << "Vie des joueurs : " << this->health << std::endl;
-	if (this->health == 0) {
-		this->onDestroy();
+	if (this->health >= 1) {
+		if (type == Wall::Stone) {
+			this->m_materials[0].setDiffuseColor(glm::vec3(0.2f/health*3.0f));
+		}
+		this->health -= 1;
+		if (this->health == 0)
+			this->onDestroy();
 	}
 }
