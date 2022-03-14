@@ -4,21 +4,21 @@
 #include <Game/Wall.hpp>
 #include <Game/Map.hpp>
 
-Wall::Wall(Map* map, int type): Actor(map), type(type) {
+Wall::Wall(Map* map, Type type): Actor(map), type(type) {
 	m_meshes.push_back(Primitives::cube());
 	Material mat;
 	switch (type) {
-	case Metal:
+	case Type::Metal:
 		this->health = -1;
 		mat.setDiffuseColor(glm::vec3(0.5f, 0.5f, 0.5f));
 		mat.setSpecularColor(glm::vec3(0.6f, 0.6f, 0.6f));
 		break;
-	case Stone:
+	case Type::Stone:
 		mat.setDiffuseColor(glm::vec3(0.2f, 0.2f, 0.2f));
 		mat.setSpecularColor(glm::vec3(0.3f, 0.3f, 0.3f));
 		this->health = 3;
 		break;
-	case Wood:
+	case Type::Wood:
 		mat.setDiffuseColor(glm::vec3(0.86f, 0.72f, 0.52f));
 		mat.setSpecularColor(glm::vec3(0.9f, 0.76f, 0.58f));
 		this->health = 1;

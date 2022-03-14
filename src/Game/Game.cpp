@@ -182,8 +182,11 @@ void Game::setState(GameState state)
 		cerr << "Loading main menu..." << endl; float time = glfwGetTime();
 		if (m_gameState == GameState::GAME) {
 			// Delete game content
-			delete map;
-			map = nullptr;
+			if(map != nullptr)
+			{
+				delete map;
+				map = nullptr;
+			}
 		}
 		/* Load Buttons */
 		// Create button(window, position, anchor, size, ...)
