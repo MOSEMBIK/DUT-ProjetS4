@@ -19,7 +19,7 @@ private:
 	std::vector<Actor*> actors;
 	std::map<glm::ivec2, Wall*, cmpVec> walls;
 	std::map<glm::ivec2, Bomb*, cmpVec> bombs;
-	std::vector<Player*> players;
+	std::list<Player*> players;
 
 	Mesh mapMesh;
 	Material mapMaterial;
@@ -43,6 +43,7 @@ public:
 
 	inline void removeWall(glm::ivec2 pos) { walls.erase(walls.find(pos)); }
 	inline void removeBomb(glm::ivec2 pos) { bombs.erase(bombs.find(pos)); }
+	inline void removePlayer(Player* play) { players.remove(play); }
 
 	//void removePlayer()
 

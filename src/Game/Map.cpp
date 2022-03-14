@@ -77,9 +77,9 @@ void Map::addBomb(Bomb* bomb, glm::ivec2 pos) {
 }
 	
 void Map::draw() {	
-	for (Actor* actor : actors) {
-		if (actor != nullptr)
-			actor->draw();
+	for (auto player : players) {
+		if (player != nullptr)
+			player->draw();
 	}
 
 	for (auto bomb : bombs) {
@@ -97,9 +97,9 @@ void Map::draw() {
 }
 
 void Map::update(float deltaTime) {	
-	for (Actor* actor : actors) {
-		if (actor != nullptr)
-			actor->update(deltaTime);
+	for (auto player : players) {
+		if (player != nullptr)
+			player->update(deltaTime);
 	}
 
 	for (auto bomb : bombs) {
@@ -169,12 +169,16 @@ void Map::onExplosion(int x, int z, int range) {
 		touched.push_back(pos);
 	}
 
+	list<Player*> playersToRemove;
 	for (Player* player : players) {
 		glm::ivec3 pos(player->getTransform().getPosition());
-		if (std::find(touched.begin(), touched.end(), glm::ivec2(pos.x,pos.z)) != touched.end()) {
-			delete player;
-			player = nullptr;
-		}
+		if (std::find(touched.begin(), touched.end(), glm::ivec2(pos.x,pos.z)) != touched.end())
+			playersToRemove.push_back(player);
+	}
+	for (Player* player : playersToRemove) {
+		players.remove(player);
+		delete player;
+		player = nullptr;
 	}
 	if (wallUpdate) calculateWallMesh();
 }
