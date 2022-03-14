@@ -16,5 +16,5 @@ public:
 	virtual ~Robot() {}
 
 	void update(float deltaTime);
-	std::vector<glm::ivec2> move(glm::ivec2);
+	std::vector<glm::ivec2> genTrajet(glm::ivec2);
 };

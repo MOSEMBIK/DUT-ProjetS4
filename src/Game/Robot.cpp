@@ -37,7 +37,7 @@ void Robot::update(float deltaTime) {
 }
 
 // Mannathan A* algorithm
-std::vector<glm::ivec2> Robot::move(glm::ivec2 destination) {
+std::vector<glm::ivec2> Robot::genTrajet(glm::ivec2 destination) {
 
 	std::vector<glm::ivec2> new_trajet;
 	new_trajet.push_back(trajet[case_of_t]);
@@ -90,7 +90,7 @@ std::vector<glm::ivec2> Robot::move(glm::ivec2 destination) {
 				}
 			}
 		}
-
+		case_of_t = 0;
 		return new_trajet;
 
 	} else return new_trajet;

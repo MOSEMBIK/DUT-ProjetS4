@@ -20,5 +20,4 @@ public:
 
 	inline float getSpeed() const { return speed; }
 	
-	virtual std::vector<glm::ivec2> move(glm::ivec2) {};
 };
