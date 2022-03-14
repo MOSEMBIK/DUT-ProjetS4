@@ -100,17 +100,12 @@ void Map::genEdgesMap(){
 }
 
 bool Map::isReachable(glm::ivec2 coord){
-	// Check whatIs
-	// Return true if not a bomb or a wall
-	// Else ruturn false
 	if (whatIs(coord) == "void") return true;
 
 	return false;
 }
 
 std::string Map::whatIs(glm::ivec2 coord){
-	// Return as a string what is at this location
-	// Bomb ? Wall ? Void ? (if Player -> return Void)
 	if (walls[coord] != nullptr) return "wall";
 	if (bombs[coord] != nullptr) return "bomb";
 
