@@ -10,6 +10,9 @@
 
 class Map;
 
+class Player;
+class Bomb;
+
 class Actor
 {
 protected:

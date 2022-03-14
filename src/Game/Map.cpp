@@ -72,20 +72,48 @@ void Map::update(float deltaTime) {
 ///-------------------------------------------------------
 ///--- Fonctions utiles au déplacement des Players
 
+std::vector<glm::ivec2> Map::nearRoads(glm::ivec2 coord) {
+	std::vector<glm::ivec2> nearR;
+
+	glm::ivec2 cordTest (coord[0]-1, coord[1]);
+	if (whatIs(cordTest) == "void") nearR.push_back(cordTest);
+	cordTest = glm::ivec2(coord[0], coord[1]-1);
+	if (whatIs(cordTest) == "void") nearR.push_back(cordTest);
+	cordTest = glm::ivec2(coord[0]+1, coord[1]);
+	if (whatIs(cordTest) == "void") nearR.push_back(cordTest);
+	cordTest = glm::ivec2(coord[0], coord[1]+1);
+	if (whatIs(cordTest) == "void") nearR.push_back(cordTest);
+}
+
 void Map::genEdgesMap(){
-	
+	std::vector<glm::ivec2> roads;
+	for (int i=1; i < mapSize; i++) {
+		for (int j=1; j < mapSize; j++) {
+			glm::ivec2 checkCoord (i, j);
+			if (whatIs(checkCoord) == "void") roads.push_back(checkCoord);
+		}
+	}
+	for (glm::ivec2 rCase : roads) {
+		std::vector<glm::ivec2> nRC = nearRoads(rCase);
+		edges_map[rCase] = nRC;
+	}
 }
 
 bool Map::isReachable(glm::ivec2 coord){
 	// Check whatIs
 	// Return true if not a bomb or a wall
 	// Else ruturn false
+	if (whatIs(coord) == "void") return true;
+
 	return false;
 }
 
 std::string Map::whatIs(glm::ivec2 coord){
 	// Return as a string what is at this location
 	// Bomb ? Wall ? Void ? (if Player -> return Void)
+	if (walls[coord] != nullptr) return "wall";
+	if (bombs[coord] != nullptr) return "bomb";
+
 	return "void";
 }
 
