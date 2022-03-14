@@ -21,6 +21,7 @@ private:
 	std::map<glm::ivec2, Bomb*, cmpVec> bombs;
 	std::list<Player*> players;
 
+	Actor mapActor;
 	Mesh mapMesh;
 	Material mapMaterial;
 	Texture* mapTexture;

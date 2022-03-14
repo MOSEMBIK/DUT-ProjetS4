@@ -12,12 +12,16 @@
 using namespace std;
 using namespace glm;
 
-Map::Map() : mapMaterial(*Shader::find("Base"))
+Map::Map() : mapMaterial(*Shader::find("Base")), mapActor(this)
 {
 	Resource::loadTexture("assets/map_texture.png", mapTexture);
 	Resource::loadTexture("assets/map_texture_specular.png", mapTextureSpecular);
 	mapMaterial.setDiffuseTexture(mapTexture->m_id);
 	mapMaterial.setSpecularTexture(mapTextureSpecular->m_id);
+
+	mapActor.m_meshes = { &mapMesh };
+	mapActor.m_materials = { mapMaterial };
+	mapActor.getTransform().setPosition(vec3(-0.5f, -0.5f, -0.5f));
 }
 
 Map::~Map() {
@@ -72,7 +76,7 @@ void Map::addPlayer(Player* player) {
 }
 
 void Map::addBomb(Bomb* bomb, glm::ivec2 pos) {
-	bomb->getTransform().setPosition(glm::vec3(pos.x, 1, pos.y));
+	bomb->getTransform().setPosition(glm::vec3(pos.x, 0, pos.y));
 	bombs[pos] = bomb;
 }
 	
@@ -87,13 +91,7 @@ void Map::draw() {
 			bomb.second->draw();
 	}
 
-	mapMaterial.use();
-	const Shader* shader = mapMaterial.getShader();
-	shader->use();
-	mat4 M = glm::translate(glm::vec3(0.5,-0.5f,0.5));
-	shader->setUniformValue("u_M", M);
-	shader->setUniformValue("u_iTM", glm::mat3(glm::transpose(glm::inverse(M))));
-	mapMesh.draw();
+	mapActor.draw();
 }
 
 void Map::update(float deltaTime) {	
@@ -124,7 +122,7 @@ void Map::onExplosion(int x, int z, int range) {
 		glm::ivec2 pos(i, z);
 		Wall* m = this->walls[pos];
 
-		if (m != nullptr && m->getType() != Wall::Type::Metal) {
+		if (m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;
 			break;
@@ -133,11 +131,11 @@ void Map::onExplosion(int x, int z, int range) {
 
 	}
 
-	for (int i = x; i > x-range; --i) { //Gauche
+	for (int i = x-1; i > x-range; --i) { //Gauche
 		glm::ivec2 pos(i, z);
 		Wall* m = this->walls[pos];
 
-		if (m != nullptr && m->getType() != Wall::Type::Metal) {
+		if (m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;
 			break;
@@ -145,11 +143,11 @@ void Map::onExplosion(int x, int z, int range) {
 		touched.push_back(pos);
 	}
 
-	for (int i = z; i < z-range; --z) { //Haut
-		glm::ivec2 pos(i, z);
+	for (int i = z-1; i > z-range; --i) { //Haut
+		glm::ivec2 pos(x, i);
 		Wall* m = this->walls[pos];
 
-		if (m != nullptr && m->getType() != Wall::Type::Metal) {
+		if (m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;
 			break;
@@ -157,11 +155,11 @@ void Map::onExplosion(int x, int z, int range) {
 		touched.push_back(pos);
 	}
 
-	for (int i = z; i > z+range; ++z) { //Bas
-		glm::ivec2 pos(i, z);
+	for (int i = z; i < z+range; ++i) { //Bas
+		glm::ivec2 pos(x, i);
 		Wall* m = this->walls[pos];
 
-		if (m != nullptr && m->getType() != Wall::Type::Metal) {
+		if (m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;
 			break;
@@ -281,6 +279,7 @@ void Map::calculateWallMesh()
 		}
 	}
 	mapMesh = Mesh(vertices);
+	mapActor.m_meshes = { &mapMesh };
 }
 
 ///-------------------------------------------------------

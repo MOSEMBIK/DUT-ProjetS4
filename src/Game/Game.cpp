@@ -473,8 +473,8 @@ bool Game::onUpdate(AppUpdateEvent& e)
 		} break;
 
 		case GameState::PLAYING: {
-			if (rand() % 10 == 1) {
-				map->addBomb( new Bomb(map, vec3(0.0f,0.0f,0.5f)),	ivec2(rand()%8+2,rand()%8+2) );
+			if (rand() % 60 == 1) {
+				map->addBomb( new Bomb(map, vec3(0.0f,0.0f,0.5f)),	ivec2(rand()%(map->getSize() - 2) + 1,rand()%(map->getSize() - 2) + 1));
 			}
 			map->update(m_deltaTime);
 			map->draw();
