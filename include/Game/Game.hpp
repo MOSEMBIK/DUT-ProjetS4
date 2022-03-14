@@ -15,7 +15,7 @@
 
 #include <glm/vec2.hpp>
 
-enum GameState { MAIN_MENU, OPTIONS, SINGLEPLAYER, GAME_LOADING, PLAYING, PAUSED };
+enum GameState { MAIN_MENU, OPTIONS, SINGLEPLAYER, MULTIPLAYER, GAME_LOADING, PLAYING, PAUSED };
 
 void onKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mods);
 

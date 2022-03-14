@@ -199,10 +199,11 @@ void Game::setState(GameState state)
 			game->setState(GameState::SINGLEPLAYER);
 		});
 
-		buttons.push_back(new Button(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(0.25f), vec3(0.25f, 0.25f, 0.25f), vec3(0.25f)));
+		buttons.push_back(new Button(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[1]->setLabel(Label(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), "Multiplayer", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 		buttons[1]->setOnClickCallback([]() {
-			cerr << "Multiplayer clicked" << endl;
+			Game* game = Game::getInstance();
+			game->setState(GameState::MULTIPLAYER);
 		});
 
 		buttons.push_back(new Button(mainWindow, vec2(-50, 50), vec2(1.0f, 0.0f), vec2(79, 79), (char *)"assets/options.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
@@ -278,7 +279,7 @@ void Game::setState(GameState state)
 		images.push_back(new Image(mainWindow, vec2(0, 100), vec2(0.0f, 0.5f), vec2(DEFAULT_WINDOW_W/3), Textures::bomberboy3));
 		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W), Textures::spaceBackground));
 
-		cerr << "Loaded singleplayer menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
+		cerr << "Loaded options menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
 
 	/**
@@ -346,7 +347,37 @@ void Game::setState(GameState state)
 
 		cerr << "Loaded singleplayer menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
-	
+
+	/**
+	 * @brief Load the multiplayer menu
+	 */
+	case GameState::MULTIPLAYER: {
+		cerr << "Loading multiplayer menu..." << endl; float time = glfwGetTime();
+		/* Load Buttons */
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, -30.0f), vec2(0.5f, 0.8f), vec2(DEFAULT_WINDOW_W/1.5, 60), (char *)"assets/graytton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[0]->setLabel(Label(mainWindow, vec2(0.0f, -30.0f), vec2(0.2f, 0.8f), "PielleBoul", 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		buttons[0]->setOnClickCallback([]() {
+			cerr << "Rejoindre" << endl;
+		});
+
+		buttons.push_back(new Button(mainWindow, vec2(122.5f, 50.0f), vec2(0.0f, 0.0f), vec2(220, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[1]->setLabel(Label(mainWindow, vec2(122.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[1]->setOnClickCallback([]() {
+			Game* game = Game::getInstance();
+			game->setState(GameState::MAIN_MENU);
+		});
+
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, 40.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/1.4, DEFAULT_WINDOW_H/1.3), (char *)"assets/bluetton.png", vec3(1.0f), vec3(1.0f), vec3(1.0f)));
+
+		/* Load Labels */
+		labels.push_back(new Label(mainWindow, vec2(0.0f, 50.0f), vec2(0.5f, 0.8f), "Multiplayer", 48, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+
+		/* Load Images */
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W), Textures::spaceBackground));
+
+		cerr << "Loaded multiplayer menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
+	} break;
+
 	/**
 	 * @brief Launch the game
 	 */
