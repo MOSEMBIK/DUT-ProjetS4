@@ -419,7 +419,8 @@ bool Game::onUpdate(AppUpdateEvent& e)
 
 		case GameState::GAME: {
 			if (rand() % 10 == 1) {
-				map->onExplosion(rand()%20, rand()%20, 2);
+				map->addActor()
+				
 			}
 			
 			map->update(m_deltaTime);

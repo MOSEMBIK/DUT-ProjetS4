@@ -11,3 +11,9 @@ void Bomb::onExplode() {
 	glm::vec3 pos = this->getTransform().getPosition();
 	this->map->onExplosion(pos.x, pos.z, range);
 }
+
+void Bomb::update(float deltaTime) {
+	this->timer -= deltaTime;
+	if (this->timer <= 0)
+		this->onExplode();
+}

@@ -8,7 +8,7 @@ class Bomb: public Actor
 {
 private:
 	glm::vec3 color;
-	int range;
+	int range = 1;
 	int duration;
 	int timer = 2;
 
@@ -16,6 +16,8 @@ public:
 	Bomb(Map* map, glm::vec3 color, int range, int duration);
 	virtual ~Bomb() {}
 	void onExplode();
+	void update(float);
+
 
 
 };

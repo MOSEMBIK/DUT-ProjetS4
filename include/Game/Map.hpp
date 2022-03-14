@@ -18,6 +18,7 @@ class Map
 private:
 	std::vector<Actor*> actors;
 	std::map<glm::ivec2, Wall*, cmpVec> walls;
+	std::map<glm::ivec2, Bomb*, cmpVec> bombs;
 	std::vector<Player*> players;
 	int mapSize;
 
@@ -28,6 +29,7 @@ public:
 	void generateMap(int size = 13, int wallPercentage = 90);
 	void addActor(Actor* actor);
 	void addPlayer(Player* player);
+	void addBomb(Bomb*, glm::ivec2);
 
 	void removeWall(glm::ivec2);
 	//void removePlayer()
@@ -38,6 +40,7 @@ public:
 	void update(float deltaTime);
 
 	void onExplosion(int, int, int);
+	
 
 
 };

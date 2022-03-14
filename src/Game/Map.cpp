@@ -52,6 +52,7 @@ void Map::addPlayer(Player* player) {
 	players.push_back(player);
 }
 
+
 void Map::draw() {
 	for (auto wall : walls) {
 		if (wall.second != nullptr)
@@ -76,6 +77,7 @@ void Map::update(float deltaTime) {
 	}
 	
 }
+
 
 /**
  * @brief Quand une bombe explose sur la map, onExplosion crée un tableau des cases touchées. 
