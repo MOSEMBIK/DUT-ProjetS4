@@ -17,12 +17,18 @@ class Map
 private:
 	std::vector<Actor*> actors;
 	std::map<glm::ivec2, Wall*, cmpVec> walls;
-	int mapSize;
+	std::map<glm::ivec2, Bomb*, cmpVec> bombs;
 	Mesh mapMesh;
 	Material mapMaterial;
 	Texture* mapTexture;
 	Texture* mapTextureSpecular;
 
+	int mapSize;
+  
+public:
+	std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> edges_map; 			// Graph des accessibilités pour chaque position
+
+  
 public:
 	Map();
 	~Map();
@@ -35,4 +41,11 @@ public:
 	void draw();
 	void calculateWallMesh();
 	void update(float deltaTime);
+
+	///--- Fonctions utiles au déplacement des Players
+	std::vector<glm::ivec2> nearRoads(glm::ivec2);								// Retourne le vecteur de toute les coordonées voisine accessible depuis celles données
+	void genEdgesMap();															// (Re)genere la edges map
+	bool isReachable(glm::ivec2);												// Retourne true si le localisation passee est accessible
+	int whatIs(glm::ivec2);												// Retourne le type de l'Actor aux coordonnees passees
+
 };

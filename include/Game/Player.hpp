@@ -16,8 +16,9 @@ private:
 
 public:
 	Player(Map* map);
-	virtual ~Player() {}
+	virtual ~Player() {};
 
 	inline float getSpeed() const { return speed; }
-
+	
+	virtual std::vector<glm::ivec2> move(glm::ivec2) {};
 };

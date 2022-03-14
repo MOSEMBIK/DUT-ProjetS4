@@ -185,3 +185,48 @@ void Map::calculateWallMesh()
 	}
 	mapMesh = Mesh(vertices);
 }
+
+///-------------------------------------------------------
+///--- Fonctions utiles au déplacement des Players
+
+std::vector<glm::ivec2> Map::nearRoads(glm::ivec2 coord) {
+	std::vector<glm::ivec2> nearR;
+
+	glm::ivec2 cordTest (coord[0]-1, coord[1]);
+	if (whatIs(cordTest) == 0) nearR.push_back(cordTest);
+	cordTest = glm::ivec2(coord[0], coord[1]-1);
+	if (whatIs(cordTest) == 0) nearR.push_back(cordTest);
+	cordTest = glm::ivec2(coord[0]+1, coord[1]);
+	if (whatIs(cordTest) == 0) nearR.push_back(cordTest);
+	cordTest = glm::ivec2(coord[0], coord[1]+1);
+	if (whatIs(cordTest) == 0) nearR.push_back(cordTest);
+}
+
+void Map::genEdgesMap(){
+	std::vector<glm::ivec2> roads;
+	for (int i=1; i < mapSize; i++) {
+		for (int j=1; j < mapSize; j++) {
+			glm::ivec2 checkCoord (i, j);
+			if (whatIs(checkCoord) == 0) roads.push_back(checkCoord);
+		}
+	}
+	for (glm::ivec2 rCase : roads) {
+		std::vector<glm::ivec2> nRC = nearRoads(rCase);
+		edges_map[rCase] = nRC;
+	}
+}
+
+bool Map::isReachable(glm::ivec2 coord){
+	if (whatIs(coord) == 0) return true;
+
+	return false;
+}
+
+int Map::whatIs(glm::ivec2 coord){
+	if (walls[coord] != nullptr) return 1;
+	if (bombs[coord] != nullptr) return 2;
+
+	return 0;
+}
+
+///-------------------------------------------------------
