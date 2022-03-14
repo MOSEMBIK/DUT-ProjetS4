@@ -6,8 +6,6 @@
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 
-#include <unordered_map>
-
 struct cmpVec {
     bool operator()(const glm::vec2& lhs, const glm::vec2& rhs) const {
         return lhs.x < rhs.x || (lhs.x == rhs.x && lhs.y < rhs.y);
@@ -23,7 +21,7 @@ private:
 
 	int mapSize;
 public:
-	std::unordered_map<glm::ivec2, std::vector<glm::ivec2>> edges_map; 			// Graph des accessibilités pour chaque position
+	std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> edges_map; 			// Graph des accessibilités pour chaque position
 	
 
 public:

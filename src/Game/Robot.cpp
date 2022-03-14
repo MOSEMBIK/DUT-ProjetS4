@@ -46,7 +46,7 @@ std::vector<glm::ivec2> Robot::move(glm::ivec2 destination) {
 
 	if (map->isReachable(destination)){
 		
-		std::unordered_map<glm::ivec2, std::vector<glm::ivec2>> &edges = *&(map->edges_map);
+		std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> &edges = *&(map->edges_map);
 
 		if (map->whatIs(new_trajet[done]) != "void"){
 			new_trajet.push_back(edges[new_trajet[done]][0]);
@@ -56,7 +56,7 @@ std::vector<glm::ivec2> Robot::move(glm::ivec2 destination) {
 		std::vector<std::pair<int, glm::ivec2>> queue;
 		queue[0] = (std::pair<int, glm::ivec2> (0, new_trajet.back()));
 
-		std::unordered_map<glm::ivec2, int> clout;
+		std::map<glm::ivec2, int, cmpVec> clout;
 		clout[new_trajet[done]] = 0;
 
 		// Génération plus court chemin
