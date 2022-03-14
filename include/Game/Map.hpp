@@ -18,6 +18,10 @@ private:
 	std::vector<Actor*> actors;
 	std::map<glm::ivec2, Wall*, cmpVec> walls;
 	int mapSize;
+	Mesh mapMesh;
+	Material mapMaterial;
+	Texture* mapTexture;
+	Texture* mapTextureSpecular;
 
 public:
 	Map();
@@ -29,5 +33,6 @@ public:
 	inline int getSize() { return mapSize; }
 
 	void draw();
+	void calculateWallMesh();
 	void update(float deltaTime);
 };
