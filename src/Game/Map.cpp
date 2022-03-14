@@ -1,6 +1,8 @@
 
 #include <Game/Map.hpp>
 #include <Game/Actor.hpp>
+#include <Game/Player.hpp>
+#include <algorithm>
 #include <numeric>
 #include <algorithm>
 #include <iterator> 
@@ -65,9 +67,24 @@ void Map::addActor(Actor* actor) {
 	actors.push_back(actor);
 }
 
+void Map::addPlayer(Player* player) {
+	players.push_back(player);
+}
+
+void Map::addBomb(Bomb* bomb, glm::ivec2 pos) {
+	bomb->getTransform().setPosition(glm::vec3(pos.x, 0, pos.y));
+	bombs[pos] = bomb;
+}
+	
 void Map::draw() {	
 	for (Actor* actor : actors) {
-		actor->draw();
+		if (actor != nullptr)
+			actor->draw();
+	}
+
+	for (auto bomb : bombs) {
+		if (bomb.second != nullptr)
+			bomb.second->draw();
 	}
 
 	mapMaterial.use();
@@ -81,7 +98,78 @@ void Map::draw() {
 
 void Map::update(float deltaTime) {	
 	for (Actor* actor : actors) {
-		actor->update(deltaTime);
+		if (actor != nullptr)
+			actor->update(deltaTime);
+	}
+
+	for (auto bomb : bombs) {
+		if (bomb.second != nullptr)
+			bomb.second->update(deltaTime);
+	}
+}
+
+
+/**
+ * @brief Quand une bombe explose sur la map, onExplosion crée un tableau des cases touchées. 
+ * Ensuite, elle vérifie si un joueur se situe dans une de ses cases
+ * 
+ * @param x 
+ * @param z 
+ * @param range 
+ */
+void Map::onExplosion(int x, int z, int range) {
+	std::vector<glm::ivec2> touched;
+	for (int i = x; i < x+range; ++i) { //Droite
+		glm::ivec2 pos(i, z);
+		Wall* m = this->walls[pos];
+
+		if (m != nullptr && m->getType() != Wall::Type::Metal) {
+			m->removeHealth();
+			break;
+		}
+		touched.push_back(pos);
+
+	}
+
+	for (int i = x; i > x-range; --i) { //Gauche
+		glm::ivec2 pos(i, z);
+		Wall* m = this->walls[pos];
+
+		if (m != nullptr && m->getType() != Wall::Type::Metal) {
+			m->removeHealth();
+			break;
+		}
+		touched.push_back(pos);
+	}
+
+	for (int i = z; i < z-range; --z) { //Haut
+		glm::ivec2 pos(i, z);
+		Wall* m = this->walls[pos];
+
+		if (m != nullptr && m->getType() != Wall::Type::Metal) {
+			m->removeHealth();
+			break;
+		}
+		touched.push_back(pos);
+	}
+
+	for (int i = z; i > z+range; ++z) { //Bas
+		glm::ivec2 pos(i, z);
+		Wall* m = this->walls[pos];
+
+		if (m != nullptr && m->getType() != Wall::Type::Metal) {
+			m->removeHealth();
+			break;
+		}
+		touched.push_back(pos);
+	}
+
+	for (Player* player : players) {
+		glm::ivec3 pos(player->getTransform().getPosition());
+		if (std::find(touched.begin(), touched.end(), glm::ivec2(pos.x,pos.z)) != touched.end()) {
+			delete player;
+			player = nullptr;
+		}
 	}
 	std::cerr << "Upd";
 }

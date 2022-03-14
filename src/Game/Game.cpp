@@ -468,6 +468,14 @@ bool Game::onUpdate(AppUpdateEvent& e)
 		case GameState::SINGLEPLAYER: {
 		} break;
 
+		case GameState::GAME: {
+			if (rand() % 2 == 1) {
+				map->addBomb(
+					new Bomb(map, vec3(rand())),
+					ivec2(rand()%map->getSize(), rand()%map->getSize())
+				);
+			}
+			
 		case GameState::GAME_LOADING: {
 			setState(GameState::PLAYING);
 		} break;
