@@ -37,7 +37,7 @@ void Wall::onDestroy() {
 
 void Wall::removeHealth() {
 	if (this->health >= 1) {
-		if (type == Wall::Stone) {
+		if (type == Wall::Type::Stone) {
 			this->m_materials[0].setDiffuseColor(glm::vec3(0.2f/health*3.0f));
 		}
 		this->health -= 1;

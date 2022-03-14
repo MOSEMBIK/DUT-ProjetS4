@@ -41,8 +41,8 @@ public:
 	void addPlayer(Player* player);
 	void addBomb(Bomb*, glm::ivec2);
 
-	inline void removeWall(glm::ivec2 pos) { walls[pos] = nullptr; }
-	inline void removeBomb(glm::ivec2 pos) { bombs[pos] = nullptr; }
+	inline void removeWall(glm::ivec2 pos) { walls.erase(walls.find(pos)); }
+	inline void removeBomb(glm::ivec2 pos) { bombs.erase(bombs.find(pos)); }
 
 	//void removePlayer()
 

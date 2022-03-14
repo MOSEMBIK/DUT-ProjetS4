@@ -72,7 +72,7 @@ void Map::addPlayer(Player* player) {
 }
 
 void Map::addBomb(Bomb* bomb, glm::ivec2 pos) {
-	bomb->getTransform().setPosition(glm::vec3(pos.x, 0, pos.y));
+	bomb->getTransform().setPosition(glm::vec3(pos.x, 1, pos.y));
 	bombs[pos] = bomb;
 }
 	
@@ -118,6 +118,7 @@ void Map::update(float deltaTime) {
  * @param range 
  */
 void Map::onExplosion(int x, int z, int range) {
+	bool wallUpdate = false;
 	std::vector<glm::ivec2> touched;
 	for (int i = x; i < x+range; ++i) { //Droite
 		glm::ivec2 pos(i, z);
@@ -125,6 +126,7 @@ void Map::onExplosion(int x, int z, int range) {
 
 		if (m != nullptr && m->getType() != Wall::Type::Metal) {
 			m->removeHealth();
+			wallUpdate = true;
 			break;
 		}
 		touched.push_back(pos);
@@ -137,6 +139,7 @@ void Map::onExplosion(int x, int z, int range) {
 
 		if (m != nullptr && m->getType() != Wall::Type::Metal) {
 			m->removeHealth();
+			wallUpdate = true;
 			break;
 		}
 		touched.push_back(pos);
@@ -148,6 +151,7 @@ void Map::onExplosion(int x, int z, int range) {
 
 		if (m != nullptr && m->getType() != Wall::Type::Metal) {
 			m->removeHealth();
+			wallUpdate = true;
 			break;
 		}
 		touched.push_back(pos);
@@ -159,6 +163,7 @@ void Map::onExplosion(int x, int z, int range) {
 
 		if (m != nullptr && m->getType() != Wall::Type::Metal) {
 			m->removeHealth();
+			wallUpdate = true;
 			break;
 		}
 		touched.push_back(pos);
@@ -171,7 +176,7 @@ void Map::onExplosion(int x, int z, int range) {
 			player = nullptr;
 		}
 	}
-	std::cerr << "Upd";
+	if (wallUpdate) calculateWallMesh();
 }
 
 void Map::calculateWallMesh()
@@ -183,8 +188,8 @@ void Map::calculateWallMesh()
 	{
 		for(int z = 0; z < mapSize; z++)
 		{
-			auto it = walls.find(ivec2(x,z));
-			if(it == walls.end())
+			auto iterat = walls.find(ivec2(x,z));
+			if(iterat == walls.end() || iterat->second == nullptr)
 			{
 				vertices.push_back(Vertex { vec3(x, 0, z + 1), vec3(0, 1, 0), vec2(0, 0.5f)});
 				vertices.push_back(Vertex { vec3(x + 1, 0, z), vec3(0, 1, 0), vec2(0.5f, 0)});
@@ -196,7 +201,7 @@ void Map::calculateWallMesh()
 			}
 			else
 			{
-				WallType type = it->second->getType();
+				WallType type = iterat->second->getType();
 				vec2 uv;
 				switch(type)
 				{
@@ -225,7 +230,7 @@ void Map::calculateWallMesh()
 				vertices.push_back(Vertex { vec3(x + 1, 1, z + 1), vec3(0, 1, 0), uv + glm::vec2(0.5f, 0.5f)});
 				vertices.push_back(Vertex { vec3(x + 1, 1, z), vec3(0, 1, 0), uv + glm::vec2(0.5f, 0.0f)});
 				
-				if(auto it = walls.find(ivec2(x + 1,z)); it == walls.end())
+				if(auto it = walls.find(ivec2(x + 1,z)); it == walls.end() || it->second == nullptr)
 				{
 					vertices.push_back(Vertex { vec3(x + 1, 0, z), vec3(1, 0, 0), uv + glm::vec2(0.0f, 0.0f)});
 					vertices.push_back(Vertex { vec3(x + 1, 1, z), vec3(1, 0, 0), uv + glm::vec2(0.5f, 0.0f)});
@@ -236,7 +241,7 @@ void Map::calculateWallMesh()
 					vertices.push_back(Vertex { vec3(x + 1, 1, z + 1), vec3(1, 0, 0), uv + glm::vec2(0.5f, 0.5f)});
 				}
 
-				if(auto it = walls.find(ivec2(x - 1,z)); it == walls.end())
+				if(auto it = walls.find(ivec2(x - 1,z)); it == walls.end() || it->second == nullptr)
 				{
 					vertices.push_back(Vertex { vec3(x, 0, z), vec3(-1, 0, 0), uv + glm::vec2(0.0f, 0.0f)});
 					vertices.push_back(Vertex { vec3(x, 0, z + 1), vec3(-1, 0, 0), uv + glm::vec2(0.0f, 0.5f)});
@@ -247,7 +252,7 @@ void Map::calculateWallMesh()
 					vertices.push_back(Vertex { vec3(x, 1, z), vec3(-1, 0, 0), uv + glm::vec2(0.5f, 0.0f)});
 				}
 
-				if(auto it = walls.find(ivec2(x,z + 1)); it == walls.end())
+				if(auto it = walls.find(ivec2(x,z + 1)); it == walls.end() || it->second == nullptr)
 				{
 					vertices.push_back(Vertex { vec3(x, 0, z + 1), vec3(0, 0, 1), uv + glm::vec2(0.0f, 0.0f)});
 					vertices.push_back(Vertex { vec3(x + 1, 0, z + 1), vec3(0, 0, 1), uv + glm::vec2(0.5f, 0.0f)});
@@ -258,7 +263,7 @@ void Map::calculateWallMesh()
 					vertices.push_back(Vertex { vec3(x, 1, z + 1), vec3(0, 0, 1), uv + glm::vec2(0.0f, 0.5f)});
 				}
 
-				if(auto it = walls.find(ivec2(x,z - 1)); it == walls.end())
+				if(auto it = walls.find(ivec2(x,z - 1)); it == walls.end() || it->second == nullptr)
 				{
 					vertices.push_back(Vertex { vec3(x, 0, z), vec3(0, 0, -1), uv + glm::vec2(0.0f, 0.0f)});
 					vertices.push_back(Vertex { vec3(x, 1, z), vec3(0, 0, -1), uv + glm::vec2(0.0f, 0.5f)});
@@ -288,6 +293,7 @@ std::vector<glm::ivec2> Map::nearRoads(glm::ivec2 coord) {
 	if (whatIs(cordTest) == 0) nearR.push_back(cordTest);
 	cordTest = glm::ivec2(coord[0], coord[1]+1);
 	if (whatIs(cordTest) == 0) nearR.push_back(cordTest);
+	return nearR;
 }
 
 void Map::genEdgesMap(){
