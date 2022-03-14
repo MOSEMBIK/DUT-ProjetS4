@@ -118,13 +118,15 @@ void Map::update(float deltaTime) {
  * @param range 
  */
 void Map::onExplosion(int x, int z, int range) {
+	cerr << "explosion en : " << x << "," << z << endl;
 	bool wallUpdate = false;
 	std::vector<glm::ivec2> touched;
-	for (int i = x; i < x+range; ++i) { //Droite
+	for (int i = x; i < x+range+1; ++i) { //Droite
 		glm::ivec2 pos(i, z);
 		Wall* m = this->walls[pos];
 
-		if (m != nullptr && m->getType() != Wall::Type::Metal) {
+		if (m != nullptr) {
+			cerr << "Wall detruit en " << i << ", " << z << endl;
 			m->removeHealth();
 			wallUpdate = true;
 			break;
@@ -133,11 +135,12 @@ void Map::onExplosion(int x, int z, int range) {
 
 	}
 
-	for (int i = x; i > x-range; --i) { //Gauche
+	for (int i = x-1; i > x-range-1; --i) { //Gauche
 		glm::ivec2 pos(i, z);
 		Wall* m = this->walls[pos];
 
-		if (m != nullptr && m->getType() != Wall::Type::Metal) {
+		if (m != nullptr) {
+			cerr << "Wall detruit en " << i << ", " << z << endl;
 			m->removeHealth();
 			wallUpdate = true;
 			break;
@@ -145,11 +148,12 @@ void Map::onExplosion(int x, int z, int range) {
 		touched.push_back(pos);
 	}
 
-	for (int i = z; i < z-range; --z) { //Haut
-		glm::ivec2 pos(i, z);
+	for (int i = z-1; i > z-range-1; --i) { //Haut
+		glm::ivec2 pos(x, i);
 		Wall* m = this->walls[pos];
 
-		if (m != nullptr && m->getType() != Wall::Type::Metal) {
+		if (m != nullptr) {
+			cerr << "Wall detruit en " << x << ", " << i << endl;
 			m->removeHealth();
 			wallUpdate = true;
 			break;
@@ -157,11 +161,12 @@ void Map::onExplosion(int x, int z, int range) {
 		touched.push_back(pos);
 	}
 
-	for (int i = z; i > z+range; ++z) { //Bas
-		glm::ivec2 pos(i, z);
+	for (int i = z; i < z+range+1; ++i) { //Bas
+		glm::ivec2 pos(x, i);
 		Wall* m = this->walls[pos];
 
-		if (m != nullptr && m->getType() != Wall::Type::Metal) {
+		if (m != nullptr) {
+			cerr << "Wall detruit en " << x << ", " << i << endl;
 			m->removeHealth();
 			wallUpdate = true;
 			break;
