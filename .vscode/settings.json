@@ -73,7 +73,13 @@
 		"optional": "cpp",
 		"span": "cpp",
 		"stop_token": "cpp",
-		"thread": "cpp"
+		"thread": "cpp",
+		"*.tcc": "cpp",
+		"cwctype": "cpp",
+		"deque": "cpp",
+		"memory_resource": "cpp",
+		"string_view": "cpp",
+		"cinttypes": "cpp"
 	},
     "cmake.configureOnOpen": false
 }

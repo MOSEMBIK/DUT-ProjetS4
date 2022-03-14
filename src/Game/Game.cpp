@@ -418,6 +418,10 @@ bool Game::onUpdate(AppUpdateEvent& e)
 		} break;
 
 		case GameState::GAME: {
+			if (rand() % 100 == 1) {
+				map->onExplosion(rand()%20, rand()%20, 2);
+			}
+			
 			map->update(m_deltaTime);
 			map->draw();
 		} break;
