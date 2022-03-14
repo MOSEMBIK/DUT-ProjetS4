@@ -14,6 +14,7 @@ private:
 
 public:
 	Bomb(Map* map, glm::vec3 color, int range, int duration);
+	virtual ~Bomb() {}
 
 
 };

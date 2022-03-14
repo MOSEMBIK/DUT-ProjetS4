@@ -5,32 +5,102 @@
 
 #include <functional>
 #include <map>
+#include <list>
 
 #include <glm/vec2.hpp>
 
-const unsigned int WINDOW_W = 1280;
-const unsigned int WINDOW_H = 720;
+#include <Engine/Event/Event.hpp>
+#include <Engine/Event/EventReceiver.hpp>
+
+#define DEFAULT_WINDOW_W 1280
+#define DEFAULT_WINDOW_H 720
+
+struct WindowProps
+{
+    std::string Title;
+    unsigned int Width;
+    unsigned int Height;
+
+    WindowProps(const std::string& title = "Bomberman",
+                unsigned int width = DEFAULT_WINDOW_W,
+                unsigned int height = DEFAULT_WINDOW_H)
+        : Title(title), Width(width), Height(height)
+    {
+    }
+};
 
 class Window
 {
-private:
-    GLFWwindow* m_window;
-	std::map<int, std::function<void(double, double, int)>> m_callbacks;
-    glm::ivec2 m_size;
-	int CALLBACK_ID = 0;
+    public:
+        using EventCallbackFn = std::function<void(Event&)>;
 
-public:
-	glm::vec2 m_scale;
+    private:
+        struct WindowData
+        {
+            std::string Title;
+            unsigned int Width, Height;
+            unsigned int CursorX, CursorY;
+            float Time;
+            bool VSync;
 
-    Window();
-    // Suppression du clonage et de l'opÃ©rateur =
-    Window(Window&) = delete;
-    void operator= (const Window&) = delete;
+            EventCallbackFn EventCallback;
+        };
 
-    inline GLFWwindow* getWindow() const { return m_window; } 
-    inline glm::ivec2 getSize() { return m_size; }
+    private:
+		GLFWwindow* m_window;
+		WindowData m_data;
+        std::list<IEventReceiver*> m_EventReceivers;
 
-    int registerCallback(std::function<void(double, double, int)> callback);
-	void unregisterCallback(int i);
-    void update();
+    public:
+
+    public:
+        Window(const WindowProps& props);    
+		~Window();
+
+		void onUpdate();
+        void onEvent(Event& e)
+        {
+            for(auto er : m_EventReceivers)
+            {
+                er->onEvent(e);
+                if(e.Handled)
+                    break;
+            }
+        }
+
+		unsigned int getWidth() const { return m_data.Width; }
+		unsigned int getHeight() const { return m_data.Height; }
+
+        GLFWwindow* getWindow() const { return m_window; }
+
+		void setEventCallback(const EventCallbackFn& callback) { m_data.EventCallback = callback; }
+		void setVSync(bool enabled);
+		bool isVSync() const;
+
+        void attachEventReceiver(IEventReceiver& er) 
+        { 
+            m_EventReceivers.push_back(&er); 
+            er.onAttached();
+        };
+
+        void detachEventReceiver(IEventReceiver& er) 
+        { 
+            m_EventReceivers.remove(&er); 
+            er.onDetached();
+        };
+
+        void setTitle(std::string title);
+
+        glm::vec2 getScale() 
+        { 
+            return glm::vec2
+            ( m_data.Width / float(DEFAULT_WINDOW_W) ,
+            m_data.Height / float(DEFAULT_WINDOW_H) );
+        }
+
+		static Window* create(const WindowProps& props = WindowProps());
+
+	private:
+		void Init(const WindowProps& props);
+		void Shutdown();
 };

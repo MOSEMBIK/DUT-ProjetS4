@@ -13,24 +13,26 @@
 
 struct Vertex {
     glm::vec3 m_position;
-    glm::vec3 m_normal;
-    glm::vec2 m_uvs;
-    glm::vec3 m_colors;
+    glm::vec3 m_normal = glm::vec3(0.0f);
+    glm::vec2 m_uvs = glm::vec2(0.0f);
+    glm::vec3 m_colors = glm::vec3(1.0f);
 };
 
 class Mesh {
     private:
         //  render data
-        GLenum drawType;
         unsigned int VAO, VBO, EBO;
 
-        void setupMesh();
         static std::map<std::string, Mesh*> meshDict;
+
+    public:
+        void setupMesh();
 
         // mesh data
         std::vector<Vertex>       m_vertices;
         std::vector<unsigned int> m_indices;
-    public:
+        GLenum drawType;
+
         /**
          * @brief Clear pointers
          * 
@@ -52,6 +54,8 @@ class Mesh {
          * @return Mesh* Pointer to the mesh, nullptr if not found
          */
         static Mesh* find(std::string name);
+
+        Mesh() = default;
 
         /**
          * @brief Construct a new Mesh object from vertices and draw type

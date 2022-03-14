@@ -9,7 +9,7 @@ private:
 
 public:
 	Human(Map* map);
-	~Human() {};
+  virtual ~Human() {}
 
 	std::vector<glm::ivec2> move(glm::ivec2) {};
 };

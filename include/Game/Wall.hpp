@@ -4,18 +4,20 @@
 
 class Wall: public Actor
 {
+public:
+	enum class Type { Metal, Stone, Wood };
+	Wall(Map* map, Type type = Type::Metal);
+	virtual ~Wall() {}
+
+	inline Type getType() { return type; }
+	inline int getHealth() { return health; }
+	void removeHealth();
+
 private:
-	int type;
+	Type type;
 	int health;
 
 	void onDestroy();
 
-public:
-	enum Type { Metal, Stone, Wood };
-	Wall(Map* map, int type = Metal);
-
-	inline int getType() { return type; }
-	inline int getHealth() { return health; }
-	void removeHealth();
 
 };

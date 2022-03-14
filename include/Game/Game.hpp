@@ -8,10 +8,14 @@
 #include <Engine/Lights.hpp>
 #include <Engine/Window.hpp>
 
+#include <Engine/Event/Event.hpp>
+#include <Engine/Event/MouseEvent.hpp>
+#include <Engine/Event/KeyEvent.hpp>
+#include <Engine/Event/ApplicationEvent.hpp>
+
 #include <glm/vec2.hpp>
 
-enum VSync { OFF = 0, ONE_FRAME = 1, TWO_FRAME = 2};
-enum GameState { MAIN_MENU, SINGLEPLAYER, GAME };
+enum GameState { MAIN_MENU, OPTIONS, SINGLEPLAYER, GAME_LOADING, PLAYING, PAUSED };
 
 void onKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mods);
 
@@ -23,7 +27,8 @@ private:
     float m_currentTime;
     float m_deltaTime;
 
-    glm::vec2 m_mousePos;
+    bool m_running = true;
+	unsigned int keyPressed = 0;
 
     DirectionalLight m_directionalLight;
     std::vector<PointLight> m_pointsLights;
@@ -34,23 +39,34 @@ private:
     Shader* basicShader;
 
     GameState m_gameState;
-    VSync m_vsync;
+
+    // Options
+	std::string m_username;
+	bool m_fullscreen;
+	glm::ivec2 m_windowSize;
+
 
     // Singleton
     static Game* m_instance;
 
     bool init();
-    bool loadRequieredResources();
+    bool loadRequiredResources();
     void processInputs(GLFWwindow* window);
 
 public:
+	std::vector<unsigned char> m_gameSettings = {13, 4, 90, 10, 3};
     // Suppression du clonage et de l'opérateur =
     Game(Game&) = delete;
     void operator= (const Game&) = delete;
 
     ~Game();
 
-    void update();
+	bool postInit();
+	bool updateWindowOptions();
+    void onEvent(Event& e);
+    bool onUpdate(AppUpdateEvent& e);
+    bool onClose(WindowCloseEvent& e);
+    void run();
 
     /**
      * @brief Get the Singleton instance of Game
@@ -96,13 +112,6 @@ public:
     inline Map* getMap() { return map; }
 
     /**
-     * @brief Get the Mouse Position
-     * 
-     * @return glm::vec2 
-     */
-    inline glm::vec2 getMousePosition() { return m_mousePos; }
-
-    /**
      * @brief Get the time elapsed since the start of the software
      * 
      * @return float 
@@ -115,21 +124,6 @@ public:
      * @return float 
      */
     inline float getDeltaTime() { return m_deltaTime; }
-
-    /**
-     * @brief Get the VSync setting
-     * 
-     * @return VSync 
-     */
-    inline VSync getVSync() { return m_vsync; }
-
-    /**
-     * @brief Set the VSync setting
-     * 
-     * @param v 
-     * @return VSync 
-     */
-    inline void setVSync(VSync v) { m_vsync = v; }
 
     /**
      * @brief Get the current state of the game

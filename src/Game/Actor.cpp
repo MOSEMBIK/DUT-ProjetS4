@@ -13,11 +13,11 @@
 
 using namespace std;
 
-Actor::Actor(Map* map) : map(map), m_window(Game::getInstance()->getMainWindow()) {}
+Actor::Actor(Map* map) : m_window(Game::getInstance()->getMainWindow()), map(map) {}
 
 Actor::Actor(Window* window) : m_window(window) {}
 
-Actor::Actor(Map* map, const char* filename) : map(map), m_window(Game::getInstance()->getMainWindow()) {
+Actor::Actor(Map* map, const char* filename) : m_window(Game::getInstance()->getMainWindow()), map(map) {
 	if (!loadOBJ(filename)) {
 		cout << "Failed to load " << filename << endl;
 	}

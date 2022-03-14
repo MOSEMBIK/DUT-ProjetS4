@@ -18,22 +18,28 @@ private:
 	std::vector<Actor*> actors;
 	std::map<glm::ivec2, Wall*, cmpVec> walls;
 	std::map<glm::ivec2, Bomb*, cmpVec> bombs;
+	Mesh mapMesh;
+	Material mapMaterial;
+	Texture* mapTexture;
+	Texture* mapTextureSpecular;
 
 	int mapSize;
+  
 public:
 	std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> edges_map; 			// Graph des accessibilités pour chaque position
-	
 
+  
 public:
 	Map();
 	~Map();
 
-	void generateMap(int size = 13);
+	void generateMap(int size = 13, int wallPercentage = 90);
 	void addActor(Actor* actor);
 
 	inline int getSize() { return mapSize; }
 
 	void draw();
+	void calculateWallMesh();
 	void update(float deltaTime);
 
 	///--- Fonctions utiles au déplacement des Players

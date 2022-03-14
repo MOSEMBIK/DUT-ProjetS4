@@ -80,7 +80,7 @@ void TextRenderer::loadFont(string font, unsigned int fontSize)
             texture,
             ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-            face->glyph->advance.x
+            (uint)face->glyph->advance.x
         };
         m_characters.insert(pair<char, Character>(c, character));
     }
@@ -119,7 +119,7 @@ void TextRenderer::renderText(string text, vec2 position, vec2 anchor, int align
 {
     // activate corresponding render state	
     m_textShader.use();
-	mat4 P = ortho(-(float)m_window->getSize().x * anchor.x, (float)m_window->getSize().x * (1 - anchor.x), -(float)m_window->getSize().y * anchor.y, (float)m_window->getSize().y * (1 - anchor.y));
+	mat4 P = ortho(-(float)m_window->getWidth() * anchor.x, (float)m_window->getWidth() * (1 - anchor.x), -(float)m_window->getHeight() * anchor.y, (float)m_window->getHeight() * (1 - anchor.y));
 	m_textShader.setUniformValue("u_P", P);
     m_textShader.setUniformValue("u_textColor", color);
     glActiveTexture(GL_TEXTURE0);
@@ -142,7 +142,7 @@ void TextRenderer::renderText(string text, vec2 position, vec2 anchor, int align
     {
         position.y -= getTextHeight(text);
     }
-	position *= m_window->m_scale.y;
+	position *= m_window->getScale().y;
 
     // iterate through all characters
     string::const_iterator c;
@@ -158,11 +158,11 @@ void TextRenderer::renderText(string text, vec2 position, vec2 anchor, int align
         // update VBO for each character
         float vertices[6][4] = {
             { xpos,     ypos + h,   0.0f, 1.0f },
-            { xpos + w, ypos,       1.0f, 0.0f },
             { xpos,     ypos,       0.0f, 0.0f },
+            { xpos + w, ypos,       1.0f, 0.0f },
 
-            { xpos,     ypos + h,   0.0f, 1.0f },
             { xpos + w, ypos + h,   1.0f, 1.0f },
+            { xpos,     ypos + h,   0.0f, 1.0f },
             { xpos + w, ypos,       1.0f, 0.0f }
         };
         // render glyph texture over quad

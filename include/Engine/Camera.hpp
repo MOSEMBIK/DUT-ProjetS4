@@ -4,8 +4,9 @@
 #include <GLFW/glfw3.h>
 
 #include <Engine/Transform.hpp>
+#include <Engine/Event/EventReceiver.hpp>
 
-class Camera
+class Camera : public IEventReceiver
 {
 private:
     Transform m_transform;
@@ -13,8 +14,12 @@ private:
     float m_nearPlane;
     float m_farPlane;
 
+    bool m_enableRotation;
+
 public:
     Camera();
+
+    virtual ~Camera() = default;
 
     /**
      * @brief Get the Transform of the Camera
@@ -79,4 +84,11 @@ public:
      * @return float 
      */
     inline void setFarPlane(float farPlane) { m_farPlane = farPlane; }
+
+    virtual void onEvent(Event& e);
+
+    bool onMouseMoved(MouseMovedEvent& e);
+    bool onMouseButtonPressed(MouseButtonPressedEvent& e);
+    bool onMouseButtonReleased(MouseButtonReleasedEvent& e);
+    bool onAppUpdate(AppUpdateEvent& e);
 };

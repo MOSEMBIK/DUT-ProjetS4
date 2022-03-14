@@ -65,6 +65,16 @@
 		"chrono": "cpp",
 		"ratio": "cpp",
 		"xmemory0": "cpp"
+		"format": "cpp",
+		"array": "cpp",
+		"charconv": "cpp",
+		"condition_variable": "cpp",
+		"forward_list": "cpp",
+		"mutex": "cpp",
+		"optional": "cpp",
+		"span": "cpp",
+		"stop_token": "cpp",
+		"thread": "cpp"
 	},
     "cmake.configureOnOpen": false
 }

@@ -24,19 +24,11 @@ int main(int argc, char **argv)
 {
 	UNUSED(argc);
 	UNUSED(argv);
-
-	// Initialise la librairie GLFW
-	if (!glfwInit())
-		return -1;
-
-	//Text::init();
+	std::cerr << "---------------------------" << std::endl;
 
 	Game* game = Game::getInstance();
-
-    while(!glfwWindowShouldClose(game->getMainWindow()->getWindow()))
-    {
-        game->update();
-    }
+	game->postInit();
+	game->run();
 
 	glfwTerminate();
 
