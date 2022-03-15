@@ -441,17 +441,17 @@ void Game::setState(GameState state)
 			game->setState(GameState::MULTI_CREATE_SERVER);
 		});
 
-		list<ServerInfo> servers = { {"127.0.0.1", "PielleBoule", "1:4", 999}/*, {}*/ };
+		list<ServerInfo> servers = { {"stoupy.tk", "Stoupy51", "3:9", 12}, {"127.0.0.1", "Bourbourman", "7:60", 75}, {} };
 		unsigned char i = 1;
 		for (ServerInfo server : servers) { i++;
-			buttons.push_back(new Button(mainWindow, vec2(0.0f, -30.0f*i), vec2(0.5f, 0.8f), vec2(DEFAULT_WINDOW_W/1.5, 60), (char *)"assets/button.png", vec3(1.0f)*0.75f, vec3(0.75f, 0.75f, 0.5f)*0.75f, vec3(0.5f)*0.75f));
-			labels.push_back(new Label(mainWindow, vec2(0.0f, -30.0f*i), vec2(0.225f, 0.8f), server.m_serverOwner				, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
-			labels.push_back(new Label(mainWindow, vec2(0.0f, -30.0f*i), vec2(0.185f, 0.8f), server.m_players					, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE, vec3(0.69f)));
+			buttons.push_back(new Button(mainWindow, vec2(0.0f, -i*79.0f), vec2(0.5f, 1.0f), vec2(DEFAULT_WINDOW_W/1.5, 60), (char *)"assets/button.png", vec3(1.0f)*0.75f, vec3(0.75f, 0.75f, 0.5f)*0.75f, vec3(0.5f)*0.75f));
+			labels.push_back(new Label(mainWindow, vec2(30.0f, -i*79.0f), vec2(0.225f, 1.0f), server.m_serverOwner				, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+			labels.push_back(new Label(mainWindow, vec2(20.0f, -i*79.0f), vec2(0.185f, 1.0f), server.m_players					, 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE, vec3(0.69f)));
 			vec3 pingColor = vec3(1.0f, 0.0f, 0.0f);
 			if (server.m_ping < 32) { pingColor = vec3(0.0f, 1.0f, 0.0f); }
 			else if (server.m_ping < 100) { pingColor = vec3(1.0f, 1.0f, 0.0f); }
-			labels.push_back(new Label(mainWindow, vec2(0.0f, -30.0f*i), vec2(0.74f, 0.8f), to_string(server.m_ping)+" ms"		, 24, bomberFont, ALIGN_RIGHT | ALIGN_MIDDLE, pingColor));
-			labels.push_back(new Label(mainWindow, vec2(0.0f, -30.0f*i), vec2(0.75f, 0.8f), "Join server"						, 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+			labels.push_back(new Label(mainWindow, vec2(0.0f, -i*79.0f), vec2(0.63f, 1.0f), to_string(server.m_ping)+" ms"		, 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE, pingColor));
+			labels.push_back(new Label(mainWindow, vec2(50.0f, -i*79.0f), vec2(0.70f, 1.0f), "Join server"						, 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 			buttons[i]->setOnClickCallback([server]() {
 				cerr << "Rejoindre " << server.m_ip << endl;
 			});
