@@ -19,8 +19,8 @@ void Server::start() {
 	m_context.run();
 }
 
-Server::ClientPtr Server::find(const string & alias) {
-	for (ClientPtr client: this->m_clients)
+Server::ServerClientPtr Server::find(const string & alias) {
+	for (ServerClientPtr client: this->m_clients)
 		if(client->alias() == alias)
 			return client;
 	return nullptr;
@@ -30,14 +30,14 @@ void Server::accept() {
 	m_acceptor.async_accept ([this](const std::error_code & ec, Socket && socket) {
 		// Erreur ?
 		if (!ec) {
-			m_clients.emplace_back(std::make_shared<Client>(this, std::move (socket)));
+			m_clients.emplace_back(std::make_shared<ServerClient>(this, std::move (socket)));
 			m_clients.back()->start();
 		}
 		accept();
 	});
 }
 
-void Server::process(ClientPtr client, const string & message) {
+void Server::process(ServerClientPtr client, const string & message) {
 	// Lecture d'une éventuelle commande.
 	std::istringstream iss (message);
 	string command;
@@ -65,20 +65,20 @@ void Server::process(ClientPtr client, const string & message) {
 	}
 }
 
-void Server::process_private(ClientPtr client, const string & data) {
+void Server::process_private(ServerClientPtr client, const string & data) {
 	int delimiterPosition = data.find(' ');
 	string recipientName = data.substr(0, delimiterPosition);
 	string message = data.substr(delimiterPosition + 1, data.length() - 1);
 
-	ClientPtr recipientClient = find(recipientName);
+	ServerClientPtr recipientClient = find(recipientName);
 	if(recipientClient != nullptr)
 		recipientClient->write("#private " + client->alias() + " " + message);
 }
 
-void Server::process_list(ClientPtr client, const string & data) {
+void Server::process_list(ServerClientPtr client, const string & data) {
 	UNUSED(data);
 	string m = "#list ";
-	for (ClientPtr client: m_clients) {
+	for (ServerClientPtr client: m_clients) {
 		m += client->alias() + " ";
 		cerr << "-> [" << client->alias() << "]" << endl;
 	}
@@ -86,7 +86,7 @@ void Server::process_list(ClientPtr client, const string & data) {
 	client->write(m);
 }
 
-void Server::process_amogus(ClientPtr client, const string & data) {
+void Server::process_amogus(ServerClientPtr client, const string & data) {
 	UNUSED(client);
 	UNUSED(data);
 	broadcast("⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣤⣤⣤⣤⣶⣦⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀\n"
@@ -110,19 +110,19 @@ void Server::process_amogus(ClientPtr client, const string & data) {
 			"⠀⠀⠀⠀⠀⠀⠀⠈⠛⠻⠿⠿⠿⠿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀");
 }
 
-void Server::process_message(ClientPtr client, const string & data) {
+void Server::process_message(ServerClientPtr client, const string & data) {
 	string m = "<b>" + client->alias() + "</b> : " + data;
 	broadcast (m);
 }
 
-void Server::process_quit(ClientPtr client, const string & data) {
+void Server::process_quit(ServerClientPtr client, const string & data) {
 	UNUSED(data);
 	client->stop();
 }
 
-void Server::broadcast(const string & message, ClientPtr emitter) {
+void Server::broadcast(const string & message, ServerClientPtr emitter) {
 	string m = message + '\n';
-	for (ClientPtr client: this->m_clients) {
+	for (ServerClientPtr client: this->m_clients) {
 		if (client != emitter)
 		client->write(message);
 	}

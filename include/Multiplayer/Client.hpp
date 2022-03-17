@@ -10,7 +10,9 @@ class Client {
 	static const std::map<std::string, Processor> PROCESSORS;
 
   private:
+	asio::io_context io_context;
 	Socket m_socket;
+	std::thread m_thread;
 
   private:
 	// Traitement d'un message.
@@ -33,9 +35,6 @@ class Client {
 	// Envoi d'un message.
 	void write (const std::string &);
 
-	// Connexion / déconnexion.
-	void connected (const std::string & host, unsigned short port = 42069);
-	void disconnected ();
 	// Message.
 	void message (const std::string & message);
 	// Error.

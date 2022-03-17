@@ -670,6 +670,8 @@ bool Game::onUpdate(AppUpdateEvent& e)
 			server_map->update(m_deltaTime);
 			server_map->draw();
 
+			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_T) == GLFW_PRESS)
+        		m_client->write("test à "+to_string(glfwGetTime())+" secondes");
 
 			if (keyPressed == GLFW_KEY_B && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_B) == GLFW_RELEASE)
         		server_map->addBomb( new Bomb(map, vec3(0.0f, 0.0f, 0.5f)),	ivec2(rand()%8+2,rand()%8+2) );
