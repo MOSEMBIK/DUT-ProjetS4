@@ -42,7 +42,7 @@ LIBDIRS		:= $(LIB)
 FIXPATH 	= $(subst /,\,$1)
 RM			:= del /q /f
 MD			:= mkdir
-COPY 		:= xcopy "$(SHADER)" "$(OUTPUT)\$(SHADER)"/S/D/I/Y && xcopy "$(ASSETS)" "$(OUTPUT)\$(ASSETS)"/S/D/I/Y && xcopy "$(LIB)\glew32.dll" "$(OUTPUT)"/S/D/I/Y && xcopy "$(LIB)\glfw3.dll" "$(OUTPUT)"/S/D/I/Y
+COPY 		:= xcopy "$(SHADER)" "$(OUTPUT)\$(SHADER)"/S/D/I/Y && xcopy "$(ASSETS)" "$(OUTPUT)\$(ASSETS)"/S/D/I/Y && xcopy "$(LIB)\glew32.dll" "$(OUTPUT)"/S/D/I/Y && xcopy "$(LIB)\glfw3.dll" "$(OUTPUT)"/S/D/I/Y && xcopy "$(LIB)\freetype.dll" "$(OUTPUT)"/S/D/I/Y
 else
 MAIN		:= Game
 SOURCEDIRS	:= $(shell find $(SRC) -type d)
