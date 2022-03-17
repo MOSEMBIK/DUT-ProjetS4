@@ -7,6 +7,7 @@ Client::Client(const string & host, unsigned short port) : io_context(), m_socke
 {
 	// Connexion au serveur
 	m_socket.connect(asio::ip::tcp::endpoint(asio::ip::address::from_string(host), port));
+
 	// Création du thread pour la boucle de traitement
 	m_thread = thread([this]() {
 		while (true) {
@@ -17,7 +18,9 @@ Client::Client(const string & host, unsigned short port) : io_context(), m_socke
 
 			// Traitement du message si aucune erreur
 			if (error) break;
-			process(message);
+			if (message != "") {
+				process(message);
+			}
 		}
 		// Fermeture du socket.
 		m_socket.close();
@@ -33,6 +36,7 @@ Client::~Client() {
 
 // Envoi d'un message à travers le socket.
 void Client::write(const string & message) {
+	cerr << "write(" << message << ")" << endl;
 	asio::write(m_socket, asio::buffer(message));
 }
 

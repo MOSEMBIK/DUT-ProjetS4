@@ -1,12 +1,10 @@
 
 #include <Multiplayer/Server.hpp>
 
-using std::cerr;
-using std::endl;
-using std::string;
+using namespace std;
 
 Server::ServerClient::ServerClient (Server * server, Socket && socket)
-	: m_server {server}, m_socket {std::move(socket)}, m_active {false}
+	: m_server {server}, m_socket {move(socket)}, m_active {false}
 {
 	cerr << "Nouveau client !" << endl;
 }
@@ -18,16 +16,17 @@ void Server::ServerClient::start() {
 	ServerClientPtr self = shared_from_this();
 
 	// Lecture asynchrone.
-	async_read_until(m_socket, m_buffer, '\n', [this, self] (const std::error_code & ec, std::size_t n) {
+	async_read_until(m_socket, m_buffer, '\n', [this, self] (const error_code & ec, size_t n) {
 		UNUSED(n);
 		// Erreur ?
 		if (!ec) {
-			std::istream is {&m_buffer};
+			istream is {&m_buffer};
 			string alias;
-			std::getline(is, alias, ' ');
-			alias = std::regex_replace(alias, std::regex("\\s"), "");
+			getline(is, alias, ' ');
+			alias = regex_replace(alias, regex("\\s"), "");
 
 			if (m_server->find(alias) == nullptr) {
+				cerr << "Nouveau client avec l'username : " << alias << endl;
 				self->m_alias = alias;
 				self->write("#alias " + alias);
 				m_server->process_list(self);
@@ -58,15 +57,15 @@ void Server::ServerClient::read() {
 	ServerClientPtr self = shared_from_this();
 
 	// Lecture asynchrone.
-	async_read_until(m_socket, m_buffer, '\n', [this, self] (const std::error_code & ec, std::size_t n) {
+	async_read_until(m_socket, m_buffer, '\n', [this, self] (const error_code & ec, size_t n) {
 		UNUSED(n);
 		// Erreur ?
 		if (!ec) {
-			std::istream is {&m_buffer};
+			istream is {&m_buffer};
 			string message;
 
 			// Traiter tous les messages disponibles.
-			while (std::getline(is, message))
+			while (getline(is, message))
 				m_server->process(self, message);
 			
 			// Si le client est toujours actif, lire à nouveau.
@@ -90,6 +89,6 @@ void Server::ServerClient::write(const string & message) {
 	async_write(
 		m_socket,
 		asio::buffer (m.data (), m.length ()),
-		[this] (const std::error_code & ec, std::size_t n) { UNUSED(ec); UNUSED(n); }
+		[this] (const error_code & ec, size_t n) { UNUSED(ec); UNUSED(n); }
 	);
 }

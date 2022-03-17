@@ -1,22 +1,21 @@
 
 #include <Multiplayer/Server.hpp>
 
-using std::cerr;
-using std::endl;
-using std::string;
+using namespace std;
 
 Server::Server(unsigned short port) : m_context {}, m_clients {},
 	m_acceptor {m_context, asio::ip::tcp::endpoint {asio::ip::tcp::v4(), port}}
 {
-	cerr << "Nouveau serveur !" << endl;
 }
 
 void Server::start() {
 	// Acceptation des connexions entrantes.
 	accept();
 
-	// Démarrage du contexte.
-	m_context.run();
+	// Démarrage du contexte sur un nouveau thread
+	m_thread = thread([this]() {
+		m_context.run();
+	});
 }
 
 Server::ServerClientPtr Server::find(const string & alias) {
@@ -27,10 +26,10 @@ Server::ServerClientPtr Server::find(const string & alias) {
 }
 
 void Server::accept() {
-	m_acceptor.async_accept ([this](const std::error_code & ec, Socket && socket) {
+	m_acceptor.async_accept ([this](const error_code & ec, Socket && socket) {
 		// Erreur ?
 		if (!ec) {
-			m_clients.emplace_back(std::make_shared<ServerClient>(this, std::move (socket)));
+			m_clients.emplace_back(make_shared<ServerClient>(this, move (socket)));
 			m_clients.back()->start();
 		}
 		accept();
@@ -38,16 +37,17 @@ void Server::accept() {
 }
 
 void Server::process(ServerClientPtr client, const string & message) {
+	cerr << "Server::process: " << message << endl;
 	// Lecture d'une éventuelle commande.
-	std::istringstream iss (message);
+	istringstream iss (message);
 	string command;
 	if (iss >> command) {
 		// Commande ?
 		if (command[0] == '/') {
 			// Consommation des caractères blancs.
-			iss >> std::ws;
+			iss >> ws;
 			// Reste du message.
-			string data {std::istreambuf_iterator<char> {iss}, std::istreambuf_iterator<char> {}};
+			string data {istreambuf_iterator<char> {iss}, istreambuf_iterator<char> {}};
 
 			// Recherche du processeur correspondant.
 			// - S'il existe, l'appeler ;
@@ -124,11 +124,11 @@ void Server::broadcast(const string & message, ServerClientPtr emitter) {
 	string m = message + '\n';
 	for (ServerClientPtr client: this->m_clients) {
 		if (client != emitter)
-		client->write(message);
+			client->write(message);
 	}
 }
 
-const std::map<string, Server::Processor> Server::PROCESSORS {
+const map<string, Server::Processor> Server::PROCESSORS {
 	{"/quit", &Server::process_quit},
 	{"/list", &Server::process_list},
 	{"/private", &Server::process_private},

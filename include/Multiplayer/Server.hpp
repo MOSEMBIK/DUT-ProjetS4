@@ -49,6 +49,7 @@ class Server {
 	static const std::map<std::string, Processor> PROCESSORS;
 
   private:
+	std::thread m_thread;
 	asio::io_context m_context;
 	std::list<ServerClientPtr> m_clients;
 	asio::ip::tcp::acceptor m_acceptor;

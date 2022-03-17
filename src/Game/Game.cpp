@@ -14,8 +14,6 @@
 
 using namespace glm;
 using namespace std;
-using std::cerr;
-using std::endl;
 
 #define SHOW_EVENTS 0
 
@@ -544,6 +542,7 @@ void Game::setState(GameState state)
 		if (m_server != nullptr) { delete m_server; m_server = nullptr; }
 		m_server = new Server();
 		m_server->start();
+
 		Map* server_map = &m_server->getMap();
 		server_map->generateMap(m_gameSettings[0], m_gameSettings[2]);
 		
@@ -671,7 +670,7 @@ bool Game::onUpdate(AppUpdateEvent& e)
 			server_map->draw();
 
 			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_T) == GLFW_PRESS)
-        		m_client->write("test à "+to_string(glfwGetTime())+" secondes");
+        		m_client->write("/ඞ");
 
 			if (keyPressed == GLFW_KEY_B && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_B) == GLFW_RELEASE)
         		server_map->addBomb( new Bomb(map, vec3(0.0f, 0.0f, 0.5f)),	ivec2(rand()%8+2,rand()%8+2) );

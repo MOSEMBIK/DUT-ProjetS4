@@ -4,12 +4,6 @@
 
 class Client {
   private:
-	// Signature d'un processeur.
-	typedef void (Client::*Processor) (const std::string &);
-	// Processeurs.
-	static const std::map<std::string, Processor> PROCESSORS;
-
-  private:
 	asio::io_context io_context;
 	Socket m_socket;
 	std::thread m_thread;
@@ -46,16 +40,18 @@ class Client {
 	void user_renamed (const std::string &, const std::string &);
 	void user_list (const std::string &);
 	void user_private (const std::string &, const std::string &);
-};
 
-// Processeurs.
-const std::map<std::string, Client::Processor> Client::PROCESSORS = {
-	{"#error", &Client::process_error},
-	{"#alias", &Client::process_alias},
-	{"#connected", &Client::process_connected},
-	{"#disconnected", &Client::process_disconnected},
-	{"#renamed", &Client::process_renamed},
-	{"#list", &Client::process_list},
-	{"#private", &Client::process_private}
+  private:
+	// Signature d'un processeur.
+	typedef void (Client::*Processor) (const std::string &);
+	// Processeurs.
+	const std::map<std::string, Processor> PROCESSORS  = {
+		{"#error", &Client::process_error},
+		{"#alias", &Client::process_alias},
+		{"#connected", &Client::process_connected},
+		{"#disconnected", &Client::process_disconnected},
+		{"#renamed", &Client::process_renamed},
+		{"#list", &Client::process_list},
+		{"#private", &Client::process_private}
+	};
 };
-
