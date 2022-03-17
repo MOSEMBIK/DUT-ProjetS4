@@ -10,8 +10,6 @@
 #include <Engine/ResourceLoader.hpp>
 #include <Engine/Utils.hpp>
 
-#include <Multiplayer/Server.hpp>
-
 #include <iostream>
 
 using namespace glm;
@@ -350,7 +348,7 @@ void Game::setState(GameState state)
 	} break;
 
 	/**
-	 * @brief Launch the game
+	 * @brief Launch a singleplayer game
 	 */
 	case GameState::SOLO_LOADING: {
 		cerr << "Loading Singleplayer Game..." << endl; float time = glfwGetTime();
@@ -375,7 +373,7 @@ void Game::setState(GameState state)
 	} break;
 
 	/**
-	 * @brief Playing game
+	 * @brief Playing singleplayer game
 	 */
 	case GameState::SOLO_GAME: {
 		cerr << "Resuming Singleplayer Game..." << endl; float time = glfwGetTime();
@@ -477,8 +475,8 @@ void Game::setState(GameState state)
 		buttons.push_back(new Button(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), vec2(220, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[0]->setLabel(Label(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), "Launch Game", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 		buttons[0]->setOnClickCallback([]() {
-			//Game* game = Game::getInstance();
-			//game->setState(GameState::MULTI_LOADING_SERVER);
+			Game* game = Game::getInstance();
+			game->setState(GameState::MULTI_LOADING_SERVER);
 			cerr << "Launching server..." << endl;
 		});
 
@@ -535,6 +533,43 @@ void Game::setState(GameState state)
 		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W), Textures::spaceBackground));
 
 		cerr << "Loaded multiplayer create server menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
+	} break;
+
+	/**
+	 * @brief Launch a multiplayer game
+	 */
+	case GameState::MULTI_LOADING_SERVER: {
+		cerr << "Loading Multiplayer Server..." << endl; float time = glfwGetTime();
+
+		if (m_server != nullptr) { delete m_server; m_server = nullptr; }
+		m_server = new Server();
+		m_server->start();
+		Map* server_map = &m_server->getMap();
+		server_map->generateMap(m_gameSettings[0], m_gameSettings[2]);
+		
+		// Test de robots
+		for (int i=0; i < m_gameSettings[4]; i++) {
+			Robot* robot = new Robot(server_map);
+			robot->getTransform().setPosition(vec3(1.0f, 0.0f, 1.0f) * float(rand()%m_gameSettings[0]));
+			server_map->addPlayer(robot);
+		}
+
+		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
+		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
+
+		m_client = new Client("127.0.0.1");
+
+		cerr << "Loaded Multiplayer Server in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
+	} break;
+
+	/**
+	 * @brief Playing multiplayer game
+	 */
+	case GameState::MULTI_GAME: {
+		cerr << "Resuming Multiplayer Game..." << endl; float time = glfwGetTime();
+		/* Load labels */
+
+		cerr << "Resumed Multiplayer Game in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
 	}
 	m_gameState = state;
@@ -624,6 +659,30 @@ bool Game::onUpdate(AppUpdateEvent& e)
 
 		case GameState::MULTI_CREATE_SERVER: {
 		} break;
+
+		case GameState::MULTI_LOADING_SERVER: {
+			setState(GameState::MULTI_GAME);
+		} break;
+
+		case GameState::MULTI_GAME: {
+			Map* server_map = &m_server->getMap();
+
+			server_map->update(m_deltaTime);
+			server_map->draw();
+
+
+			if (keyPressed == GLFW_KEY_B && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_B) == GLFW_RELEASE)
+        		server_map->addBomb( new Bomb(map, vec3(0.0f, 0.0f, 0.5f)),	ivec2(rand()%8+2,rand()%8+2) );
+			if (keyPressed == GLFW_KEY_ESCAPE && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)
+        		setState(GameState::SOLO_PAUSED);
+			
+			keyPressed = 0;
+			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        		keyPressed = GLFW_KEY_ESCAPE;
+			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_B) == GLFW_PRESS)
+        		keyPressed = GLFW_KEY_B;
+		} break;
+
 	}
 
 	if(m_currentTime - m_lastTime >= 1)

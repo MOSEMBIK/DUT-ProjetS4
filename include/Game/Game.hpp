@@ -13,12 +13,15 @@
 #include <Engine/Event/KeyEvent.hpp>
 #include <Engine/Event/ApplicationEvent.hpp>
 
+#include <Multiplayer/Server.hpp>
+#include <Multiplayer/Client.hpp>
+
 #include <glm/vec2.hpp>
 
 enum GameState {
 	MAIN_MENU, OPTIONS,
 	SOLO_MENU, SOLO_GAME, SOLO_LOADING, SOLO_PAUSED,
-	MULTI_MENU, MULTI_CREATE_SERVER
+	MULTI_MENU, MULTI_CREATE_SERVER, MULTI_LOADING_SERVER, MULTI_GAME
 };
 
 void onKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -52,6 +55,11 @@ private:
 
     // Singleton
     static Game* m_instance;
+
+	// Multiplayer
+	Server* m_server;
+	Client* m_client;
+
 
     bool init();
     bool loadRequiredResources();

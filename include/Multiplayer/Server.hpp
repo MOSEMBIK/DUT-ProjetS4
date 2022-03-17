@@ -2,6 +2,8 @@
 
 #include <utils.h>
 
+#include <Game/Map.hpp>
+
 #include <string>
 #include <list>
 #include <map>
@@ -16,10 +18,10 @@ struct ServerInfo {
 	unsigned int	m_ping = 999;
 };
 
+typedef asio::ip::tcp::socket Socket;
+
 class Server {
   private:
-	typedef asio::ip::tcp::socket Socket;
-
 	// Client vu du serveur (pointeurs intelligents).
 	class Client : public std::enable_shared_from_this<Client> {
 	  private:
@@ -73,11 +75,15 @@ class Server {
 	// Suppression d'un client.
 	void remove (ClientPtr);
 
+  private:
+	Map m_map;
+
   public:
-	// Constructeur.
 	Server (unsigned short port = 42069);
-	// Démarrage.
-	void start ();
+	void start (); // Démarrage.
+
+	inline void setMap (Map map) { m_map = map; }
+	inline Map& getMap () { return m_map; }
 
   public:
 	static const std::string INVALID_ALIAS;

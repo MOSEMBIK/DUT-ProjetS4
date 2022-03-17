@@ -25,8 +25,6 @@ Map::Map() : mapMaterial(*Shader::find("Base")), mapActor(this)
 }
 
 Map::~Map() {
-
-	std::cerr << "Hello";
 	for (Actor* actor : actors) {
 		if(actor != nullptr)
 			delete actor;
@@ -36,7 +34,6 @@ Map::~Map() {
 		if(wall.second != nullptr)
 			delete wall.second;
 	}
-	std::cerr << "O<O";
 }
 
 void Map::generateMap(int size, int wallPercentage) {
