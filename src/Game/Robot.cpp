@@ -95,7 +95,7 @@ bool Robot::isPossible(glm::ivec2 coord, glm::ivec2 aPos, std::list<glm::ivec2> 
  */
 glm::ivec2 Robot::choseDestination(int mode){
 	std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> edges = map->edges_map;
-	std::list<glm::ivec2> players = map->getPlayersMap();
+	std::list<std::pair<glm::ivec2, int>>  players = map->getPlayersMap();
 	std::map<glm::ivec2, float, cmpVec> dangerMap = map->getDangerMap();
 	glm::ivec2 pos = trajet[case_of_t];
 
@@ -130,9 +130,14 @@ glm::ivec2 Robot::choseDestination(int mode){
 
 	// Nearst Player location
 	} else if (mode == 1) { 
+		cerr << "( " << pos.x << ", " << pos.y << " )" << endl;
 		std::list<glm::ivec2> playersL;
-		for (glm::ivec2 pl : players){
-			if (pl.x != pos.x || pl.y != pos.y) playersL.push_back(pl);
+		for (std::pair<glm::ivec2, int> pl : players){
+			if (pl.second != id){
+				playersL.push_back(pl.first);
+				cerr << "( " << pl.first.x << ", " << pl.first.y << " )" << endl;
+			}
+			cerr << "C'est moi !!" << endl;
 		}
 		
 		glm::ivec2 nearstPlayer = playersL.front();
@@ -194,7 +199,7 @@ std::vector<glm::ivec2> Robot::genTrajetMann(glm::ivec2 destination) {
 		clout[new_trajet[done]] = 0;
 
 		// Génération plus court chemin
-		while (!queue.empty()) {
+		while (queue.empty()) {
 			cerr << queue.size() << endl;
 
 			// Recuperation de la case optimale
