@@ -19,5 +19,6 @@ public:
 	virtual ~Player() {};
 
 	inline float getSpeed() const { return speed; }
+
 	void setBomb(glm::ivec2);
 };

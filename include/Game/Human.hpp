@@ -6,9 +6,12 @@
 class Human: public Player
 {
 private:
-
+	int mapSize;
+	int x, z;
 public:
 	Human(Map* map);
   	virtual ~Human() {}
+
+	void update(float deltaTime);
 
 };
