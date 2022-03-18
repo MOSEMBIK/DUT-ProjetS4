@@ -229,4 +229,12 @@ int Map::whatIs(glm::ivec2 coord){
 	return 0;
 }
 
+std::list<glm::ivec2> Map::getPlayersMap(){
+	
+}
+
+std::pair<glm::ivec2, std::pair<int, float>> getBombsMap(){
+
+}
+
 ///-------------------------------------------------------

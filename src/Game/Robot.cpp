@@ -8,6 +8,10 @@ Robot::Robot(Map* map) : Player(map) {
 }
 
 void Robot::update(float deltaTime) {
+	case_of_t++;
+	x = trajet[case_of_t][0];
+	z = trajet[case_of_t][1];
+
 	Transform& transform = getTransform();
 	glm::vec3 pos = transform.getPosition();
 	if (int(pos.x) == x && int(pos.z) == z) {
@@ -37,12 +41,69 @@ void Robot::update(float deltaTime) {
 
 ///--- REFLEXION
 // Destination
+/**
+ * @brief Check if aPos is reachable from coord
+ * 
+ * @param coord Destination location
+ * @param aPos Start location
+ * @param checked List for recursivity that keep in mind checked locations
+ * @return Boolean (true->case is reachable, false->case isn't reachable)
+ */
+bool Robot::isPossible(glm::ivec2 coord, glm::ivec2 aPos, std::list<glm::ivec2> &checked){
+	std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> edges = map->edges_map;
+	glm::ivec2 pos;
+	if (aPos[0] == -1 && aPos[1] == -1) pos = trajet[case_of_t];
+	else  pos = aPos;
+
+	checked.push_back(pos);
+	for (glm::ivec2 next : edges[pos]) {
+		if (find(checked.begin(), checked.end(), next) == checked.end()){
+			if (next[0] == coord[0] || next[1] == coord[1]) {
+				return true;
+			} else {
+				return isPossible(coord, next, checked);
+			}
+		}
+	}
+	return false;
+}
+
+/**
+ * @brief Think about the best location to go 
+ * 
+ * @return Chosen location
+ */
 glm::ivec2 Robot::choseDestination(){
+	std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> edges = map->edges_map;
+	std::list<glm::ivec2> players = map->getPlayersMap();
+	std::pair<glm::ivec2, std::pair<int, float>> bombs = map->getBombsMap();
+	glm::ivec2 pos = trajet[case_of_t];
+
+	// Nearst Player location
+	glm::ivec2 nearstPlayer = players.front();
+	for (glm::ivec2 ply : players) if (sqrt(abs(ply[0] - pos[0]) + abs(ply[1] - pos[1])) < sqrt(abs(nearstPlayer[0] - pos[0]) + abs(nearstPlayer[1] - pos[1]))) nearstPlayer = ply;
+	glm::ivec2 dest = nearstPlayer;
+	if (isPossible(dest)) return dest;
+
+	// Explosion safe location
+	
+}
+
+// Bombs
+/**
+ * @brief Return were the Robot can place a Bomb
+ * @return 0->no, 1->up, 2->right, 3->bot, 4->left 
+ */
+int shouldBomb(){
 	
 }
 
 ///--- DEPLACEMENTS
-// Mannathan A* Algorithm
+/**
+ * @brief Mannathan A* Algorithm
+ * @param destination Destination location
+ * @return Vector of coords that represent the best way found to reach destination
+*/
 std::vector<glm::ivec2> Robot::genTrajetMann(glm::ivec2 destination) {
 	std::vector<glm::ivec2> new_trajet;
 	new_trajet.push_back(trajet[case_of_t]);
@@ -51,7 +112,7 @@ std::vector<glm::ivec2> Robot::genTrajetMann(glm::ivec2 destination) {
 
 	if (map->isReachable(destination)){
 		
-		std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> &edges = *&(map->edges_map);
+		std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> edges = map->edges_map;
 
 		if (map->whatIs(new_trajet[done]) != 0){
 			new_trajet.push_back(edges[new_trajet[done]][0]);
