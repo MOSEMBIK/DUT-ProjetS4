@@ -1,5 +1,6 @@
 
 #include <Multiplayer/Client.hpp>
+#include <Game/Map.hpp>
 
 using namespace std;
 
@@ -40,7 +41,7 @@ Client::~Client() {
 }
 
 // Envoi d'un message à travers le socket.
-void Client::write(const string & message) {	
+void Client::write(const string & message) {
 	// Ajout du caractère "fin de ligne".
 	string m = message + '\n';
 
@@ -89,7 +90,7 @@ void Client::user_list (const string & message) {
 void Client::process(const string & message) {
 	istringstream iss (message);
 	string command;
-	if (iss >> command)
+	if (iss >> command) {
 		if (command[0] == '#') {
 			iss >> ws;
 			string data {istreambuf_iterator<char> {iss}, istreambuf_iterator<char> {}};
@@ -103,13 +104,15 @@ void Client::process(const string & message) {
 		else {
 			cerr << message << endl;
 		}
+	}
 }
 
 
-// Commande "#alias"
-void Client::process_alias(const string & message)
-{
-	cerr << "Client::process_alias: " << message << endl;
+// Commande "#loadMap"
+void Client::process_loadMap(const string & message) {
+	if (m_map != nullptr) delete m_map;
+	m_map = new Map();
+	m_map->loadMap(message);
 }
 
 // Commande "#connected"

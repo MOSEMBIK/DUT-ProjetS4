@@ -22,7 +22,7 @@ class Client {
 	// Gestion des erreurs.
 	void process_error (const std::string & message);
 	// Reste des processors
-	void process_alias (const std::string & message);
+	void process_loadMap (const std::string & message);
 	void process_connected (const std::string & message);
 	void process_disconnected (const std::string & message);
 	void process_renamed (const std::string & message);
@@ -57,7 +57,7 @@ class Client {
 	// Processeurs.
 	const std::map<std::string, Processor> PROCESSORS  = {
 		{"#error", &Client::process_error},
-		{"#alias", &Client::process_alias},
+		{"#loadMap", &Client::process_loadMap},
 		{"#connected", &Client::process_connected},
 		{"#disconnected", &Client::process_disconnected},
 		{"#renamed", &Client::process_renamed},

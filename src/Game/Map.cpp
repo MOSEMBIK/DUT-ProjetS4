@@ -37,16 +37,46 @@ Map::~Map() {
 }
 
 string Map::getData() const {
-	string data = "";
-	data += "Map size: " + to_string(mapSize) + "|";
-	data += "walls:{";
+	string data = "#loadMap " + to_string(mapSize) + "|";
+
 	for (auto wall : walls) {
 		if (wall.second != nullptr)
-			data += wall.second->getData() + ",";
+			data += wall.second->getData() + ";";
 	}
-	data += "}|";
+	data += "|";
+	for (auto player : players) {
+		if (player != nullptr)
+			data += player->getData() + ";";
+	}
+	data += "|";
 
 	return data;
+}
+
+void Map::loadMap(const std::string& mapData) {
+	// Example of string :
+	// #13|[0,0,0,0,-1],[0,0,1,0,-1],[0,0,2,0,-1],|[3,0,3,0.430000,0.660000,0.640000,0.500000,1065353216],[8,0,8,0.310000,0.470000,0.580000,0.727272,1042365813],
+
+	cerr << "Loading map : " << endl; float time = glfwGetTime();
+	cerr << mapData << endl;
+
+	// Parse map size, walls and players
+	// Parsing map size
+	int pos = mapData.find("|");
+	string sizeStr = mapData.substr(0, pos);
+	this->mapSize = stoi(sizeStr);
+
+	// Parsing walls to "|"
+	pos = mapData.find("|", pos);
+	int pos2 = mapData.find("|", pos + 1);
+	string wallsStr = mapData.substr(pos + 1, pos2 - pos - 2);
+	cerr << endl << "Walls : " << wallsStr << endl;
+
+	// Parsing players
+	pos = mapData.find("|", pos2);
+	string playersStr = mapData.substr(pos2 + 1, pos - pos2 - 3);
+	cerr << endl << "Players : " << playersStr << endl;
+	
 }
 
 

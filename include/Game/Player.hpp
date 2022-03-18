@@ -23,6 +23,8 @@ public:
 	Player(Map* map);
 	virtual ~Player() {};
 
+	std::string getData(); // Fonction qui retourne les données du joueur sous forme de string
+
 	inline float getSpeed() const { return speed; }
 
 	void setBomb(glm::ivec2);

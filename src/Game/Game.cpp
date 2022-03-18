@@ -410,7 +410,6 @@ void Game::setState(GameState state)
 			labels.push_back(new Label(mainWindow, vec2(400.0f, -i*79.0f), vec2(0.5f, 1.0f), "Join server"						, 24, bomberFont, ALIGN_RIGHT | ALIGN_MIDDLE));
 			buttons[i]->setOnClickCallback([this]() {
 				m_client = new Client("82.64.248.19");
-				m_client->write(m_username);
 				setState(GameState::MULTI_JOIN_SERVER);
 			});
 		}
@@ -497,6 +496,7 @@ void Game::setState(GameState state)
 		if (m_server != nullptr) { delete m_server; m_server = nullptr; }
 		m_server = new Server();
 		m_server->start();
+		m_client = new Client("127.0.0.1");
 
 		Map* server_map = &m_server->getMap();
 		server_map->generateMap(m_gameSettings[0], m_gameSettings[2]);
