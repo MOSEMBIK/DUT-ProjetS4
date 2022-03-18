@@ -168,7 +168,7 @@ Game::~Game()
 
 void Game::setState(GameState state)
 {
-	cerr << endl;
+	cerr << "Set State" << endl;
 	for (auto image : images) { delete image; } images.clear();
 	for (auto button : buttons) { delete button; } buttons.clear();
 	for (auto label : labels) { delete label; } labels.clear();
@@ -442,7 +442,9 @@ bool Game::postInit() {
 	}
 	updateWindowOptions();
 
+	cerr << "Loading walls..." << endl;
 	wall = new Wall(map);
+	cerr << "Scale walls..." << endl;
 	wall->getTransform().setScale(vec3(0.0f));
 	this->setState(GameState::MAIN_MENU);
 	return true;
