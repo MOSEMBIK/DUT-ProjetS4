@@ -1,20 +1,30 @@
 #include <Game/Robot.hpp>
 #include <Game/Map.hpp>
 
+using std::cerr;
+using std::endl;
+
 Robot::Robot(Map* map) : Player(map) {
 	this->mapSize = map->getSize() - 1;
 	this->x = rand() % mapSize;
 	this->z = rand() % mapSize;
+
+	case_of_t = 0;
+	trajet.push_back(glm::ivec2(x, z));
 }
 
 void Robot::update(float deltaTime) {
+	cerr << "Updating Robot..." << endl;
 	glm::ivec2 sBomb = shouldBomb();
 	if (sBomb[0] != -1 && sBomb[1] != -1) {
+		cerr << "Should bomb ?" << endl;
 		this->setBomb(sBomb);
 		setTrajet(genTrajetMann(choseDestination()));
 	}
 
-	if (trajet.size()==1) setTrajet(genTrajetMann(choseDestination(1)));
+	cerr << "Trajet vide ou case unique" << endl;
+	if (trajet.size()<=1) setTrajet(genTrajetMann(choseDestination(1)));
+	cerr << "New Trajet set" << endl;
 	std::map<glm::ivec2, float, cmpVec> dangerMap = map->getDangerMap();
 	if (trajet.size()>1) {
 		if (dangerMap[trajet[case_of_t+1]]>0.5){
@@ -71,15 +81,15 @@ void Robot::update(float deltaTime) {
  * @param checked List for recursivity that keep in mind checked locations
  * @return Boolean (true->case is reachable, false->case isn't reachable)
  */
-bool Robot::isPossible(glm::ivec2 coord, glm::ivec2 aPos, std::list<glm::ivec2> &checked){
+bool Robot::isPossible(glm::ivec2 coord, glm::ivec2 aPos, std::list<glm::ivec2> *checked){
 	std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> edges = map->edges_map;
 	glm::ivec2 pos;
 	if (aPos[0] == -1 && aPos[1] == -1) pos = trajet[case_of_t];
 	else  pos = aPos;
 
-	checked.push_back(pos);
+	checked->push_back(pos);
 	for (glm::ivec2 next : edges[pos]) {
-		if (find(checked.begin(), checked.end(), next) == checked.end()){
+		if (find(checked->begin(), checked->end(), next) == checked->end()){
 			if (next[0] == coord[0] || next[1] == coord[1]) {
 				return true;
 			} else {
@@ -96,13 +106,17 @@ bool Robot::isPossible(glm::ivec2 coord, glm::ivec2 aPos, std::list<glm::ivec2> 
  * @return Chosen location
  */
 glm::ivec2 Robot::choseDestination(int mode){
+	cerr << "Chose destination function" << endl;
 	std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> edges = map->edges_map;
 	std::list<glm::ivec2> players = map->getPlayersMap();
+	cerr << "Get dangerMap" << endl;	
 	std::map<glm::ivec2, float, cmpVec> dangerMap = map->getDangerMap();
+	cerr << "Get current position" << endl;
 	glm::ivec2 pos = trajet[case_of_t];
 
 	// Explosion safe location
-	if (mode == 0) { 							
+	if (mode == 0) { 	
+		cerr << "Mode 0" << endl;						
 		glm::ivec2 nearstSafe = pos;
 		std::list<glm::ivec2> checked;
 		
@@ -132,10 +146,12 @@ glm::ivec2 Robot::choseDestination(int mode){
 
 	// Nearst Player location
 	} else if (mode == 1) { 
+		cerr << "Mode 1" << endl;	
 		glm::ivec2 nearstPlayer = players.front();
 		for (glm::ivec2 ply : players) if (sqrt(abs(ply[0] - pos[0]) + abs(ply[1] - pos[1])) < sqrt(abs(nearstPlayer[0] - pos[0]) + abs(nearstPlayer[1] - pos[1]))) nearstPlayer = ply;
 		if (isPossible(nearstPlayer)) return nearstPlayer;
 	}	
+	return(pos);
 }
 
 // Bombs
@@ -145,14 +161,21 @@ glm::ivec2 Robot::choseDestination(int mode){
  * @return Placement location
  */
 glm::ivec2 Robot::shouldBomb(){
+	cerr << "Should bomb function" << endl;
 	if (case_of_t >= trajet.size()-1) {
+		cerr << "if 1" << endl;
 		if (trajet.size() <= 1){
+			cerr << "if 2" << endl;
+			cerr << "Set Trajet" << endl;
 			setTrajet(genTrajetMann(choseDestination(1)));
+			
+			cerr << "Return (-1, -1)" << endl;
 			return glm::ivec2 (-1, -1);
 		}
-
+		cerr << "Return Bomb" << endl;
 		return trajet[case_of_t];
 	}
+	cerr << "Return (-1, -1)" << endl;
 	return glm::ivec2 (-1, -1);
 }
 
@@ -163,6 +186,8 @@ glm::ivec2 Robot::shouldBomb(){
  * @return Vector of coords that represent the best way found to reach destination
 */
 std::vector<glm::ivec2> Robot::genTrajetMann(glm::ivec2 destination) {
+	cerr << "Generate Trajet A* function" << endl;
+
 	std::vector<glm::ivec2> new_trajet;
 	new_trajet.push_back(trajet[case_of_t]);
 
@@ -220,6 +245,7 @@ std::vector<glm::ivec2> Robot::genTrajetMann(glm::ivec2 destination) {
 }
 
 void Robot::setTrajet(std::vector<glm::ivec2> trj) {
+	cerr << "Set Trajet function" << endl;
 	case_of_t = 0;
 	trajet.clear();
 	trajet = trj;

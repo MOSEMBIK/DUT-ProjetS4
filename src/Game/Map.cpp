@@ -95,15 +95,24 @@ void Map::draw() {
 }
 
 void Map::update(float deltaTime) {	
+	cerr << "Updating Map..." << endl;
+
+	cerr << "Generate edges map..." << endl;
+	genEdgesMap();
+
 	for (auto player : players) {
+		cerr << "Updating Players..." << endl;
 		if (player != nullptr)
 			player->update(deltaTime);
 	}
 
 	for (auto bomb : bombs) {
+		cerr << "Updating Bombs..." << endl;
 		if (bomb.second != nullptr)
 			bomb.second->update(deltaTime);
 	}
+
+	cerr << "Map Updated" << endl;
 }
 
 
@@ -300,14 +309,18 @@ std::vector<glm::ivec2> Map::nearRoads(glm::ivec2 coord) {
 }
 
 void Map::genEdgesMap(){
+	cerr << "genEdgesMap function" << endl;
 	std::vector<glm::ivec2> roads;
 	for (int i=1; i < mapSize; i++) {
+		cerr << "for 1" << endl;
 		for (int j=1; j < mapSize; j++) {
+			cerr << "for 2" << endl;
 			glm::ivec2 checkCoord (i, j);
 			if (whatIs(checkCoord) == 0) roads.push_back(checkCoord);
 		}
 	}
 	for (glm::ivec2 rCase : roads) {
+		cerr << "for 3" << endl;
 		std::vector<glm::ivec2> nRC = nearRoads(rCase);
 		edges_map[rCase] = nRC;
 	}
@@ -320,18 +333,44 @@ bool Map::isReachable(glm::ivec2 coord){
 }
 
 int Map::whatIs(glm::ivec2 coord){
+	cerr << "whatIs function" << endl;
+	cerr << "1" << endl;
 	if (walls[coord] != nullptr) return 1;
+	cerr << "2" << endl;
 	if (bombs[coord] != nullptr) return 2;
+	cerr << "3" << endl;
 
 	return 0;
 }
 
 std::list<glm::ivec2> Map::getPlayersMap(){
-	
+	std::list<glm::ivec2> lst;
+	for (Player* ply : players){
+		lst.push_back(glm::ivec2( int(ply->getTransform().getPosition().x), int(ply->getTransform().getPosition().z)));
+	}
+	return lst;
 }
 
 std::map<glm::ivec2, float, cmpVec> Map::getDangerMap(){
-
+	cerr << "Get dangerMap function" << endl;
+	std::map<glm::ivec2, float, cmpVec> danger;
+	if (bombs.size() >= 1) {
+		for (std::pair<glm::ivec2, Bomb*> bombP : bombs){
+			cerr << "for bombs" << endl;
+			if (bombP.second != nullptr) {
+				for (int i=0; i <= bombP.second->getRange(); i++){
+					cerr << "for " << i << endl;
+					danger[glm::ivec2 (bombP.first[0]+i, bombP.first[1])] = bombP.second->getTimer()/2;
+					danger[glm::ivec2 (bombP.first[0], bombP.first[1]+i)] = bombP.second->getTimer()/2;
+					danger[glm::ivec2 (bombP.first[0]-i, bombP.first[1])] = bombP.second->getTimer()/2;
+					danger[glm::ivec2 (bombP.first[0], bombP.first[1]-i)] = bombP.second->getTimer()/2;
+				}
+			}
+			cerr << "nullptr" << endl;
+		}
+	}
+	cerr << "Return" << endl;
+	return danger;
 }
 
 ///-------------------------------------------------------
