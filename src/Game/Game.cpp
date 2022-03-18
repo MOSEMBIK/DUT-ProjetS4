@@ -358,7 +358,7 @@ void Game::setState(GameState state)
 		for (int i=0; i < m_gameSettings[4]; i++) {
 			Robot* robot = new Robot(map);
 			robot->getTransform().setPosition(vec3(1.0f, 0.0f, 1.0f) * float(rand()%m_gameSettings[0]));
-			map->addActor(robot);
+			map->addPlayer(robot);
 		}
 
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
@@ -467,12 +467,15 @@ bool Game::onUpdate(AppUpdateEvent& e)
 
 		case GameState::SINGLEPLAYER: {
 		} break;
-
+			
 		case GameState::GAME_LOADING: {
 			setState(GameState::PLAYING);
 		} break;
 
 		case GameState::PLAYING: {
+			if (rand() % 60 == 1) {
+				map->addBomb( new Bomb(map, vec3(0.0f,0.0f,0.5f)),	ivec2(rand()%(map->getSize() - 2) + 1,rand()%(map->getSize() - 2) + 1));
+			}
 			map->update(m_deltaTime);
 			map->draw();
 			if (keyPressed == GLFW_KEY_ESCAPE && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE) {

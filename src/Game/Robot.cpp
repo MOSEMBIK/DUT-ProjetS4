@@ -188,7 +188,7 @@ std::vector<glm::ivec2> Robot::genTrajetMann(glm::ivec2 destination) {
 
 			// Recuperation de la case optimale
 			int idx = 0;
-			for (int i=1; i < queue.size(); i++){
+			for (int i=1; i < int(queue.size()); i++){
 				if (queue[idx].second > queue[i].second) idx = i;
 			}
 			glm::ivec2 current = queue[idx].first;

@@ -16,14 +16,15 @@ class Bomb;
 class Actor
 {
 protected:
-	std::vector<Mesh*> m_meshes;
-	std::vector<Material> m_materials;
 	bool collision = true;
 	Transform m_transform;
 	Window* m_window;
 	Map* map;
 
 public:
+	std::vector<Mesh*> m_meshes;
+	std::vector<Material> m_materials;
+	
 	Actor(Map* map);
 	Actor(Window* window);
 	Actor(Map* map, const char* filename);
