@@ -14,14 +14,23 @@ Client::Client(const string & host, unsigned short port) : io_context(), m_socke
 	async_read_until(m_socket, m_buffer, '\n', [this] (const error_code & ec, size_t n) {
 		UNUSED(n);
 
-		if (!ec) {
-			istream is {&m_buffer};
-			string message;
-			getline(is, message);
-			if (message != "")
-				process(message);
-		}
+		if (!ec) handle_read();	
 	});
+}
+
+void Client::handle_read() {
+	error_code ec;
+	read_until(m_socket, m_buffer, '\n', ec);
+
+	if (!ec) {
+		istream is {&m_buffer};
+		string message;
+		getline(is, message);
+		if (message != "")
+			process(message);
+		
+		handle_read();
+	}
 }
 
 Client::~Client() {

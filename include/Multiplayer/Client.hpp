@@ -29,6 +29,8 @@ class Client {
 
 	// Envoi d'un message.
 	void write (const std::string &);
+	// Lecture d'un message.
+	void handle_read ();
 
 	// Message.
 	void message (const std::string & message);
