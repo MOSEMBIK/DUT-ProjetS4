@@ -16,6 +16,9 @@ class Bomb;
 class Actor
 {
 protected:
+	int id;
+	static int current_id;
+
 	bool collision = true;
 	Transform m_transform;
 	Window* m_window;
@@ -28,6 +31,9 @@ public:
 	Actor(Map* map);
 	Actor(Window* window);
 	Actor(Map* map, const char* filename);
+
+	int getId() {return id;}
+
 virtual ~Actor() {}
 
 	/**

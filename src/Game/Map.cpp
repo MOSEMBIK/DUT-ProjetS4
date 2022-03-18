@@ -335,10 +335,10 @@ int Map::whatIs(glm::ivec2 coord){
 	return 0;
 }
 
-std::list<glm::ivec2> Map::getPlayersMap(){
-	std::list<glm::ivec2> lst;
+std::list<std::pair<glm::ivec2, int>> Map::getPlayersMap(){
+	std::list<std::pair<glm::ivec2, int>>  lst;
 	for (Player* ply : players){
-		lst.push_back(glm::ivec2( int(ply->getTransform().getPosition().x), int(ply->getTransform().getPosition().z)));
+		lst.push_back(std::pair(glm::ivec2( int(ply->getTransform().getPosition().x), int(ply->getTransform().getPosition().z)), ply->getId()));
 	}
 	return lst;
 }
