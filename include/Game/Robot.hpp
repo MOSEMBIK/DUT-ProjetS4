@@ -19,5 +19,6 @@ public:
 
 	glm::ivec2 choseDestination();
 
-	std::vector<glm::ivec2> genTrajet(glm::ivec2);
+	std::vector<glm::ivec2> genTrajetMann(glm::ivec2);
+	void setTrajet(std::vector<glm::ivec2>);
 };

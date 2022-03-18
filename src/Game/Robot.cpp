@@ -7,7 +7,6 @@ Robot::Robot(Map* map) : Player(map) {
 	this->z = rand() % mapSize;
 }
 
-
 void Robot::update(float deltaTime) {
 	Transform& transform = getTransform();
 	glm::vec3 pos = transform.getPosition();
@@ -36,9 +35,15 @@ void Robot::update(float deltaTime) {
 	transform.setRotation(glm::slerp(transform.getRotation(), targetRotation, 6.0f / 60.0f));
 }
 
-// Mannathan A* algorithm
-std::vector<glm::ivec2> Robot::genTrajet(glm::ivec2 destination) {
+///--- REFLEXION
+// Destination
+glm::ivec2 Robot::choseDestination(){
+	
+}
 
+///--- DEPLACEMENTS
+// Mannathan A* Algorithm
+std::vector<glm::ivec2> Robot::genTrajetMann(glm::ivec2 destination) {
 	std::vector<glm::ivec2> new_trajet;
 	new_trajet.push_back(trajet[case_of_t]);
 
@@ -90,8 +95,13 @@ std::vector<glm::ivec2> Robot::genTrajet(glm::ivec2 destination) {
 				}
 			}
 		}
-		case_of_t = 0;
 		return new_trajet;
 
 	} else return new_trajet;
+}
+
+void Robot::setTrajet(std::vector<glm::ivec2> trj) {
+	case_of_t = 0;
+	trajet.clear();
+	trajet = trj;
 }
