@@ -13,7 +13,6 @@ Client::Client(const string & host, unsigned short port) : io_context(), m_socke
 
 	async_read_until(m_socket, m_buffer, '\n', [this] (const error_code & ec, size_t n) {
 		UNUSED(n);
-
 		if (!ec) handle_read();	
 	});
 }
@@ -100,6 +99,9 @@ void Client::process(const string & message) {
 				Client::Processor proc = search->second;
 				(this->*proc)(data);
 			}
+		}
+		else {
+			cerr << message << endl;
 		}
 }
 
