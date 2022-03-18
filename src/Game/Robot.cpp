@@ -17,14 +17,11 @@ void Robot::update(float deltaTime) {
 	cerr << "Updating Robot..." << endl;
 	glm::ivec2 sBomb = shouldBomb();
 	if (sBomb[0] != -1 && sBomb[1] != -1) {
-		cerr << "Should bomb ?" << endl;
 		this->setBomb(sBomb);
 		setTrajet(genTrajetMann(choseDestination()));
 	}
 
-	cerr << "Trajet vide ou case unique" << endl;
 	if (trajet.size()<=1) setTrajet(genTrajetMann(choseDestination(1)));
-	cerr << "New Trajet set" << endl;
 	std::map<glm::ivec2, float, cmpVec> dangerMap = map->getDangerMap();
 	if (trajet.size()>1) {
 		if (dangerMap[trajet[case_of_t+1]]>0.5){
@@ -47,6 +44,7 @@ void Robot::update(float deltaTime) {
 		x = trajet[case_of_t][0];
 		z = trajet[case_of_t][1];
 	}
+	cerr << x << " - " << z << endl;
 
 	Transform& transform = getTransform();
 	glm::vec3 pos = transform.getPosition();
@@ -106,17 +104,13 @@ bool Robot::isPossible(glm::ivec2 coord, glm::ivec2 aPos, std::list<glm::ivec2> 
  * @return Chosen location
  */
 glm::ivec2 Robot::choseDestination(int mode){
-	cerr << "Chose destination function" << endl;
 	std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> edges = map->edges_map;
 	std::list<glm::ivec2> players = map->getPlayersMap();
-	cerr << "Get dangerMap" << endl;	
 	std::map<glm::ivec2, float, cmpVec> dangerMap = map->getDangerMap();
-	cerr << "Get current position" << endl;
 	glm::ivec2 pos = trajet[case_of_t];
 
 	// Explosion safe location
-	if (mode == 0) { 	
-		cerr << "Mode 0" << endl;						
+	if (mode == 0) { 						
 		glm::ivec2 nearstSafe = pos;
 		std::list<glm::ivec2> checked;
 		
@@ -146,9 +140,13 @@ glm::ivec2 Robot::choseDestination(int mode){
 
 	// Nearst Player location
 	} else if (mode == 1) { 
-		cerr << "Mode 1" << endl;	
-		glm::ivec2 nearstPlayer = players.front();
-		for (glm::ivec2 ply : players) if (sqrt(abs(ply[0] - pos[0]) + abs(ply[1] - pos[1])) < sqrt(abs(nearstPlayer[0] - pos[0]) + abs(nearstPlayer[1] - pos[1]))) nearstPlayer = ply;
+		std::list<glm::ivec2> playersL;
+		for (glm::ivec2 pl : players){
+			if (pl.x != pos.x || pl.y != pos.y) playersL.push_back(pl);
+		}
+		
+		glm::ivec2 nearstPlayer = playersL.front();
+		for (glm::ivec2 ply : playersL) if (sqrt(abs(ply[0] - pos[0]) + abs(ply[1] - pos[1])) < sqrt(abs(nearstPlayer[0] - pos[0]) + abs(nearstPlayer[1] - pos[1]))) nearstPlayer = ply;
 		if (isPossible(nearstPlayer)) return nearstPlayer;
 	}	
 	return(pos);
@@ -163,12 +161,10 @@ glm::ivec2 Robot::choseDestination(int mode){
 glm::ivec2 Robot::shouldBomb(){
 	cerr << "Should bomb function" << endl;
 	if (case_of_t >= trajet.size()-1) {
-		cerr << "if 1" << endl;
 		if (trajet.size() <= 1){
-			cerr << "if 2" << endl;
 			cerr << "Set Trajet" << endl;
 			setTrajet(genTrajetMann(choseDestination(1)));
-			
+
 			cerr << "Return (-1, -1)" << endl;
 			return glm::ivec2 (-1, -1);
 		}
@@ -194,7 +190,6 @@ std::vector<glm::ivec2> Robot::genTrajetMann(glm::ivec2 destination) {
 	int done = 0;
 
 	if (map->isReachable(destination)){
-		
 		std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> edges = map->edges_map;
 
 		if (map->whatIs(new_trajet[done]) != 0){
@@ -203,19 +198,21 @@ std::vector<glm::ivec2> Robot::genTrajetMann(glm::ivec2 destination) {
 		}
 
 		std::vector<std::pair<glm::ivec2, int>> queue;
-		queue[0] = std::pair<glm::ivec2, int> (new_trajet.back(), 0);
+		queue.push_back(std::pair<glm::ivec2, int> (new_trajet.back(), 0));
 
 		std::map<glm::ivec2, int, cmpVec> clout;
 		clout[new_trajet[done]] = 0;
 
 		// Génération plus court chemin
-		while (queue.empty()) {
+		while (!queue.empty()) {
+			cerr << queue.size() << endl;
 
 			// Recuperation de la case optimale
 			int idx = 0;
 			for (int i=1; i < int(queue.size()); i++){
 				if (queue[idx].second > queue[i].second) idx = i;
 			}
+			cerr << idx << endl;
 			glm::ivec2 current = queue[idx].first;
 			queue.erase(queue.begin() + idx);
 
@@ -227,6 +224,7 @@ std::vector<glm::ivec2> Robot::genTrajetMann(glm::ivec2 destination) {
 
 			// Generation du trajet
 			for (glm::ivec2 next : edges[current]){
+				cerr << done << endl;
 				int nClout = clout[current];
 				if ( (clout.find(next) != clout.end()) || (nClout < clout[next]) ) {
 					clout[next] = nClout;
@@ -239,13 +237,21 @@ std::vector<glm::ivec2> Robot::genTrajetMann(glm::ivec2 destination) {
 				}
 			}
 		}
+		cerr << "trajet"<< endl;
+		cerr << "{ "<< endl;
+		for (auto var : new_trajet){
+			cerr << "( " << var[0] << ", " << var[1] << " ), "<< endl;
+		}
+		cerr << " }" << endl;
+
 		return new_trajet;
 
-	} else return new_trajet;
+	} else {
+		return new_trajet;
+	}
 }
 
 void Robot::setTrajet(std::vector<glm::ivec2> trj) {
-	cerr << "Set Trajet function" << endl;
 	case_of_t = 0;
 	trajet.clear();
 	trajet = trj;
