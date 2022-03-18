@@ -41,11 +41,13 @@ Client::~Client() {
 }
 
 // Envoi d'un message à travers le socket.
-void Client::write(const string & message) {
-	cerr << "write(" << message << ")" << endl;
+void Client::write(const string & message) {	
+	// Ajout du caractère "fin de ligne".
+	string m = message + '\n';
+
 	async_write(
 		m_socket,
-		asio::buffer (message.data (), message.length ()),
+		asio::buffer (m.data (), m.length ()),
 		[this] (const error_code & ec, size_t n) { UNUSED(ec); UNUSED(n); }
 	);
 }
@@ -86,7 +88,19 @@ void Client::user_list (const string & message) {
 }
 
 void Client::process(const string & message) {
-	cerr << "Received message: " << message << endl;
+	istringstream iss (message);
+	string command;
+	if (iss >> command)
+		if (command[0] == '#') {
+			iss >> ws;
+			string data {istreambuf_iterator<char> {iss}, istreambuf_iterator<char> {}};
+
+			auto search = PROCESSORS.find(command);
+			if(search != PROCESSORS.end()) {
+				Client::Processor proc = search->second;
+				(this->*proc)(data);
+			}
+		}
 }
 
 

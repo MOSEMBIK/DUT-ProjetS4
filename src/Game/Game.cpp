@@ -558,7 +558,8 @@ void Game::setState(GameState state)
 
 		cerr << "Loaded Multiplayer Server in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 
-		m_client = new Client("127.0.0.1");
+		m_client = new Client("82.64.248.19");
+		m_client->write(m_username);
 	} break;
 
 	/**
@@ -670,7 +671,7 @@ bool Game::onUpdate(AppUpdateEvent& e)
 			server_map->draw();
 
 			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_T) == GLFW_PRESS)
-        		m_client->write("hey");
+        		m_client->write("/ඞ");
 			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_Y) == GLFW_PRESS)
         		m_server->broadcast("broadcast test");
 

@@ -6,7 +6,6 @@ using namespace std;
 Server::ServerClient::ServerClient (Server * server, Socket && socket)
 	: m_server {server}, m_socket {move(socket)}, m_active {false}
 {
-	cerr << "Connexion d'un nouveau client !" << endl;
 }
 
 void Server::ServerClient::start() {
@@ -15,11 +14,9 @@ void Server::ServerClient::start() {
 	// Pointeur intelligent pour assurer la survie de l'objet.
 	ServerClientPtr self = shared_from_this();
 
-	cerr << "ServerClient::start()" << endl;
 
 	// Lecture asynchrone.
 	async_read_until(m_socket, m_buffer, '\n', [this, self] (const error_code & ec, size_t n) {
-		cerr << "ServerClient::start(): async_read_until" << endl;
 		UNUSED(n);
 		// Erreur ?
 		if (!ec) {
@@ -28,22 +25,21 @@ void Server::ServerClient::start() {
 			getline(is, alias, ' ');
 			alias = regex_replace(alias, regex("\\s"), "");
 
-			if (m_server->find(alias) == nullptr) {
-				cerr << "Nouveau client avec l'username : " << alias << endl;
-				self->m_alias = alias;
-				self->write("#alias " + alias);
-				m_server->process_list(self);
-				m_server->broadcast("#connected " + alias, self);
-				self->m_active = true;
-				self->read();
+			// Si l'alias est déjà pris, on rajoute un chiffre.
+			if (m_server->find(alias) != nullptr) {
+				int i = 2;
+				while (m_server->find(alias + "_" + to_string(i)) != nullptr)
+					i++;
+				alias += "_" + to_string(i);
 			}
-			else
-				self->write(Server::INVALID_ALIAS);
+
+			self->m_alias = alias;
+			m_server->broadcast("#connected " + alias, self);
+			self->m_active = true;
+			self->read();
 		}
-		else {
-			cerr << "Bonjour, au revoir !" << endl;
+		else
 			m_server->m_clients.remove(self);
-		}
 	});
 }
 
@@ -55,8 +51,6 @@ void Server::ServerClient::rename(const string & alias) {
 }
 
 void Server::ServerClient::read() {
-	cerr << "Lecture du client !" << endl;
-
 	// Pointeur intelligent pour assurer la survie de l'objet.
 	ServerClientPtr self = shared_from_this();
 
@@ -76,7 +70,6 @@ void Server::ServerClient::read() {
 			if (m_active) read();
 		}
 		else {
-			cerr << "Déconnexion !" << endl;
 			m_server->broadcast("#disconnected " + self->alias(), self);
 			m_server->m_clients.remove(self);
 			m_server->process_quit(self, string {});
@@ -90,7 +83,6 @@ void Server::ServerClient::write(const string & message) {
 	string m = message + '\n';
 
 	// Écriture asynchrone.
-	cerr << "Envoi du message au client : " << m << endl;
 	async_write(
 		m_socket,
 		asio::buffer (m.data (), m.length ()),

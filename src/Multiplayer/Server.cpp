@@ -37,7 +37,6 @@ void Server::accept() {
 }
 
 void Server::process(ServerClientPtr client, const string & message) {
-	cerr << "Server::process: " << message << endl;
 	// Lecture d'une éventuelle commande.
 	istringstream iss (message);
 	string command;
