@@ -233,7 +233,7 @@ std::list<glm::ivec2> Map::getPlayersMap(){
 	
 }
 
-std::pair<glm::ivec2, std::pair<int, float>> getBombsMap(){
+std::map<glm::ivec2, float, cmpVec> Map::getDangerMap(){
 
 }
 

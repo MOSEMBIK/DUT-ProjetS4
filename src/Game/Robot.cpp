@@ -8,16 +8,55 @@ Robot::Robot(Map* map) : Player(map) {
 }
 
 void Robot::update(float deltaTime) {
-	case_of_t++;
-	x = trajet[case_of_t][0];
-	z = trajet[case_of_t][1];
+	switch (shouldBomb()){
+		case(0):
+			break;
+		case(1):
+			this->setBomb(glm::ivec2 (trajet[case_of_t][0], trajet[case_of_t][1]-1));
+			setTrajet(genTrajetMann(choseDestination()));
+			break;
+		case(2):
+			this->setBomb(glm::ivec2 (trajet[case_of_t][0]+1, trajet[case_of_t][1]));
+			setTrajet(genTrajetMann(choseDestination()));
+			break;
+		case(3):
+			this->setBomb(glm::ivec2 (trajet[case_of_t][0], trajet[case_of_t][1]+1));
+			setTrajet(genTrajetMann(choseDestination()));
+			break;
+		case(4):
+			this->setBomb(glm::ivec2 (trajet[case_of_t][0]-1, trajet[case_of_t][1]));
+			setTrajet(genTrajetMann(choseDestination()));
+			break;
+		default :
+			break;
+	}
+
+	if (trajet.size()==1) setTrajet(genTrajetMann(choseDestination()));
+	std::map<glm::ivec2, float, cmpVec> dangerMap = map->getDangerMap();
+	if (trajet.size()>1) {
+		if (dangerMap[trajet[case_of_t+1]]>0.5){
+			case_of_t++;
+			x = trajet[case_of_t][0];
+			z = trajet[case_of_t][1];
+		} else if (dangerMap[trajet[case_of_t]] < dangerMap[trajet[case_of_t-1]]) {
+			case_of_t--;
+			x = trajet[case_of_t-1][0];
+			z = trajet[case_of_t-1][1];
+		} else if (dangerMap[trajet[case_of_t]]<0.5) {
+			setTrajet(genTrajetMann(choseDestination()));
+			x = trajet[case_of_t][0];
+			z = trajet[case_of_t][1];
+		} else {
+			x = trajet[case_of_t][0];
+			z = trajet[case_of_t][1];
+		}
+	} else {
+		x = trajet[case_of_t][0];
+		z = trajet[case_of_t][1];
+	}
 
 	Transform& transform = getTransform();
 	glm::vec3 pos = transform.getPosition();
-	if (int(pos.x) == x && int(pos.z) == z) {
-		x = rand() % mapSize;
-		z = rand() % mapSize;
-	}
 
 	glm::quat targetRotation = transform.getRotation();
 	if (int(pos.x) < x) {
@@ -73,20 +112,47 @@ bool Robot::isPossible(glm::ivec2 coord, glm::ivec2 aPos, std::list<glm::ivec2> 
  * 
  * @return Chosen location
  */
-glm::ivec2 Robot::choseDestination(){
+glm::ivec2 Robot::choseDestination(int mode){
 	std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> edges = map->edges_map;
 	std::list<glm::ivec2> players = map->getPlayersMap();
-	std::pair<glm::ivec2, std::pair<int, float>> bombs = map->getBombsMap();
+	std::map<glm::ivec2, float, cmpVec> dangerMap = map->getDangerMap();
 	glm::ivec2 pos = trajet[case_of_t];
 
-	// Nearst Player location
-	glm::ivec2 nearstPlayer = players.front();
-	for (glm::ivec2 ply : players) if (sqrt(abs(ply[0] - pos[0]) + abs(ply[1] - pos[1])) < sqrt(abs(nearstPlayer[0] - pos[0]) + abs(nearstPlayer[1] - pos[1]))) nearstPlayer = ply;
-	glm::ivec2 dest = nearstPlayer;
-	if (isPossible(dest)) return dest;
-
 	// Explosion safe location
-	
+	if (mode == 0) { 							
+		glm::ivec2 nearstSafe = pos;
+		std::list<glm::ivec2> checked;
+		
+		for (glm::ivec2 loc : edges[nearstSafe]){
+			if (find(checked.begin(), checked.end(), loc) == checked.end()) {
+				checked.push_back(loc);
+				if (dangerMap[loc] > dangerMap[nearstSafe]) nearstSafe = loc;
+			}
+		}
+
+		if (dangerMap[nearstSafe] != 1) {
+			nearstSafe = edges[pos][0];
+			for (glm::ivec2 loc : edges[pos]){
+				if (dangerMap[nearstSafe] != 1) {
+					nearstSafe = loc;
+					for (glm::ivec2 loc2 : edges[nearstSafe]){
+						if (find(checked.begin(), checked.end(), loc2) == checked.end()) {
+							checked.push_back(loc2);
+							if (dangerMap[loc2] > dangerMap[nearstSafe]) nearstSafe = loc;
+						}
+					}
+				}
+			}
+		}
+		
+		if (isPossible(nearstSafe)) return nearstSafe;
+
+	// Nearst Player location
+	} else if (mode == 1) { 
+		glm::ivec2 nearstPlayer = players.front();
+		for (glm::ivec2 ply : players) if (sqrt(abs(ply[0] - pos[0]) + abs(ply[1] - pos[1])) < sqrt(abs(nearstPlayer[0] - pos[0]) + abs(nearstPlayer[1] - pos[1]))) nearstPlayer = ply;
+		if (isPossible(nearstPlayer)) return nearstPlayer;
+	}	
 }
 
 // Bombs
