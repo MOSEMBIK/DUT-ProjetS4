@@ -21,7 +21,7 @@
 enum GameState {
 	MAIN_MENU, OPTIONS,
 	SOLO_MENU, SOLO_GAME, SOLO_LOADING, SOLO_PAUSED,
-	MULTI_MENU, MULTI_CREATE_SERVER, MULTI_LOADING_SERVER, MULTI_JOIN_SERVER, MULTI_GAME
+	MULTI_MENU, MULTI_CREATE_SERVER, MULTI_LOADING_SERVER, MULTI_JOIN_SERVER, MULTI_GAME_CLIENT, MULTI_GAME_SERVER
 };
 
 void onKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -59,6 +59,8 @@ private:
 	// Multiplayer
 	Server* m_server;
 	Client* m_client;
+	std::string m_mapInfo;
+	std::string m_updatePosRot;
 
 
     bool init();
@@ -150,4 +152,18 @@ public:
 	 * @param state 
 	 */
     void setState(GameState state);
+
+	/**
+	 * @brief update map data to load
+	 * 
+	 * @param data 
+	 */
+	inline void loadMap(const std::string& data) { m_mapInfo = data; }
+
+	/**
+	 * @brief update map data for players
+	 * 
+	 * @param data 
+	 */
+	inline void updatePosRot(const std::string& data) { m_updatePosRot = data; }
 };

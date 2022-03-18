@@ -520,7 +520,8 @@ void Game::setState(GameState state)
 	case GameState::MULTI_JOIN_SERVER: {
 		cerr << "Joining Multiplayer Server..." << endl; float time = glfwGetTime();
 
-		m_client->setMap(map);
+		if (map != nullptr) delete map;
+		map = new Map();
 		m_client->write(m_username);
 		m_client->write("/join");
 
@@ -533,7 +534,17 @@ void Game::setState(GameState state)
 	/**
 	 * @brief Playing multiplayer game
 	 */
-	case GameState::MULTI_GAME: {
+	case GameState::MULTI_GAME_CLIENT: {
+		cerr << "Resuming Multiplayer Game Client..." << endl; float time = glfwGetTime();
+		/* Load labels */
+
+		cerr << "Resumed Multiplayer Game Client in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
+	} break;
+
+	/**
+	 * @brief Playing multiplayer game
+	 */
+	case GameState::MULTI_GAME_SERVER: {
 		cerr << "Resuming Multiplayer Game..." << endl; float time = glfwGetTime();
 		/* Load labels */
 
@@ -585,6 +596,11 @@ bool Game::onUpdate(AppUpdateEvent& e)
 	for (auto label : labels) { label->draw(); }
 	for (auto button : buttons) { button->draw(); }
 	for (auto image : images) { image->draw(); }
+	if (m_server != nullptr) {
+		Map* server_map = &m_server->getMap();
+		server_map->update(m_deltaTime);
+		m_server->broadcast(server_map->getPosRot());
+	}
 	switch (m_gameState)
 	{
 		case GameState::MAIN_MENU: {
@@ -635,7 +651,22 @@ bool Game::onUpdate(AppUpdateEvent& e)
 		case GameState::MULTI_JOIN_SERVER: {
 		} break;
 
-		case GameState::MULTI_GAME: {
+		case GameState::MULTI_GAME_CLIENT: {
+			if (keyPressed == GLFW_KEY_B && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_B) == GLFW_RELEASE)
+        		m_server->getMap().addBomb( new Bomb(map, vec3(0.0f, 0.0f, 0.5f)),	ivec2(rand()%8+2,rand()%8+2) );
+			if (m_mapInfo != "") {
+				map->loadMap(m_mapInfo);
+				m_mapInfo = "";
+			}
+			if (m_updatePosRot != "") {
+				map->loadPosRot(m_updatePosRot);
+				m_updatePosRot = "";
+			}
+			map->update(m_deltaTime);
+			map->draw();
+		} break;
+
+		case GameState::MULTI_GAME_SERVER: {
 			Map* server_map = &m_server->getMap();
 
 			server_map->update(m_deltaTime);

@@ -54,31 +54,95 @@ string Map::getData() const {
 }
 
 void Map::loadMap(const std::string& mapData) {
-	// Example of string :
-	// #13|[0,0,0,0,-1],[0,0,1,0,-1],[0,0,2,0,-1],|[3,0,3,0.430000,0.660000,0.640000,0.500000,1065353216],[8,0,8,0.310000,0.470000,0.580000,0.727272,1042365813],
+	cerr << endl << "Loading map from string.." << endl; float time = glfwGetTime();
 
-	cerr << "Loading map : " << endl; float time = glfwGetTime();
-	cerr << mapData << endl;
-
-	// Parse map size, walls and players
 	// Parsing map size
 	int pos = mapData.find("|");
 	string sizeStr = mapData.substr(0, pos);
 	this->mapSize = stoi(sizeStr);
 
-	// Parsing walls to "|"
+	// Parsing walls
 	pos = mapData.find("|", pos);
 	int pos2 = mapData.find("|", pos + 1);
 	string wallsStr = mapData.substr(pos + 1, pos2 - pos - 2);
-	cerr << endl << "Walls : " << wallsStr << endl;
+	vector<string> wallsData;
+	for (int i=0; i < (int)wallsStr.size(); i++) {
+		if (wallsStr[i] == ';') {
+			wallsData.push_back(wallsStr.substr(0, i));
+			wallsStr = wallsStr.substr(i + 1, wallsStr.size() - i - 1);
+			i = 0;
+		}
+	} wallsData.push_back(wallsStr);
+
+	for (auto wall : wallsData) {
+		wall = wall.substr(1, wall.size() - 2);
+		Wall* w = new Wall(this, wall);
+		ivec2 pos(w->getTransform().getPosition().x, w->getTransform().getPosition().z);
+		walls[pos] = w;
+	}
+	calculateWallMesh();
 
 	// Parsing players
 	pos = mapData.find("|", pos2);
 	string playersStr = mapData.substr(pos2 + 1, pos - pos2 - 3);
-	cerr << endl << "Players : " << playersStr << endl;
-	
+	vector<string> playersData;
+	for (int i=0; i < (int)playersStr.size(); i++) {
+		if (playersStr[i] == ';') {
+			playersData.push_back(playersStr.substr(0, i));
+			playersStr = playersStr.substr(i + 1, playersStr.size() - i - 1);
+			i = 0;
+		}
+	}
+	for (auto player : playersData) {
+		player = player.substr(1, player.size() - 2);
+		players.push_back(new Player(this, player));
+	}
+
+	cerr << "Loaded map from string in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 }
 
+std::string Map::getPosRot() const {
+	string data = "#updatePosRot ";
+	for (auto player : players) {
+		if (player != nullptr)
+			data += player->getPosRot() + ";";
+	}
+	return data;
+}
+
+void Map::loadPosRot(const std::string& posRotData) {
+	// Parsing players
+	string playersStr = posRotData;
+	vector<string> playersData;
+	for (int i=0; i < (int)playersStr.size(); i++) {
+		if (playersStr[i] == ';') {
+			playersData.push_back(playersStr.substr(0, i));
+			playersStr = playersStr.substr(i + 1, playersStr.size() - i - 1);
+			i = 0;
+		}
+	}
+	for (auto player : playersData) {
+		player = player.substr(0, player.size() - 2);
+
+		vector<float> playerData;
+		for (int i = 0; i < (int)player.size(); i++) {
+			if (player[i] == ',') {
+				playerData.push_back(stof(player.substr(0, i)));
+				player = player.substr(i + 1, player.size() - i - 1);
+				i = 0;
+			}
+		} playerData.push_back(stof(player));
+		for (auto p : players) {
+			if (p->getId() == int(playerData[0])) {
+				p->loadPosRot(
+					vec3(playerData[1], playerData[2], playerData[3]),
+					vec3(playerData[4], playerData[5], playerData[6])
+				);
+				break;
+			}
+		}
+	}
+}
 
 void Map::generateMap(int size, int wallPercentage) {
 	walls.clear();

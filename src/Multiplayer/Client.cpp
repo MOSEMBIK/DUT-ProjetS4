@@ -1,6 +1,7 @@
 
 #include <Multiplayer/Client.hpp>
 #include <Game/Map.hpp>
+#include <Game/Game.hpp>
 
 using namespace std;
 
@@ -62,31 +63,6 @@ void Client::error (const string & id) {
 	write("#error " + id);
 }
 
-void Client::alias (const string & alias) {
-	// Envoi de la commande.
-	write("#alias " + alias);
-}
-
-void Client::user_connected (const string & username) {
-	// Envoi de la commande.
-	write("#user_connected " + username);
-}
-
-void Client::user_disconnected (const string & username) {
-	// Envoi de la commande.
-	write("#user_disconnected " + username);
-}
-
-void Client::user_renamed (const string & old_username, const string & new_username) {
-	// Envoi de la commande.
-	write("#user_renamed " + old_username + " " + new_username);
-}
-
-void Client::user_list (const string & message) {
-	// Envoi de la commande.
-	write("#user_list " + message);
-}
-
 void Client::process(const string & message) {
 	istringstream iss (message);
 	string command;
@@ -110,43 +86,13 @@ void Client::process(const string & message) {
 
 // Commande "#loadMap"
 void Client::process_loadMap(const string & message) {
-	if (m_map != nullptr) delete m_map;
-	m_map = new Map();
-	m_map->loadMap(message);
+	Game * game = Game::getInstance();
+	game->loadMap(message);
+	game->setState(GameState::MULTI_GAME_CLIENT);
 }
 
-// Commande "#connected"
-void Client::process_connected(const string & message)
-{
-	cerr << "Client::process_connected: " << message << endl;
-}
-
-// Commande "#disconnected"
-void Client::process_disconnected(const string & message)
-{
-	cerr << "Client::process_disconnected: " << message << endl;
-}
-
-// Commande "#renamed"
-void Client::process_renamed(const string & message)
-{
-	cerr << "Client::process_renamed: " << message << endl;
-}
-
-// Commande "#list"
-void Client::process_list(const string & message)
-{
-	cerr << "Client::process_list: " << message << endl;
-}
-
-// Commande "#private"
-void Client::process_private(const string & message)
-{
-	cerr << "Client::process_private: " << message << endl;
-}
-
-// Commande "#error"
-void Client::process_error (const string & message)
-{
-	cerr << "Client::process_error: " << message << endl;
+// Commande "#updatePosRot"
+void Client::process_updatePosRot(const string & message) {
+	Game * game = Game::getInstance();
+	game->updatePosRot(message);
 }

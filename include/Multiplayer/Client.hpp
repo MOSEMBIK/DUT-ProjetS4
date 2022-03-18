@@ -10,24 +10,13 @@ class Client {
 	asio::streambuf m_buffer;
 
   private:
-	Map* m_map;
-
-  public:
-	inline void setMap (Map* map) { m_map = map; }
-
-
-  private:
 	// Traitement d'un message.
 	void process (const std::string & message);
 	// Gestion des erreurs.
 	void process_error (const std::string & message);
 	// Reste des processors
 	void process_loadMap (const std::string & message);
-	void process_connected (const std::string & message);
-	void process_disconnected (const std::string & message);
-	void process_renamed (const std::string & message);
-	void process_list (const std::string & message);
-	void process_private (const std::string & message);
+	void process_updatePosRot (const std::string & message);
 
   public:
 	// constructeur : nom du serveur, port et, éventuellement, objet parent.
@@ -43,25 +32,13 @@ class Client {
 	void message (const std::string & message);
 	// Error.
 	void error (const std::string & id);
-	// Reste des signaux
-	void alias (const std::string &);
-	void user_connected (const std::string &);
-	void user_disconnected (const std::string &);
-	void user_renamed (const std::string &, const std::string &);
-	void user_list (const std::string &);
-	void user_private (const std::string &, const std::string &);
 
   private:
 	// Signature d'un processeur.
 	typedef void (Client::*Processor) (const std::string &);
 	// Processeurs.
 	const std::map<std::string, Processor> PROCESSORS  = {
-		{"#error", &Client::process_error},
 		{"#loadMap", &Client::process_loadMap},
-		{"#connected", &Client::process_connected},
-		{"#disconnected", &Client::process_disconnected},
-		{"#renamed", &Client::process_renamed},
-		{"#list", &Client::process_list},
-		{"#private", &Client::process_private}
+		{"#updatePosRot", &Client::process_updatePosRot},
 	};
 };

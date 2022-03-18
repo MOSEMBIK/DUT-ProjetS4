@@ -53,14 +53,52 @@ Player::Player(Map* map) : Actor(map,"assets/models/Bomber.obj"),
 	this->m_materials[0].setDiffuseColor(color);
 }
 
-string Player::getData() {
-	ivec3 pos = getTransform().getPosition();
+Player::Player(Map* map, string& data) : Actor(map,"assets/models/Bomber.obj") {
+	vector<string> playerData;
+	for (int i = 0; i < (int)data.size(); i++) {
+		if (data[i] == ',') {
+			playerData.push_back(data.substr(0, i));
+			data = data.substr(i + 1, data.size() - i - 1);
+			i = 0;
+		}
+	} playerData.push_back(data);
+
+	m_transform.setPosition(vec3(stof(playerData[0]), stof(playerData[1]), stof(playerData[2])));
+	m_transform.setRotation(vec3(stof(playerData[3]), stof(playerData[4]), stof(playerData[5])));
+
+	this->color = vec3(stof(playerData[6]), stof(playerData[7]), stof(playerData[8]));
+	this->m_materials[0].setDiffuseColor(color);
+	this->speed = stof(playerData[9]);
+	this->bombRange = stoi(playerData[10]);
+	this->id = stoi(playerData[11]);
+}
+
+string Player::getData() const {
+	vec3 pos = m_transform.getPosition();
+	auto rot = m_transform.getRotation();
 
 	return string(
 		"[" +
 		to_string(pos.x) + "," + to_string(pos.y) + "," + to_string(pos.z) + "," +
+		to_string(rot.x) + "," + to_string(rot.y) + "," + to_string(rot.z) + "," +
 		to_string(color.x) + "," + to_string(color.y) + "," + to_string(color.z) + "," +
-		to_string(speed) + "," + to_string(bombRange) +
+		to_string(speed) + "," + to_string(bombRange) + "," + to_string(id) +
 		"]"
 	);
+}
+
+string Player::getPosRot() const {
+	vec3 pos = m_transform.getPosition();
+	auto rot = m_transform.getRotation();
+
+	return string(
+		to_string(id) + "," +
+		to_string(pos.x) + "," + to_string(pos.y) + "," + to_string(pos.z) + "," +
+		to_string(rot.x) + "," + to_string(rot.y) + "," + to_string(rot.z)
+	);
+}
+
+void Player::loadPosRot(vec3 pos, vec3 rot) {
+	m_transform.setPosition(pos);
+	m_transform.setRotation(rot);
 }

@@ -31,6 +31,40 @@ Wall::Wall(Map* map, Type type): Actor(map), type(type) {
 	m_materials.push_back(mat);
 }
 
+Wall::Wall(Map* map, string& data) : Actor(map) {
+	// data string example : [2,0,5,2,1]
+	vector<string> wallData;
+	for (int i = 0; i < (int)data.size(); i++) {
+		if (data[i] == ',') {
+			wallData.push_back(data.substr(0, i));
+			data = data.substr(i + 1, data.size() - i - 1);
+			i = 0;
+		}
+	} wallData.push_back(data);
+
+	m_meshes.push_back(Primitives::cube());
+	Material mat;
+	this->m_transform.setPosition(vec3(stoi(wallData[0]), stoi(wallData[1]), stoi(wallData[2])));
+
+	this->type = Type(stoi(wallData[3]));
+	switch (type) {
+	case Type::Metal:
+		mat.setDiffuseColor(vec3(0.5f, 0.5f, 0.5f));
+		mat.setSpecularColor(vec3(0.6f, 0.6f, 0.6f));
+		break;
+	case Type::Stone:
+		mat.setDiffuseColor(vec3(0.2f, 0.2f, 0.2f));
+		mat.setSpecularColor(vec3(0.3f, 0.3f, 0.3f));
+		break;
+	case Type::Wood:
+		mat.setDiffuseColor(vec3(0.86f, 0.72f, 0.52f));
+		mat.setSpecularColor(vec3(0.9f, 0.76f, 0.58f));
+		break;
+	}
+	m_materials.push_back(mat);
+	this->health = stoi(wallData[4]);
+}
+
 string Wall::getData() {
 	ivec3 pos = getTransform().getPosition();
 	string wallType;

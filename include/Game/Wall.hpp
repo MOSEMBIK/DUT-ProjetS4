@@ -7,6 +7,7 @@ class Wall: public Actor
 public:
 	enum class Type { Metal, Stone, Wood };
 	Wall(Map* map, Type type = Type::Metal);
+	Wall(Map* map, std::string& data);
 	virtual ~Wall() {}
 
 	std::string getData(); // Fonction qui retourne les données du mur sous forme de string

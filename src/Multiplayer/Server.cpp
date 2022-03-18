@@ -65,6 +65,7 @@ void Server::process(ServerClientPtr client, const string & message) {
 }
 
 void Server::process_join(ServerClientPtr client, const string & data) {
+	UNUSED(data);
 	// Récupération des informations de la map.
 	string map = m_map.getData();
 

@@ -13,11 +13,13 @@
 
 using namespace std;
 
-Actor::Actor(Map* map) : m_window(Game::getInstance()->getMainWindow()), map(map) {}
+int Actor::current_id;
 
-Actor::Actor(Window* window) : m_window(window) {}
+Actor::Actor(Map* map) : m_window(Game::getInstance()->getMainWindow()), map(map), id(current_id++) {}
 
-Actor::Actor(Map* map, const char* filename) : m_window(Game::getInstance()->getMainWindow()), map(map) {
+Actor::Actor(Window* window) : m_window(window), id(current_id++) {}
+
+Actor::Actor(Map* map, const char* filename) : m_window(Game::getInstance()->getMainWindow()), map(map), id(current_id++) {
 	if (!loadOBJ(filename)) {
 		cout << "Failed to load " << filename << endl;
 	}
