@@ -21,7 +21,7 @@ public:
 
 
 	glm::ivec2 choseDestination(int mode = 0);
-	int shouldBomb();											// Return (-1, -1) si ne peut choisir
+	glm::ivec2 shouldBomb();											// Return (-1, -1) si ne peut choisir
 
 	std::vector<glm::ivec2> genTrajetMann(glm::ivec2);
 	void setTrajet(std::vector<glm::ivec2>);

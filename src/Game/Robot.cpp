@@ -8,30 +8,13 @@ Robot::Robot(Map* map) : Player(map) {
 }
 
 void Robot::update(float deltaTime) {
-	switch (shouldBomb()){
-		case(0):
-			break;
-		case(1):
-			this->setBomb(glm::ivec2 (trajet[case_of_t][0], trajet[case_of_t][1]-1));
-			setTrajet(genTrajetMann(choseDestination()));
-			break;
-		case(2):
-			this->setBomb(glm::ivec2 (trajet[case_of_t][0]+1, trajet[case_of_t][1]));
-			setTrajet(genTrajetMann(choseDestination()));
-			break;
-		case(3):
-			this->setBomb(glm::ivec2 (trajet[case_of_t][0], trajet[case_of_t][1]+1));
-			setTrajet(genTrajetMann(choseDestination()));
-			break;
-		case(4):
-			this->setBomb(glm::ivec2 (trajet[case_of_t][0]-1, trajet[case_of_t][1]));
-			setTrajet(genTrajetMann(choseDestination()));
-			break;
-		default :
-			break;
+	glm::ivec2 sBomb = shouldBomb();
+	if (sBomb[0] != -1 && sBomb[1] != -1) {
+		this->setBomb(sBomb);
+		setTrajet(genTrajetMann(choseDestination()));
 	}
 
-	if (trajet.size()==1) setTrajet(genTrajetMann(choseDestination()));
+	if (trajet.size()==1) setTrajet(genTrajetMann(choseDestination(1)));
 	std::map<glm::ivec2, float, cmpVec> dangerMap = map->getDangerMap();
 	if (trajet.size()>1) {
 		if (dangerMap[trajet[case_of_t+1]]>0.5){
@@ -157,11 +140,20 @@ glm::ivec2 Robot::choseDestination(int mode){
 
 // Bombs
 /**
- * @brief Return were the Robot can place a Bomb
- * @return 0->no, 1->up, 2->right, 3->bot, 4->left 
+ * @brief Return were the Robot can place a Bomb (return (-1, -1) if cannot)
+ * 
+ * @return Placement location
  */
-int shouldBomb(){
-	
+glm::ivec2 Robot::shouldBomb(){
+	if (case_of_t >= trajet.size()-1) {
+		if (trajet.size() <= 1){
+			setTrajet(genTrajetMann(choseDestination(1)));
+			return glm::ivec2 (-1, -1);
+		}
+
+		return trajet[case_of_t];
+	}
+	return glm::ivec2 (-1, -1);
 }
 
 ///--- DEPLACEMENTS
