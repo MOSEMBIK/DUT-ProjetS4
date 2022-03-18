@@ -107,7 +107,7 @@ void Map::update(float deltaTime) {
 	}
 
 	for (auto bomb : bombs) {
-		cerr << "Updating Bombs..." << endl;
+		// cerr << "Updating Bombs..." << endl;
 		if (bomb.second != nullptr)
 			bomb.second->update(deltaTime);
 	}
