@@ -71,8 +71,6 @@ class Server {
 	void process_amogus (ServerClientPtr client, const std::string & = "");
 	// Processeurs.
 	void process_message (ServerClientPtr, const std::string &);
-	// Diffusion d'un message.
-	void broadcast (const std::string & message, ServerClientPtr emitter = nullptr);
 	// Suppression d'un client.
 	void remove (ServerClientPtr);
 
@@ -85,6 +83,9 @@ class Server {
 
 	inline void setMap (Map map) { m_map = map; }
 	inline Map& getMap () { return m_map; }
+
+	// Diffusion d'un message.
+	void broadcast (const std::string & message, ServerClientPtr emitter = nullptr);
 
   public:
 	static const std::string INVALID_ALIAS;

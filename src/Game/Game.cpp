@@ -556,9 +556,9 @@ void Game::setState(GameState state)
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
 		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
 
-		m_client = new Client("127.0.0.1");
-
 		cerr << "Loaded Multiplayer Server in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
+
+		m_client = new Client("127.0.0.1");
 	} break;
 
 	/**
@@ -670,7 +670,9 @@ bool Game::onUpdate(AppUpdateEvent& e)
 			server_map->draw();
 
 			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_T) == GLFW_PRESS)
-        		m_client->write("/ඞ");
+        		m_client->write("hey");
+			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_Y) == GLFW_PRESS)
+        		m_server->broadcast("broadcast test");
 
 			if (keyPressed == GLFW_KEY_B && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_B) == GLFW_RELEASE)
         		server_map->addBomb( new Bomb(map, vec3(0.0f, 0.0f, 0.5f)),	ivec2(rand()%8+2,rand()%8+2) );

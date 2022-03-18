@@ -6,7 +6,7 @@ using namespace std;
 Server::ServerClient::ServerClient (Server * server, Socket && socket)
 	: m_server {server}, m_socket {move(socket)}, m_active {false}
 {
-	cerr << "Nouveau client !" << endl;
+	cerr << "Connexion d'un nouveau client !" << endl;
 }
 
 void Server::ServerClient::start() {
@@ -15,8 +15,11 @@ void Server::ServerClient::start() {
 	// Pointeur intelligent pour assurer la survie de l'objet.
 	ServerClientPtr self = shared_from_this();
 
+	cerr << "ServerClient::start()" << endl;
+
 	// Lecture asynchrone.
 	async_read_until(m_socket, m_buffer, '\n', [this, self] (const error_code & ec, size_t n) {
+		cerr << "ServerClient::start(): async_read_until" << endl;
 		UNUSED(n);
 		// Erreur ?
 		if (!ec) {
@@ -52,6 +55,7 @@ void Server::ServerClient::rename(const string & alias) {
 }
 
 void Server::ServerClient::read() {
+	cerr << "Lecture du client !" << endl;
 
 	// Pointeur intelligent pour assurer la survie de l'objet.
 	ServerClientPtr self = shared_from_this();
@@ -86,6 +90,7 @@ void Server::ServerClient::write(const string & message) {
 	string m = message + '\n';
 
 	// Écriture asynchrone.
+	cerr << "Envoi du message au client : " << m << endl;
 	async_write(
 		m_socket,
 		asio::buffer (m.data (), m.length ()),

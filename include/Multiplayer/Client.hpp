@@ -7,6 +7,7 @@ class Client {
 	asio::io_context io_context;
 	Socket m_socket;
 	std::thread m_thread;
+	asio::streambuf m_buffer;
 
   private:
 	// Traitement d'un message.

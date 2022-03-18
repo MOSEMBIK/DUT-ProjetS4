@@ -121,11 +121,9 @@ void Server::process_quit(ServerClientPtr client, const string & data) {
 }
 
 void Server::broadcast(const string & message, ServerClientPtr emitter) {
-	string m = message + '\n';
-	for (ServerClientPtr client: this->m_clients) {
+	for (ServerClientPtr client: this->m_clients)
 		if (client != emitter)
 			client->write(message);
-	}
 }
 
 const map<string, Server::Processor> Server::PROCESSORS {

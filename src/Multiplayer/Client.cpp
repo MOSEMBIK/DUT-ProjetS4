@@ -8,22 +8,19 @@ Client::Client(const string & host, unsigned short port) : io_context(), m_socke
 	// Connexion au serveur
 	m_socket.connect(asio::ip::tcp::endpoint(asio::ip::address::from_string(host), port));
 
-	// Création du thread pour la boucle de traitement
-	m_thread = thread([this]() {
-		while (true) {
-			// Réception d'un message.
-			string message;
-			asio::error_code error;
-			asio::read(m_socket, asio::buffer(message), error);
+	// Lancement du thread
+	m_thread = thread([this]() { io_context.run(); });
 
-			// Traitement du message si aucune erreur
-			if (error) break;
-			if (message != "") {
+	async_read_until(m_socket, m_buffer, '\n', [this] (const error_code & ec, size_t n) {
+		UNUSED(n);
+
+		if (!ec) {
+			istream is {&m_buffer};
+			string message;
+			getline(is, message);
+			if (message != "")
 				process(message);
-			}
 		}
-		// Fermeture du socket.
-		m_socket.close();
 	});
 }
 
@@ -37,7 +34,11 @@ Client::~Client() {
 // Envoi d'un message à travers le socket.
 void Client::write(const string & message) {
 	cerr << "write(" << message << ")" << endl;
-	asio::write(m_socket, asio::buffer(message));
+	async_write(
+		m_socket,
+		asio::buffer (message.data (), message.length ()),
+		[this] (const error_code & ec, size_t n) { UNUSED(ec); UNUSED(n); }
+	);
 }
 
 void Client::message (const string & message) {
@@ -76,7 +77,7 @@ void Client::user_list (const string & message) {
 }
 
 void Client::process(const string & message) {
-	cerr << "Client::process: " << message << endl;
+	cerr << "Received message: " << message << endl;
 }
 
 
