@@ -64,6 +64,14 @@ void Server::process(ServerClientPtr client, const string & message) {
 	}
 }
 
+void Server::process_join(ServerClientPtr client, const string & data) {
+	// Récupération des informations de la map.
+	string map = m_map.getData();
+
+	// Envoie des informations de la map.
+	client->write(map);
+}
+
 void Server::process_private(ServerClientPtr client, const string & data) {
 	int delimiterPosition = data.find(' ');
 	string recipientName = data.substr(0, delimiterPosition);
@@ -126,6 +134,7 @@ void Server::broadcast(const string & message, ServerClientPtr emitter) {
 }
 
 const map<string, Server::Processor> Server::PROCESSORS {
+	{"/join", &Server::process_join},
 	{"/quit", &Server::process_quit},
 	{"/list", &Server::process_list},
 	{"/private", &Server::process_private},

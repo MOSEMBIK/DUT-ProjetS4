@@ -191,24 +191,15 @@ void Game::setState(GameState state)
 		// Create button(window, position, anchor, size, ...)
 		buttons.push_back(new Button(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[0]->setLabel(Label(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), "Singleplayer", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		buttons[0]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->setState(GameState::SOLO_MENU);
-		});
+		buttons[0]->setOnClickCallback([this]() { setState(GameState::SOLO_MENU); });
 
 		buttons.push_back(new Button(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[1]->setLabel(Label(mainWindow, vec2(0, -50), vec2(0.5f, 0.5f), "Multiplayer", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		buttons[1]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->setState(GameState::MULTI_MENU);
-		});
+		buttons[1]->setOnClickCallback([this]() { setState(GameState::MULTI_MENU); });
 
 		buttons.push_back(new Button(mainWindow, vec2(-50, 50), vec2(1.0f, 0.0f), vec2(79, 79), (char *)"assets/options.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[2]->setNineSlice(0);
-		buttons[2]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->setState(GameState::OPTIONS);
-		});
+		buttons[2]->setOnClickCallback([this]() { setState(GameState::OPTIONS); });
 
 		/* Load Images */
 		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W), Textures::homeBackground));
@@ -224,25 +215,14 @@ void Game::setState(GameState state)
 		/* Load Buttons */
 		buttons.push_back(new Button(mainWindow, vec2(-137.5f, 50.0f), vec2(1.0f, 0.0f), vec2(250, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[0]->setLabel(Label(mainWindow, vec2(-137.5f, 50.0f), vec2(1.0f, 0.0f), "Apply changes", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		buttons[0]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->updateWindowOptions();
-		});
+		buttons[0]->setOnClickCallback([this]() { updateWindowOptions(); });
 
 		buttons.push_back(new Button(mainWindow, vec2(137.5f, 50.0f), vec2(0.0f, 0.0f), vec2(250, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[1]->setLabel(Label(mainWindow, vec2(137.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		if (m_gameState == GameState::SOLO_PAUSED) {
-			buttons[1]->setOnClickCallback([]() {
-				Game* game = Game::getInstance();
-				game->setState(GameState::SOLO_PAUSED);
-			});
-		}
-		else {
-			buttons[1]->setOnClickCallback([]() {
-				Game* game = Game::getInstance();
-				game->setState(GameState::MAIN_MENU);
-			});
-		}
+		if (m_gameState == GameState::SOLO_PAUSED)
+			buttons[1]->setOnClickCallback([this]() { setState(GameState::SOLO_PAUSED); });
+		else
+			buttons[1]->setOnClickCallback([this]() { setState(GameState::MAIN_MENU); });
 
 		char* arrow = (char*)"assets/arrow.png";
 		char* reverse_arrow = (char*)"assets/reverse_arrow.png";
@@ -287,17 +267,11 @@ void Game::setState(GameState state)
 		/* Load Buttons */
 		buttons.push_back(new Button(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), vec2(220, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[0]->setLabel(Label(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), "Launch Game", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		buttons[0]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->setState(GameState::SOLO_LOADING);
-		});
+		buttons[0]->setOnClickCallback([this]() { setState(GameState::SOLO_LOADING); });
 
 		buttons.push_back(new Button(mainWindow, vec2(122.5f, 50.0f), vec2(0.0f, 0.0f), vec2(220, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[1]->setLabel(Label(mainWindow, vec2(122.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		buttons[1]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->setState(GameState::MAIN_MENU);
-		});
+		buttons[1]->setOnClickCallback([this]() { setState(GameState::MAIN_MENU); });
 
 		char* arrow = (char*)"assets/arrow.png";
 		char* reverse_arrow = (char*)"assets/reverse_arrow.png";
@@ -388,28 +362,20 @@ void Game::setState(GameState state)
 		/* Load Buttons */
 		buttons.push_back(new Button(mainWindow, vec2(0.0f, 185.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[0]->setLabel(Label(mainWindow, vec2(0.0f, 185.0f), vec2(0.5f, 0.5f), "Resume", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		buttons[0]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->setState(GameState::SOLO_GAME);
-		});
+		buttons[0]->setOnClickCallback([this]() { setState(GameState::SOLO_GAME); });
+
 		buttons.push_back(new Button(mainWindow, vec2(0.0f, 62.5f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[1]->setLabel(Label(mainWindow, vec2(0.0f, 62.5f), vec2(0.5f, 0.5f), "Restart", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		buttons[1]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->setState(GameState::SOLO_LOADING);
-		});
+		buttons[1]->setOnClickCallback([this]() { setState(GameState::SOLO_LOADING); });
+		
 		buttons.push_back(new Button(mainWindow, vec2(0.0f, -62.5f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[2]->setLabel(Label(mainWindow, vec2(0.0f, -62.5f), vec2(0.5f, 0.5f), "Options", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		buttons[2]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->setState(GameState::OPTIONS);
-		});
+		buttons[2]->setOnClickCallback([this]() { setState(GameState::OPTIONS); });
+		
 		buttons.push_back(new Button(mainWindow, vec2(0.0f, -185.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[3]->setLabel(Label(mainWindow, vec2(0.0f, -185.0f), vec2(0.5f, 0.5f), "Exit to main menu", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		buttons[3]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->setState(GameState::MAIN_MENU);
-		});
+		buttons[3]->setOnClickCallback([this]() { setState(GameState::MAIN_MENU); });
+		
 
 		buttons.push_back(new Button(mainWindow, vec2(0.0f, 0.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2, DEFAULT_WINDOW_H/1.5), (char *)"assets/graytton.png", vec3(1.0f), vec3(1.0f), vec3(1.0f)));
 		buttons.push_back(new Button(mainWindow, vec2(0.0f, 0.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2, DEFAULT_WINDOW_H/1.5)+10.0f, (char *)"assets/bluetton.png", vec3(1.0f), vec3(1.0f), vec3(1.0f)));
@@ -425,17 +391,11 @@ void Game::setState(GameState state)
 		/* Load Buttons */
 		buttons.push_back(new Button(mainWindow, vec2(137.5f, 50.0f), vec2(0.0f, 0.0f), vec2(250, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[0]->setLabel(Label(mainWindow, vec2(137.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		buttons[0]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->setState(GameState::MAIN_MENU);
-		});
+		buttons[0]->setOnClickCallback([this]() { setState(GameState::MAIN_MENU); });
 
 		buttons.push_back(new Button(mainWindow, vec2(-137.5f, 50.0f), vec2(1.0f, 0.0f), vec2(250, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[1]->setLabel(Label(mainWindow, vec2(-137.5f, 50.0f), vec2(1.0f, 0.0f), "Create server", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		buttons[1]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->setState(GameState::MULTI_CREATE_SERVER);
-		});
+		buttons[1]->setOnClickCallback([this]() { setState(GameState::MULTI_CREATE_SERVER); });
 
 		list<ServerInfo> servers = { {"stoupy.tk", "Stoupy51", "3:9", 12}, {"127.0.0.1", "Bourbourman", "7:60", 75}, {} };
 		unsigned char i = 1;
@@ -448,8 +408,10 @@ void Game::setState(GameState state)
 			else if (server.m_ping < 100) { pingColor = vec3(1.0f, 1.0f, 0.0f); }
 			labels.push_back(new Label(mainWindow, vec2(200.0f, -i*79.0f), vec2(0.5f, 1.0f), to_string(server.m_ping)+" ms"		, 24, bomberFont, ALIGN_RIGHT | ALIGN_MIDDLE, pingColor));
 			labels.push_back(new Label(mainWindow, vec2(400.0f, -i*79.0f), vec2(0.5f, 1.0f), "Join server"						, 24, bomberFont, ALIGN_RIGHT | ALIGN_MIDDLE));
-			buttons[i]->setOnClickCallback([server]() {
-				cerr << "Rejoindre " << server.m_ip << endl;
+			buttons[i]->setOnClickCallback([this]() {
+				m_client = new Client("82.64.248.19");
+				m_client->write(m_username);
+				setState(GameState::MULTI_JOIN_SERVER);
 			});
 		}
 
@@ -472,18 +434,11 @@ void Game::setState(GameState state)
 		/* Load Buttons */
 		buttons.push_back(new Button(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), vec2(220, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[0]->setLabel(Label(mainWindow, vec2(-122.5f, 50.0f), vec2(1.0f, 0.0f), "Launch Game", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		buttons[0]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->setState(GameState::MULTI_LOADING_SERVER);
-			cerr << "Launching server..." << endl;
-		});
+		buttons[0]->setOnClickCallback([this]() { setState(GameState::MULTI_LOADING_SERVER); });
 
 		buttons.push_back(new Button(mainWindow, vec2(122.5f, 50.0f), vec2(0.0f, 0.0f), vec2(220, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
 		buttons[1]->setLabel(Label(mainWindow, vec2(122.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
-		buttons[1]->setOnClickCallback([]() {
-			Game* game = Game::getInstance();
-			game->setState(GameState::MULTI_MENU);
-		});
+		buttons[1]->setOnClickCallback([this]() { setState(GameState::MULTI_MENU); });
 
 		char* arrow = (char*)"assets/arrow.png";
 		char* reverse_arrow = (char*)"assets/reverse_arrow.png";
@@ -557,9 +512,22 @@ void Game::setState(GameState state)
 		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
 
 		cerr << "Loaded Multiplayer Server in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
+	} break;
 
-		m_client = new Client("82.64.248.19");
+	/**
+	 * @brief Join a multiplayer game
+	 */
+	case GameState::MULTI_JOIN_SERVER: {
+		cerr << "Joining Multiplayer Server..." << endl; float time = glfwGetTime();
+
+		m_client->setMap(map);
 		m_client->write(m_username);
+		m_client->write("/join");
+
+		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
+		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
+
+		cerr << "Joined Multiplayer Server in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
 
 	/**
@@ -661,7 +629,10 @@ bool Game::onUpdate(AppUpdateEvent& e)
 		} break;
 
 		case GameState::MULTI_LOADING_SERVER: {
-			setState(GameState::MULTI_GAME);
+			setState(GameState::MULTI_JOIN_SERVER);
+		} break;
+
+		case GameState::MULTI_JOIN_SERVER: {
 		} break;
 
 		case GameState::MULTI_GAME: {

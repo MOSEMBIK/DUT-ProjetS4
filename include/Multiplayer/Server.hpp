@@ -59,19 +59,17 @@ class Server {
 	void accept ();
 	// Recherche par alias.
 	ServerClientPtr find (const std::string & alias);
-	// Traitement d'une commande.
+
+	// Traitement des commandes
 	void process (ServerClientPtr, const std::string &);
-	// Traitement de la commande quit.
-	void process_quit (ServerClientPtr client, const std::string &);
-	// Traitement de la commande list.
+	void process_join (ServerClientPtr client, const std::string & = "");
+	void process_quit (ServerClientPtr client, const std::string & = "");
 	void process_list (ServerClientPtr client, const std::string & = "");
-	// Traitement de la commande private.
 	void process_private (ServerClientPtr client, const std::string & = "");
-	// Traitement de la commande amogus.
 	void process_amogus (ServerClientPtr client, const std::string & = "");
-	// Processeurs.
+
 	void process_message (ServerClientPtr, const std::string &);
-	// Suppression d'un client.
+
 	void remove (ServerClientPtr);
 
   private:

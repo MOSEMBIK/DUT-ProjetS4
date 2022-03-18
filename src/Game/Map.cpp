@@ -36,6 +36,20 @@ Map::~Map() {
 	}
 }
 
+string Map::getData() const {
+	string data = "";
+	data += "Map size: " + to_string(mapSize) + "|";
+	data += "walls:{";
+	for (auto wall : walls) {
+		if (wall.second != nullptr)
+			data += wall.second->getData() + ",";
+	}
+	data += "}|";
+
+	return data;
+}
+
+
 void Map::generateMap(int size, int wallPercentage) {
 	walls.clear();
 	if (size % 2 == 0)

@@ -37,6 +37,8 @@ public:
 	Map();
 	~Map();
 
+	std::string getData() const; // Fonction qui retourne les données de la map sous forme de string
+
 	void generateMap(int size = 13, int wallPercentage = 90);
 	void addActor(Actor* actor);
 	void addPlayer(Player* player);

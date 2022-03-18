@@ -10,6 +10,13 @@ class Client {
 	asio::streambuf m_buffer;
 
   private:
+	Map* m_map;
+
+  public:
+	inline void setMap (Map* map) { m_map = map; }
+
+
+  private:
 	// Traitement d'un message.
 	void process (const std::string & message);
 	// Gestion des erreurs.
