@@ -14,10 +14,18 @@ private:
 	int bombRange;
 	int bombCount;
 
+protected:
+	unsigned char movement = '0';
+	int mapSize;
+	int x, z;
+
 public:
 	Player(Map* map);
 	virtual ~Player() {};
 
 	inline float getSpeed() const { return speed; }
+
 	void setBomb(glm::ivec2);
+
+	void update(float deltaTime);
 };
