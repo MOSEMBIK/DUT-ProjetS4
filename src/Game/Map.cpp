@@ -12,7 +12,7 @@
 using namespace std;
 using namespace glm;
 
-Map::Map() : mapMaterial(*Shader::find("Base")), mapActor(this)
+Map::Map() : mapActor(this), mapMaterial(*Shader::find("Base"))
 {
 	Resource::loadTexture("assets/map_texture.png", mapTexture);
 	Resource::loadTexture("assets/map_texture_specular.png", mapTextureSpecular);

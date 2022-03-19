@@ -15,11 +15,11 @@ using namespace std;
 
 int Actor::current_id;
 
-Actor::Actor(Map* map) : m_window(Game::getInstance()->getMainWindow()), map(map), id(current_id++) {}
+Actor::Actor(Map* map) : id(current_id++), m_window(Game::getInstance()->getMainWindow()), map(map) {}
 
-Actor::Actor(Window* window) : m_window(window), id(current_id++) {}
+Actor::Actor(Window* window) : id(current_id++), m_window(window) {}
 
-Actor::Actor(Map* map, const char* filename) : m_window(Game::getInstance()->getMainWindow()), map(map), id(current_id++) {
+Actor::Actor(Map* map, const char* filename) : id(current_id++), m_window(Game::getInstance()->getMainWindow()), map(map) {
 	if (!loadOBJ(filename)) {
 		cout << "Failed to load " << filename << endl;
 	}

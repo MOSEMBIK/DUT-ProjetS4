@@ -160,7 +160,7 @@ glm::ivec2 Robot::choseDestination(int mode){
  */
 glm::ivec2 Robot::shouldBomb(){
 	cerr << "Should bomb function" << endl;
-	if (case_of_t >= trajet.size()-1) {
+	if (case_of_t >= int(trajet.size())-1) {
 		if (trajet.size() <= 1){
 			cerr << "Set Trajet" << endl;
 			setTrajet(genTrajetMann(choseDestination(1)));
