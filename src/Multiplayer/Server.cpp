@@ -3,9 +3,20 @@
 
 using namespace std;
 
+int Server::ServerClient::m_current_id = 2022000;
+
 Server::Server(unsigned short port) : m_context {}, m_clients {},
 	m_acceptor {m_context, asio::ip::tcp::endpoint {asio::ip::tcp::v4(), port}}
 {
+}
+
+Server::~Server() {
+	for (auto client : m_clients)
+		client->stop();
+	// Fermeture du socket.
+	m_acceptor.close();
+	// Arrêt du thread.
+	m_thread.~thread();
 }
 
 void Server::start() {
@@ -119,7 +130,7 @@ void Server::process_amogus(ServerClientPtr client, const string & data) {
 }
 
 void Server::process_message(ServerClientPtr client, const string & data) {
-	string m = "<b>" + client->alias() + "</b> : " + data;
+	string m = client->alias() + " : " + data;
 	broadcast (m);
 }
 
@@ -132,6 +143,14 @@ void Server::broadcast(const string & message, ServerClientPtr emitter) {
 	for (ServerClientPtr client: this->m_clients)
 		if (client != emitter)
 			client->write(message);
+}
+
+void Server::sendList(const string & message) {
+	string list = "#playersList ";
+	for (ServerClientPtr client: this->m_clients)
+		list += client->alias() + ", ";
+	list.pop_back();
+	broadcast(list);
 }
 
 const map<string, Server::Processor> Server::PROCESSORS {

@@ -21,6 +21,7 @@ protected:
 
 public:
 	Player(Map* map, glm::ivec2 pos);
+	Player(Map* map, glm::ivec2 pos, int playerId);
 	Player(Map* map, std::string& data);
 	virtual ~Player() {};
 

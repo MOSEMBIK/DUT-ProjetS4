@@ -167,7 +167,7 @@ Game::~Game()
 
 void Game::setState(GameState state)
 {
-	cerr << "Set State" << endl;
+	cerr << endl;
 	for (auto image : images) { delete image; } images.clear();
 	for (auto button : buttons) { delete button; } buttons.clear();
 	for (auto label : labels) { delete label; } labels.clear();
@@ -179,14 +179,20 @@ void Game::setState(GameState state)
 	 */
 	case GameState::MAIN_MENU: {
 		cerr << "Loading main menu..." << endl; float time = glfwGetTime();
-		if (m_gameState == GameState::SOLO_LOADING) {
-			// Delete game content
-			if(map != nullptr)
-			{
-				delete map;
-				map = nullptr;
-			}
+		// Delete game content
+		if (map != nullptr) {
+			delete map;
+			map = nullptr;
 		}
+		if (m_client != nullptr) {
+			delete m_client;
+			m_client = nullptr;
+		}
+		if (m_server != nullptr) {
+			delete m_server;
+			m_server = nullptr;
+		}
+
 		/* Load Buttons */
 		// Create button(window, position, anchor, size, ...)
 		buttons.push_back(new Button(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
@@ -221,6 +227,8 @@ void Game::setState(GameState state)
 		buttons[1]->setLabel(Label(mainWindow, vec2(137.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 		if (m_gameState == GameState::SOLO_PAUSED)
 			buttons[1]->setOnClickCallback([this]() { setState(GameState::SOLO_PAUSED); });
+		else if (m_gameState == GameState::MULTI_PAUSED)
+			buttons[1]->setOnClickCallback([this]() { setState(GameState::MULTI_PAUSED); });
 		else
 			buttons[1]->setOnClickCallback([this]() { setState(GameState::MAIN_MENU); });
 
@@ -336,7 +344,7 @@ void Game::setState(GameState state)
 			map->addPlayer(robot);
 		}*/
 
-		// Placement des Players sur à côté des bords de la map
+		// Placement des Players à côté des bords de la map
 		map->addPlayer(new Human(map, map->choosePos(0)));
 		for (int i = 1; i < m_gameSettings[1]; i++){
 			map->addPlayer(new Robot(map, map->choosePos(i)));
@@ -416,7 +424,7 @@ void Game::setState(GameState state)
 			labels.push_back(new Label(mainWindow, vec2(200.0f, -i*79.0f), vec2(0.5f, 1.0f), to_string(server.m_ping)+" ms"		, 24, bomberFont, ALIGN_RIGHT | ALIGN_MIDDLE, pingColor));
 			labels.push_back(new Label(mainWindow, vec2(400.0f, -i*79.0f), vec2(0.5f, 1.0f), "Join server"						, 24, bomberFont, ALIGN_RIGHT | ALIGN_MIDDLE));
 			buttons[i]->setOnClickCallback([this]() {
-				m_client = new Client("82.64.248.19");
+				m_client = new Client(this, "82.64.248.19");
 				setState(GameState::MULTI_JOIN_SERVER);
 			});
 		}
@@ -500,20 +508,28 @@ void Game::setState(GameState state)
 	case GameState::MULTI_LOADING_SERVER: {
 		cerr << "Loading Multiplayer Server..." << endl; float time = glfwGetTime();
 
-		if (m_server != nullptr) { delete m_server; m_server = nullptr; }
-		m_server = new Server();
-		m_server->start();
-		m_client = new Client("127.0.0.1");
+		if (m_server != nullptr) {
+			cerr << "Server already exists" << endl;
+			m_server->broadcast("#restart");
+		}
+		else {
+			m_server = new Server();
+			m_server->start();
+		}
+		if (m_client != nullptr) {
+			delete m_client;
+			m_client = nullptr;
+		}
+		m_client = new Client(this, "127.0.0.1");
+		m_client->write(m_username);
 
 		Map* server_map = &m_server->getMap();
 		server_map->generateMap(m_gameSettings[0], m_gameSettings[2]);
 		
-		// Test de robots
-		/*
-		for (int i=0; i < m_gameSettings[4]; i++) {
-			Robot* robot = new Robot(server_map);
-			robot->getTransform().setPosition(vec3(1.0f, 0.0f, 1.0f) * float(rand()%m_gameSettings[0]));
-			server_map->addPlayer(robot);
+		/* Placement des Players à côté des bords de la map
+		map->addPlayer(new Human(map, map->choosePos(0)));
+		for (int i = 1; i < m_gameSettings[1]; i++){
+			map->addPlayer(new Robot(map, map->choosePos(i)));
 		}*/
 
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
@@ -523,15 +539,52 @@ void Game::setState(GameState state)
 	} break;
 
 	/**
+	 * @brief Load Pre-multiplayer game
+	 */
+	case GameState::MULTI_PREGAME: {
+		cerr << "Loading Multiplayer Pregame..." << endl; float time = glfwGetTime();
+
+		/* Load Buttons */
+		buttons.push_back(new Button(mainWindow, vec2(137.5f, 50.0f), vec2(0.0f, 0.0f), vec2(250, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[0]->setLabel(Label(mainWindow, vec2(137.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[0]->setOnClickCallback([this]() { setState(GameState::MAIN_MENU); });
+
+		if (m_server != nullptr) {
+			buttons.push_back(new Button(mainWindow, vec2(-137.5f, 50.0f), vec2(1.0f, 0.0f), vec2(250, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+			buttons[1]->setLabel(Label(mainWindow, vec2(-137.5f, 50.0f), vec2(1.0f, 0.0f), "Launch game", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+			buttons[1]->setOnClickCallback([this]() {
+				// Création du serveur avec le nombre de joueurs
+				Map* server_map = &m_server->getMap();
+				int nbPlayers = m_gameSettings[1];
+				vector<int> clients = m_server->getClientsIds();
+				int nbClients = clients.size();
+				for (int i = 0; i < nbPlayers; i++) {
+					if (i < nbClients) {
+						server_map->addPlayer(new Player(server_map, server_map->choosePos(i), clients[i]));
+					}
+					else
+						server_map->addPlayer(new Robot(server_map, server_map->choosePos(i)));
+				}
+				m_server->broadcast(m_server->getMap().getData());
+			});
+		}
+
+		if (map != nullptr) delete map;
+		map = new Map();
+
+		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
+		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
+
+		cerr << "Loaded Multiplayer Pregame in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
+	} break;
+
+	/**
 	 * @brief Join a multiplayer game
 	 */
 	case GameState::MULTI_JOIN_SERVER: {
 		cerr << "Joining Multiplayer Server..." << endl; float time = glfwGetTime();
 
-		if (map != nullptr) delete map;
-		map = new Map();
 		m_client->write(m_username);
-		m_client->write("/join");
 
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
 		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
@@ -557,6 +610,39 @@ void Game::setState(GameState state)
 		/* Load labels */
 
 		cerr << "Resumed Multiplayer Game in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
+	} break;
+
+	/**
+	 * @brief Multi Paused game
+	 */
+	case GameState::MULTI_PAUSED: {
+		cerr << "Loading Multiplayer Paused menu..." << endl; float time = glfwGetTime();
+		/* Load Buttons */
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, 185.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[0]->setLabel(Label(mainWindow, vec2(0.0f, 185.0f), vec2(0.5f, 0.5f), "Resume", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[0]->setOnClickCallback([this]() { setState(GameState::MULTI_GAME_CLIENT); });
+
+		if (m_server != nullptr) {
+			buttons.push_back(new Button(mainWindow, vec2(0.0f, 62.5f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+			buttons[1]->setOnClickCallback([this]() { setState(GameState::MULTI_LOADING_SERVER); });
+		}
+		else {
+			buttons.push_back(new Button(mainWindow, vec2(0.0f, 62.5f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(0.25f), vec3(0.25f), vec3(0.25f)));
+		}
+		buttons[1]->setLabel(Label(mainWindow, vec2(0.0f, 62.5f), vec2(0.5f, 0.5f), "Restart", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, -62.5f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[2]->setLabel(Label(mainWindow, vec2(0.0f, -62.5f), vec2(0.5f, 0.5f), "Options", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[2]->setOnClickCallback([this]() { setState(GameState::OPTIONS); });
+		
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, -185.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[3]->setLabel(Label(mainWindow, vec2(0.0f, -185.0f), vec2(0.5f, 0.5f), "Exit to main menu", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[3]->setOnClickCallback([this]() { setState(GameState::MAIN_MENU); });
+
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, 0.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2, DEFAULT_WINDOW_H/1.5), (char *)"assets/graytton.png", vec3(1.0f), vec3(1.0f), vec3(1.0f)));
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, 0.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2, DEFAULT_WINDOW_H/1.5)+10.0f, (char *)"assets/bluetton.png", vec3(1.0f), vec3(1.0f), vec3(1.0f)));
+		
+		cerr << "Loaded Multiplayer Paused menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
 	}
 	m_gameState = state;
@@ -586,10 +672,9 @@ bool Game::postInit() {
 		optionsFile.close();
 	}
 	updateWindowOptions();
+	cerr << "Loaded options" << endl;
 
-	cerr << "Loading walls..." << endl;
 	wall = new Wall(map);
-	cerr << "Scale walls..." << endl;
 	wall->getTransform().setScale(vec3(0.0f));
 	this->setState(GameState::MAIN_MENU);
 	return true;
@@ -650,10 +735,30 @@ bool Game::onUpdate(AppUpdateEvent& e)
 		} break;
 
 		case GameState::MULTI_LOADING_SERVER: {
-			setState(GameState::MULTI_JOIN_SERVER);
+			if (m_connected != "") {
+				m_playerId = stoi(m_connected);
+				setState(GameState::MULTI_PREGAME);
+				m_connected = "";
+			}
 		} break;
 
 		case GameState::MULTI_JOIN_SERVER: {
+			if (m_connected != "") {
+				m_playerId = stoi(m_connected);
+				setState(GameState::MULTI_PREGAME);
+				m_connected = "";
+			}
+		} break;
+
+		case GameState::MULTI_PREGAME: {
+			if (m_mapInfo != "") {
+				map->loadMap(m_mapInfo, m_playerId);
+				m_mapInfo = "";
+				//if (m_server == nullptr)
+					setState(GameState::MULTI_GAME_CLIENT);
+				//else
+					//setState(GameState::MULTI_GAME_SERVER);
+			}
 		} break;
 
 		case GameState::MULTI_GAME_CLIENT: {
@@ -661,7 +766,7 @@ bool Game::onUpdate(AppUpdateEvent& e)
         		m_server->getMap().addBomb( new Bomb(map, vec3(0.0f, 0.0f, 0.5f)),	ivec2(rand()%8+2,rand()%8+2) );
 
 			if (m_mapInfo != "") {
-				map->loadMap(m_mapInfo);
+				map->loadMap(m_mapInfo, m_playerId);
 				m_mapInfo = "";
 			}
 			if (m_updatePosRot != "") {

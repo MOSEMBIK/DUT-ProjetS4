@@ -5,7 +5,7 @@
 
 using namespace std;
 
-Client::Client(const string & host, unsigned short port) : io_context(), m_socket(io_context)
+Client::Client(Game* game, const string & host, unsigned short port) : io_context(), m_socket(io_context), m_game(game)
 {
 	// Connexion au serveur
 	m_socket.connect(asio::ip::tcp::endpoint(asio::ip::address::from_string(host), port));
@@ -77,22 +77,32 @@ void Client::process(const string & message) {
 				(this->*proc)(data);
 			}
 		}
-		else {
-			cerr << message << endl;
-		}
 	}
 }
 
+// Commande "#connected"
+void Client::process_connected(const string & message) {
+	m_game->m_connected = message;
+}
 
 // Commande "#loadMap"
 void Client::process_loadMap(const string & message) {
-	Game * game = Game::getInstance();
-	game->loadMap(message);
-	game->setState(GameState::MULTI_GAME_CLIENT);
+	m_game->m_mapInfo = message;
 }
 
 // Commande "#updatePosRot"
 void Client::process_updatePosRot(const string & message) {
-	Game * game = Game::getInstance();
-	game->updatePosRot(message);
+	m_game->m_updatePosRot = message;
+}
+
+// Commande "#playerslist"
+void Client::process_playersList(const string & message) {
+	m_game->m_playersList = message;
+}
+
+// Commande "#restart"
+void Client::process_restart(const string & message) {
+	UNUSED(message);
+	if (m_game->m_server == nullptr)
+		m_game->setState(GameState::MULTI_JOIN_SERVER);
 }

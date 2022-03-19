@@ -1,6 +1,7 @@
 
 #include <Game/Map.hpp>
 #include <Game/Actor.hpp>
+#include <Game/Human.hpp>
 #include <Game/Player.hpp>
 #include <Game/ObjectPerk.hpp>
 #include <algorithm>
@@ -54,8 +55,26 @@ string Map::getData() const {
 	return data;
 }
 
-void Map::loadMap(const std::string& mapData) {
+void Map::loadMap(const std::string& mapData, int humanId) {
 	cerr << endl << "Loading map from string.." << endl; float time = glfwGetTime();
+
+	for (auto wall : walls) {
+		if (wall.second != nullptr)
+			delete wall.second;
+	} walls.clear();
+	for (auto bomb : bombs) {
+		if (bomb.second != nullptr)
+			delete bomb.second;
+	} bombs.clear();
+	for (auto player : players) {
+		if (player != nullptr)
+			delete player;
+	} players.clear();
+	for (auto bonus : bonuses) {
+		if (bonus.second != nullptr)
+			delete bonus.second;
+	} bonuses.clear();
+
 
 	// Parsing map size
 	int pos = mapData.find("|");
@@ -96,7 +115,10 @@ void Map::loadMap(const std::string& mapData) {
 	}
 	for (auto player : playersData) {
 		player = player.substr(1, player.size() - 2);
-		players.push_back(new Player(this, player));
+		if (humanId != stoi(player.substr(player.find_last_of(",") + 1, player.size())))
+			players.push_back(new Player(this, player));
+		else
+			players.push_back(new Human(this, player));
 	}
 
 	cerr << "Loaded map from string in " << (glfwGetTime() - time) * 1000 << "ms" << endl;

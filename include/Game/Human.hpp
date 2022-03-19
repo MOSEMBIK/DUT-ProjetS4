@@ -11,6 +11,7 @@ private:
 
 public:
 	Human(Map* map, glm::ivec2 pos);
+	Human(Map* map, std::string& data);
   	virtual ~Human() {}
 
 	void update(float deltaTime);

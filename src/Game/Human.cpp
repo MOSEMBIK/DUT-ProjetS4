@@ -3,6 +3,8 @@
 
 Human::Human(Map* map, glm::ivec2 pos) : Player(map, pos) {}
 
+Human::Human(Map* map, std::string& data) : Player(map, data) {}
+
 void Human::update(float deltaTime) {
 	glm::vec3 pos = m_transform.getPosition();
 

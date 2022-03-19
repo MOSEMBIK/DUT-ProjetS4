@@ -21,7 +21,9 @@
 enum GameState {
 	MAIN_MENU, OPTIONS,
 	SOLO_MENU, SOLO_GAME, SOLO_LOADING, SOLO_PAUSED,
-	MULTI_MENU, MULTI_CREATE_SERVER, MULTI_LOADING_SERVER, MULTI_JOIN_SERVER, MULTI_GAME_CLIENT, MULTI_GAME_SERVER
+
+	MULTI_MENU, MULTI_CREATE_SERVER, MULTI_LOADING_SERVER, MULTI_PREGAME,
+	MULTI_JOIN_SERVER, MULTI_GAME_CLIENT, MULTI_GAME_SERVER, MULTI_PAUSED
 };
 
 void onKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -56,13 +58,6 @@ private:
     // Singleton
     static Game* m_instance;
 
-	// Multiplayer
-	Server* m_server;
-	Client* m_client;
-	std::string m_mapInfo;
-	std::string m_updatePosRot;
-
-
     bool init();
     bool loadRequiredResources();
     void processInputs(GLFWwindow* window);
@@ -70,10 +65,18 @@ private:
 public:
 	std::vector<unsigned char> m_gameSettings = {13, 4, 90, 10, 3};
     // Suppression du clonage et de l'opérateur =
+    ~Game();
     Game(Game&) = delete;
     void operator= (const Game&) = delete;
 
-    ~Game();
+	// Multiplayer
+	Server* m_server;
+	Client* m_client;
+	std::string m_connected;
+	std::string m_mapInfo;
+	std::string m_updatePosRot;
+	std::string m_playersList;
+	int m_playerId = -1;
 
 	bool postInit();
 	bool updateWindowOptions();
@@ -152,18 +155,4 @@ public:
 	 * @param state 
 	 */
     void setState(GameState state);
-
-	/**
-	 * @brief update map data to load
-	 * 
-	 * @param data 
-	 */
-	inline void loadMap(const std::string& data) { m_mapInfo = data; }
-
-	/**
-	 * @brief update map data for players
-	 * 
-	 * @param data 
-	 */
-	inline void updatePosRot(const std::string& data) { m_updatePosRot = data; }
 };

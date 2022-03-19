@@ -30,12 +30,15 @@ class Server {
 		asio::streambuf m_buffer;
 		std::string m_alias;
 		bool m_active;
+		int m_id;
+		static int m_current_id;
 		
 	  public:
 		ServerClient (Server *, Socket &&);
 		void start ();
 		void stop ();
 		inline std::string alias () const { return m_alias; }
+		inline int getId() const { return m_id; }
 		void rename (const std::string &);
 		void read ();
 		void write (const std::string &);
@@ -77,13 +80,16 @@ class Server {
 
   public:
 	Server (unsigned short port = 42069);
+	~Server ();
 	void start (); // Démarrage.
 
 	inline void setMap (Map map) { m_map = map; }
 	inline Map& getMap () { return m_map; }
+	inline std::vector<int> getClientsIds () { std::vector<int> v; for (auto c: m_clients) v.push_back(c->getId()); return v; }
 
 	// Diffusion d'un message.
 	void broadcast (const std::string & message, ServerClientPtr emitter = nullptr);
+	void sendList (const std::string & message);
 
   public:
 	static const std::string INVALID_ALIAS;
