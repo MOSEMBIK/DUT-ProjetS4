@@ -123,6 +123,7 @@ void Map::loadPosRot(const std::string& posRotData) {
 	}
 	for (auto player : playersData) {
 		player = player.substr(0, player.size() - 2);
+		cerr << "Updating player " << player << endl;
 
 		vector<float> playerData;
 		for (int i = 0; i < (int)player.size(); i++) {
@@ -133,7 +134,7 @@ void Map::loadPosRot(const std::string& posRotData) {
 			}
 		} playerData.push_back(stof(player));
 		for (auto p : players) {
-			if (p->getId() == int(playerData[0])) {
+			if (p != nullptr && p->getId() == int(playerData[0])) {
 				p->loadPosRot(
 					vec3(playerData[1], playerData[2], playerData[3]),
 					vec3(playerData[4], playerData[5], playerData[6])

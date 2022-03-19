@@ -652,8 +652,9 @@ bool Game::onUpdate(AppUpdateEvent& e)
 		} break;
 
 		case GameState::MULTI_GAME_CLIENT: {
-			if (keyPressed == GLFW_KEY_B && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_B) == GLFW_RELEASE)
+			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_B) == GLFW_PRESS)
         		m_server->getMap().addBomb( new Bomb(map, vec3(0.0f, 0.0f, 0.5f)),	ivec2(rand()%8+2,rand()%8+2) );
+
 			if (m_mapInfo != "") {
 				map->loadMap(m_mapInfo);
 				m_mapInfo = "";
