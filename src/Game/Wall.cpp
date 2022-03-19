@@ -3,6 +3,7 @@
 #include <Engine/Material.hpp>
 #include <Game/Wall.hpp>
 #include <Game/Map.hpp>
+#include <Game/PowerupCount.hpp>
 
 using namespace std;
 using namespace glm;
@@ -84,8 +85,19 @@ string Wall::getData() {
 
 void Wall::onDestroy() {
 	// summon un bonus ?
-	// Destroy le wall
 	ivec2 pos(m_transform.getPosition().x, m_transform.getPosition().z);
+	int rdm = rand()%100;
+	if (rdm < 10){
+		new ObjectPerk(map,pos,ObjectPerk::Type::Speed);
+	}
+	else if (rdm < 30){
+		new ObjectPerk(map,pos,ObjectPerk::Type::Count);
+	}
+	else if (rdm < 50){
+		new ObjectPerk(map,pos,ObjectPerk::Type::Range);
+	}
+	// Destroy le wall
+	
 	map->removeWall(pos);
 	delete this;
 }

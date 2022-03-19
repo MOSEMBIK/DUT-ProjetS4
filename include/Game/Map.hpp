@@ -3,6 +3,7 @@
 #include <Game/Actor.hpp>
 #include <Game/Wall.hpp>
 #include <Game/Player.hpp>
+#include <Game/ObjectPerk.hpp>
 
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
@@ -20,6 +21,7 @@ private:
 	std::map<glm::ivec2, Wall*, cmpVec> walls;
 	std::map<glm::ivec2, Bomb*, cmpVec> bombs;
 	std::list<Player*> players;
+	std::map<glm::ivec2, ObjectPerk*, cmpVec> bonuses;
 
 	Actor mapActor;
 	Mesh mapMesh;
@@ -47,10 +49,12 @@ public:
 	void addActor(Actor* actor);
 	void addPlayer(Player* player);
 	void addBomb(Bomb*, glm::ivec2);
+	void addBonus(ObjectPerk* bonus, glm::ivec2);
 
 	inline void removeWall(glm::ivec2 pos) { walls.erase(walls.find(pos)); }
 	inline void removeBomb(glm::ivec2 pos) { bombs.erase(bombs.find(pos)); }
 	inline void removePlayer(Player* play) { players.remove(play); }
+	ObjectPerk::Type pickUpBonus(glm::ivec2 pos);
 
 	//void removePlayer()
 

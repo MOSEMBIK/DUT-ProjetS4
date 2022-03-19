@@ -6,8 +6,7 @@
 class PowerupRange: public ObjectPerk
 {
 public:
-	PowerupRange(Map* map);
+	PowerupRange(Map* map, glm::ivec2 coord);
 	virtual ~PowerupRange() {}
-	virtual void onPickUp(Player*);
 
 };
