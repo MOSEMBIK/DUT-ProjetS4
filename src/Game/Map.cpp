@@ -2,6 +2,7 @@
 #include <Game/Map.hpp>
 #include <Game/Actor.hpp>
 #include <Game/Player.hpp>
+#include <Game/ObjectPerk.hpp>
 #include <algorithm>
 #include <numeric>
 #include <algorithm>
@@ -185,6 +186,20 @@ void Map::addBomb(Bomb* bomb, glm::ivec2 pos) {
 	bomb->getTransform().setPosition(glm::vec3(pos.x, 0, pos.y));
 	bombs[pos] = bomb;
 }
+
+void Map::addBonus(ObjectPerk* bonus, glm::ivec2 pos) {
+	bonuses[pos] = bonus;
+}
+
+ObjectPerk::Type Map::pickUpBonus(glm::ivec2 pos){
+	ObjectPerk::Type type = ObjectPerk::Type::None;
+	if (bonuses[pos] != nullptr){
+		type = bonuses[pos]->getType();
+	}	
+	bonuses.erase(bonuses.find(pos)); 
+
+	return type;
+}
 	
 void Map::draw() {	
 	for (auto player : players) {
@@ -195,6 +210,11 @@ void Map::draw() {
 	for (auto bomb : bombs) {
 		if (bomb.second != nullptr)
 			bomb.second->draw();
+	}
+
+	for (auto bonus : bonuses) {
+		if (bonus.second != nullptr)
+			bonus.second->draw();
 	}
 
 	mapActor.draw();
@@ -217,6 +237,7 @@ void Map::update(float deltaTime) {
 		if (bomb.second != nullptr)
 			bomb.second->update(deltaTime);
 	}
+
 
 	cerr << "Map Updated" << endl;
 }

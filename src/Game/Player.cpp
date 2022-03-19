@@ -35,6 +35,23 @@ void Player::setBomb(glm::ivec2 coord){
 
 void Player::update(float deltaTime) {
 	glm::vec3 pos = m_transform.getPosition();
+	ObjectPerk::Type type = map->pickUpBonus(glm::ivec2(pos.x,pos.z));
+	if (type != ObjectPerk::Type::None){
+		switch (type)
+		{
+		case ObjectPerk::Type::Count:
+			this->bombCount++;
+			break;
+		case ObjectPerk::Type::Range:
+			this->bombRange++;
+			break;
+		case ObjectPerk::Type::Speed:
+			this->speed++;
+			break;
+		}
+	}
+
+	
 	if (pos.x > x) pos.x += 0.9f;
 	if (pos.z > z) pos.z += 0.9f;
 
@@ -96,3 +113,12 @@ void Player::loadPosRot(vec3 pos, vec3 rot) {
 	m_transform.setPosition(pos);
 	m_transform.setRotation(rot);
 }
+
+void Player::upBombCount(){
+	this->bombCount+=1;
+}
+
+void Player::upBombRange(){
+	this->bombRange+=1;
+}
+

@@ -33,4 +33,8 @@ public:
 	void setBomb(glm::ivec2);
 
 	void update(float deltaTime);
+
+	void upBombCount();
+
+	void upBombRange();
 };
