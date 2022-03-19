@@ -182,10 +182,24 @@ void Map::addPlayer(Player* player) {
 	players.push_back(player);
 	glm::ivec3 posn = player->getTransform().getPosition();
 	glm::ivec2 pos = glm::ivec2(posn.x,posn.z);
-	if (walls[pos] != nullptr && walls[pos]->getType() != Wall::Type::Metal){
+	glm::ivec2 pos1 = glm::ivec2(posn.x+1,posn.z);
+	glm::ivec2 pos2 = glm::ivec2(posn.x,posn.z+1);
+	glm::ivec2 pos3 = glm::ivec2(posn.x-1,posn.z);
+	glm::ivec2 pos4 = glm::ivec2(posn.x,posn.z-1);
+	std::vector<glm::ivec2> positions;
+	positions.push_back(pos);
+	positions.push_back(pos1);
+	positions.push_back(pos2);
+	positions.push_back(pos3);
+	positions.push_back(pos4);
+	for (glm::ivec2 pos : positions){
+		if (walls[pos] != nullptr && walls[pos]->getType() != Wall::Type::Metal){
 		delete walls[pos];
 		walls[pos]=nullptr;
 	}
+	}
+	
+
 		
 }
 

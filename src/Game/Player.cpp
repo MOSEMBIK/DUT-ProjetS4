@@ -4,8 +4,11 @@
 using namespace std;
 using namespace glm;
 
-Player::Player(Map* map) : Actor(map,"assets/models/Bomber.obj") {
+Player::Player(Map* map, glm::ivec2 pos) : Actor(map,"assets/models/Bomber.obj") {
 	this->m_materials[0].setDiffuseColor(glm::vec3(rand()%100/100.0f, rand()%100/100.0f, rand()%100/100.0f));
+	m_transform.setPosition(glm::ivec3(pos.x,0,pos.y));
+	this-> x = pos.x;
+	this-> z = pos.y;
 }
 
 Player::Player(Map* map, string& data) : Actor(map,"assets/models/Bomber.obj") {

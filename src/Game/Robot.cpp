@@ -4,7 +4,7 @@
 using std::cerr;
 using std::endl;
 
-Robot::Robot(Map* map) : Player(map) {
+Robot::Robot(Map* map, glm::ivec2 pos) : Player(map, pos) {
 	this->mapSize = map->getSize() - 1;
 	this->x = rand() % mapSize;
 	this->z = rand() % mapSize;
