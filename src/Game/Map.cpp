@@ -180,6 +180,13 @@ void Map::addActor(Actor* actor) {
 
 void Map::addPlayer(Player* player) {
 	players.push_back(player);
+	glm::ivec3 posn = player->getTransform().getPosition();
+	glm::ivec2 pos = glm::ivec2(posn.x,posn.z);
+	if (walls[pos] != nullptr && walls[pos]->getType() != Wall::Type::Metal){
+		delete walls[pos];
+		walls[pos]=nullptr;
+	}
+		
 }
 
 void Map::addBomb(Bomb* bomb, glm::ivec2 pos) {

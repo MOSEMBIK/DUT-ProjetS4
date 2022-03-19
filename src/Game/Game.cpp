@@ -335,8 +335,9 @@ void Game::setState(GameState state)
 			map->addPlayer(robot);
 		}
 		Human* human = new Human(map);
-		human->getTransform().setPosition(vec3(2.0f, 0.0f, 2.0f));
+		human->getTransform().setPosition(vec3(1.0f, 0.0f, 1.0f));
 		map->addPlayer(human);
+		map->calculateWallMesh();
 
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
 		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
