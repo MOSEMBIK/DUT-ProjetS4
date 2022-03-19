@@ -8,6 +8,26 @@ Player::Player(Map* map) : Actor(map,"assets/models/Bomber.obj") {
 	this->m_materials[0].setDiffuseColor(glm::vec3(rand()%100/100.0f, rand()%100/100.0f, rand()%100/100.0f));
 }
 
+Player::Player(Map* map, string& data) : Actor(map,"assets/models/Bomber.obj") {
+	vector<string> playerData;
+	for (int i = 0; i < (int)data.size(); i++) {
+		if (data[i] == ',') {
+			playerData.push_back(data.substr(0, i));
+			data = data.substr(i + 1, data.size() - i - 1);
+			i = 0;
+		}
+	} playerData.push_back(data);
+
+	m_transform.setPosition(vec3(stof(playerData[0]), stof(playerData[1]), stof(playerData[2])));
+	m_transform.setEulerAngle(vec3(stof(playerData[3]), stof(playerData[4]), stof(playerData[5])));
+
+	this->color = vec3(stof(playerData[6]), stof(playerData[7]), stof(playerData[8]));
+	this->m_materials[0].setDiffuseColor(color);
+	this->speed = stof(playerData[9]);
+	this->bombRange = stoi(playerData[10]);
+	this->id = stoi(playerData[11]);
+}
+
 void Player::setBomb(glm::ivec2 coord){
     map->addBomb( new Bomb(map, glm::vec3(0.0f,0.0f,0.5f)),    coord );
 	cerr << "Fire is in the hole !" << endl;
@@ -45,32 +65,6 @@ void Player::update(float deltaTime) {
 		targetRotation = glm::quat(glm::vec3(0, glm::radians(-90.0f), 0));
 	}
 	m_transform.setRotation(glm::slerp(m_transform.getRotation(), targetRotation, 6.0f / 60.0f));
-}
-
-Player::Player(Map* map) : Actor(map,"assets/models/Bomber.obj"),
-	color(glm::vec3(rand()%100/100.0f, rand()%100/100.0f, rand()%100/100.0f))
-{
-	this->m_materials[0].setDiffuseColor(color);
-}
-
-Player::Player(Map* map, string& data) : Actor(map,"assets/models/Bomber.obj") {
-	vector<string> playerData;
-	for (int i = 0; i < (int)data.size(); i++) {
-		if (data[i] == ',') {
-			playerData.push_back(data.substr(0, i));
-			data = data.substr(i + 1, data.size() - i - 1);
-			i = 0;
-		}
-	} playerData.push_back(data);
-
-	m_transform.setPosition(vec3(stof(playerData[0]), stof(playerData[1]), stof(playerData[2])));
-	m_transform.setEulerAngle(vec3(stof(playerData[3]), stof(playerData[4]), stof(playerData[5])));
-
-	this->color = vec3(stof(playerData[6]), stof(playerData[7]), stof(playerData[8]));
-	this->m_materials[0].setDiffuseColor(color);
-	this->speed = stof(playerData[9]);
-	this->bombRange = stoi(playerData[10]);
-	this->id = stoi(playerData[11]);
 }
 
 string Player::getData() const {
