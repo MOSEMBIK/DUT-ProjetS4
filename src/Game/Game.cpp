@@ -335,8 +335,14 @@ void Game::setState(GameState state)
 			robot->getTransform().setPosition(vec3(1.0f, 0.0f, 1.0f) * float(rand()%m_gameSettings[0]));
 			map->addPlayer(robot);
 		}*/
-		Human* human = new Human(map, ivec2(3.0f,3.0f));
-		map->addPlayer(human);
+		for (int i = 0; i < m_gameSettings[1]; i++){
+			glm::ivec2 pos = map->choosePos(m_gameSettings[0]);
+			if (pos != glm::ivec2(-1,-1)){
+				Human* human = new Human(map, glm::ivec2(pos.x,pos.y));
+				map->addPlayer(human);
+			}
+		}
+		
 		map->calculateWallMesh();
 
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));

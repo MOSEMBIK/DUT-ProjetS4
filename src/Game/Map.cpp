@@ -221,6 +221,10 @@ ObjectPerk::Type Map::pickUpBonus(glm::ivec2 pos){
 
 	return type;
 }
+
+glm::ivec2 choosePos(int length){
+	// TODO : Choisir Position de spawn du joueur
+}
 	
 void Map::draw() {	
 	for (auto player : players) {
