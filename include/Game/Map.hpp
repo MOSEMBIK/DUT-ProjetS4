@@ -56,7 +56,7 @@ public:
 	inline void removePlayer(Player* play) { players.remove(play); }
 	ObjectPerk::Type pickUpBonus(glm::ivec2 pos);
 
-	glm::ivec2 choosePos(int length);
+	glm::ivec2 choosePos(int iterateur = 0);
 
 	//void removePlayer()
 

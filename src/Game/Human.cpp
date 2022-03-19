@@ -1,9 +1,7 @@
 #include <Game/Human.hpp>
 #include <Game/Map.hpp>
 
-Human::Human(Map* map, glm::ivec2 pos) : Player(map, pos) {
-	this->mapSize = map->getSize() - 1;
-}
+Human::Human(Map* map, glm::ivec2 pos) : Player(map, pos) {}
 
 void Human::update(float deltaTime) {
 	glm::vec3 pos = m_transform.getPosition();

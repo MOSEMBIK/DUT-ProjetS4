@@ -7,6 +7,7 @@ using namespace glm;
 Player::Player(Map* map, glm::ivec2 pos) : Actor(map,"assets/models/Bomber.obj") {
 	this->m_materials[0].setDiffuseColor(glm::vec3(rand()%100/100.0f, rand()%100/100.0f, rand()%100/100.0f));
 	m_transform.setPosition(glm::ivec3(pos.x,0,pos.y));
+	this->mapSize = map->getSize() - 2;
 	this-> x = pos.x;
 	this-> z = pos.y;
 }

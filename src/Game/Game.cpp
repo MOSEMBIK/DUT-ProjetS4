@@ -335,12 +335,11 @@ void Game::setState(GameState state)
 			robot->getTransform().setPosition(vec3(1.0f, 0.0f, 1.0f) * float(rand()%m_gameSettings[0]));
 			map->addPlayer(robot);
 		}*/
-		for (int i = 0; i < m_gameSettings[1]; i++){
-			glm::ivec2 pos = map->choosePos(m_gameSettings[0]);
-			if (pos != glm::ivec2(-1,-1)){
-				Human* human = new Human(map, glm::ivec2(pos.x,pos.y));
-				map->addPlayer(human);
-			}
+
+		// Placement des Players sur à côté des bords de la map
+		map->addPlayer(new Human(map, map->choosePos(0)));
+		for (int i = 1; i < m_gameSettings[1]; i++){
+			map->addPlayer(new Robot(map, map->choosePos(i)));
 		}
 		
 		map->calculateWallMesh();
@@ -357,6 +356,7 @@ void Game::setState(GameState state)
 	case GameState::SOLO_GAME: {
 		cerr << "Resuming Singleplayer Game..." << endl; float time = glfwGetTime();
 		/* Load labels */
+		labels.push_back(new Label(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), "Hey...", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 
 		cerr << "Resumed Singleplayer Game in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;

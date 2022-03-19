@@ -220,8 +220,36 @@ ObjectPerk::Type Map::pickUpBonus(glm::ivec2 pos) {
 	return type;
 }
 
-glm::ivec2 choosePos(int length){
-	// TODO : Choisir Position de spawn du joueur
+/**
+ * @brief Renvoie une position possible sur la map collée à la bordure de la map
+ * 
+ * @param int
+ * 
+ * @return glm::ivec2
+ */
+glm::ivec2 Map::choosePos(int iterateur) {
+	glm::ivec2 pos(1, 1);
+	int diviseur = iterateur / 4 + 1;
+	int size = (mapSize - 3);
+
+	switch (iterateur % 4) {
+	case 0:
+		pos.y += size - size / diviseur;
+		break;
+	case 1:
+		pos.x += size / diviseur;
+		break;
+	case 2:
+		pos = glm::ivec2(size+1, size+1);
+		pos.y -= size - size / diviseur;
+		break;
+	case 3:
+		pos = glm::ivec2(1, size+1);
+		pos.x += size - size / diviseur;
+		break;
+	}
+
+	return pos;
 }
 	
 void Map::draw() {	
