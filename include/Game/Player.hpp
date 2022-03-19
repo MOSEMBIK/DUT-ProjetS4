@@ -26,7 +26,7 @@ public:
 
 	std::string getData() const; // Fonction qui retourne les données du joueur sous forme de string
 	std::string getPosRot() const; // Retourne les positions et les rotations du joueur (pour le serveur)
-	void loadPosRot(glm::vec3 pos, glm::vec3 rot); // Charge les positions et les rotations du joueur (pour le client)
+	void loadPosRot(glm::vec3 pos, glm::vec3 rot, int x, int z); // Charge les positions et les rotations du joueur (pour le client)
 
 	inline float getSpeed() const { return speed; }
 
@@ -34,7 +34,4 @@ public:
 
 	void update(float deltaTime);
 
-	void upBombCount();
-
-	void upBombRange();
 };

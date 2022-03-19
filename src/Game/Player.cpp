@@ -36,7 +36,7 @@ void Player::setBomb(glm::ivec2 coord){
 void Player::update(float deltaTime) {
 	glm::vec3 pos = m_transform.getPosition();
 	ObjectPerk::Type type = map->pickUpBonus(glm::ivec2(pos.x,pos.z));
-	if (type != ObjectPerk::Type::None){
+	if (type != ObjectPerk::Type::None) {
 		switch (type)
 		{
 		case ObjectPerk::Type::Count:
@@ -48,19 +48,15 @@ void Player::update(float deltaTime) {
 		case ObjectPerk::Type::Speed:
 			this->speed++;
 			break;
+		default:
+			break;
 		}
 	}
-
 	
 	if (pos.x > x) pos.x += 0.9f;
 	if (pos.z > z) pos.z += 0.9f;
 
 	if (int(pos.x) == x && int(pos.z) == z) {
-		if (movement != '0') {
-			std::cerr << "destPos: " << (int)(pos.x) << " " << (int)(pos.z) << std::endl;
-			std::cerr << "my destPos: " << x << " " << z << std::endl;
-			//m_transform.setPosition(glm::vec3(x, 0.0f, z));
-		}
 		movement = '0';
 	}
 
@@ -105,20 +101,14 @@ string Player::getPosRot() const {
 	return string(
 		to_string(id) + "," +
 		to_string(pos.x) + "," + to_string(pos.y) + "," + to_string(pos.z) + "," +
-		to_string(rot.x) + "," + to_string(rot.y) + "," + to_string(rot.z)
+		to_string(rot.x) + "," + to_string(rot.y) + "," + to_string(rot.z) + "," +
+		to_string(x) + "," + to_string(z)
 	);
 }
 
-void Player::loadPosRot(vec3 pos, vec3 rot) {
+void Player::loadPosRot(vec3 pos, vec3 rot, int x, int z) {
 	m_transform.setPosition(pos);
 	m_transform.setRotation(rot);
+	this->x = x;
+	this->z = z;
 }
-
-void Player::upBombCount(){
-	this->bombCount+=1;
-}
-
-void Player::upBombRange(){
-	this->bombRange+=1;
-}
-

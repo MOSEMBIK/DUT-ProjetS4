@@ -617,9 +617,6 @@ bool Game::onUpdate(AppUpdateEvent& e)
 		} break;
 
 		case GameState::SOLO_GAME: {
-			// if (rand() % 60 == 1) {
-			// 	map->addBomb( new Bomb(map, vec3(0.0f,0.0f,0.5f)),	ivec2(rand()%(map->getSize() - 2) + 1,rand()%(map->getSize() - 2) + 1));
-			// }
 			map->update(m_deltaTime);
 			map->draw();
 			if (keyPressed == GLFW_KEY_ESCAPE && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE) {

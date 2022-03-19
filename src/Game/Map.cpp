@@ -123,9 +123,6 @@ void Map::loadPosRot(const std::string& posRotData) {
 		}
 	}
 	for (auto player : playersData) {
-		player = player.substr(0, player.size() - 2);
-		cerr << "Updating player " << player << endl;
-
 		vector<float> playerData;
 		for (int i = 0; i < (int)player.size(); i++) {
 			if (player[i] == ',') {
@@ -138,7 +135,8 @@ void Map::loadPosRot(const std::string& posRotData) {
 			if (p != nullptr && p->getId() == int(playerData[0])) {
 				p->loadPosRot(
 					vec3(playerData[1], playerData[2], playerData[3]),
-					vec3(playerData[4], playerData[5], playerData[6])
+					vec3(playerData[4], playerData[5], playerData[6]),
+					playerData[7], playerData[8]
 				);
 				break;
 			}
@@ -191,13 +189,13 @@ void Map::addBonus(ObjectPerk* bonus, glm::ivec2 pos) {
 	bonuses[pos] = bonus;
 }
 
-ObjectPerk::Type Map::pickUpBonus(glm::ivec2 pos){
+ObjectPerk::Type Map::pickUpBonus(glm::ivec2 pos) {
 	ObjectPerk::Type type = ObjectPerk::Type::None;
-	if (bonuses[pos] != nullptr){
+	if (bonuses[pos] != nullptr) {
 		type = bonuses[pos]->getType();
-	}	
-	bonuses.erase(bonuses.find(pos)); 
-
+		delete bonuses[pos];
+		bonuses[pos] = nullptr;
+	}
 	return type;
 }
 	
@@ -221,25 +219,17 @@ void Map::draw() {
 }
 
 void Map::update(float deltaTime) {	
-	cerr << "Updating Map..." << endl;
-
-	cerr << "Generate edges map..." << endl;
 	genEdgesMap();
 
 	for (auto player : players) {
-		cerr << "Updating Players..." << endl;
 		if (player != nullptr)
 			player->update(deltaTime);
 	}
 
 	for (auto bomb : bombs) {
-		cerr << "Updating Bombs..." << endl;
 		if (bomb.second != nullptr)
 			bomb.second->update(deltaTime);
 	}
-
-
-	cerr << "Map Updated" << endl;
 }
 
 
@@ -247,8 +237,8 @@ void Map::update(float deltaTime) {
  * @brief Quand une bombe explose sur la map, onExplosion crée un tableau des cases touchées. 
  * Ensuite, elle vérifie si un joueur se situe dans une de ses cases
  * 
- * @param x 
- * @param z 
+ * @param x
+ * @param z
  * @param range 
  */
 void Map::onExplosion(int x, int z, int range) {
