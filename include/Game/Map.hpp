@@ -37,6 +37,12 @@ public:
 	Map();
 	~Map();
 
+	std::string getData() const; // Fonction qui retourne les données de la map sous forme de string
+	void loadMap(const std::string& mapData); // Fonction qui charge la map à partir d'un string
+
+	std::string getPosRot() const; // Retourne les positions et les rotations des joueurs
+	void loadPosRot(const std::string& posRotData); // Charge les positions et les rotations des joueurs
+
 	void generateMap(int size = 13, int wallPercentage = 90);
 	void addActor(Actor* actor);
 	void addPlayer(Player* player);

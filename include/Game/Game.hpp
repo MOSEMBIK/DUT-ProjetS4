@@ -13,9 +13,16 @@
 #include <Engine/Event/KeyEvent.hpp>
 #include <Engine/Event/ApplicationEvent.hpp>
 
+#include <Multiplayer/Server.hpp>
+#include <Multiplayer/Client.hpp>
+
 #include <glm/vec2.hpp>
 
-enum GameState { MAIN_MENU, OPTIONS, SINGLEPLAYER, GAME_LOADING, PLAYING, PAUSED };
+enum GameState {
+	MAIN_MENU, OPTIONS,
+	SOLO_MENU, SOLO_GAME, SOLO_LOADING, SOLO_PAUSED,
+	MULTI_MENU, MULTI_CREATE_SERVER, MULTI_LOADING_SERVER, MULTI_JOIN_SERVER, MULTI_GAME_CLIENT, MULTI_GAME_SERVER
+};
 
 void onKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mods);
 
@@ -48,6 +55,13 @@ private:
 
     // Singleton
     static Game* m_instance;
+
+	// Multiplayer
+	Server* m_server;
+	Client* m_client;
+	std::string m_mapInfo;
+	std::string m_updatePosRot;
+
 
     bool init();
     bool loadRequiredResources();
@@ -138,4 +152,18 @@ public:
 	 * @param state 
 	 */
     void setState(GameState state);
+
+	/**
+	 * @brief update map data to load
+	 * 
+	 * @param data 
+	 */
+	inline void loadMap(const std::string& data) { m_mapInfo = data; }
+
+	/**
+	 * @brief update map data for players
+	 * 
+	 * @param data 
+	 */
+	inline void updatePosRot(const std::string& data) { m_updatePosRot = data; }
 };
