@@ -10,7 +10,7 @@ private:
 	bool spacePressed = false;
 
 public:
-	Human(Map* map);
+	Human(Map* map, glm::ivec2 pos);
   	virtual ~Human() {}
 
 	void update(float deltaTime);

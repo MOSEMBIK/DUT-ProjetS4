@@ -56,6 +56,8 @@ public:
 	inline void removePlayer(Player* play) { players.remove(play); }
 	ObjectPerk::Type pickUpBonus(glm::ivec2 pos);
 
+	glm::ivec2 choosePos(int length);
+
 	//void removePlayer()
 
 	inline int getSize() { return mapSize; }

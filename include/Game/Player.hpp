@@ -20,7 +20,7 @@ protected:
 	int x, z;
 
 public:
-	Player(Map* map);
+	Player(Map* map, glm::ivec2 pos);
 	Player(Map* map, std::string& data);
 	virtual ~Player() {};
 

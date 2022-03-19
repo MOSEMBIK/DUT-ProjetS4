@@ -329,14 +329,20 @@ void Game::setState(GameState state)
 		map->generateMap(m_gameSettings[0], m_gameSettings[2]);
 		
 		// Test de robots
+		/*
 		for (int i=0; i < m_gameSettings[4]; i++) {
 			Robot* robot = new Robot(map);
 			robot->getTransform().setPosition(vec3(1.0f, 0.0f, 1.0f) * float(rand()%m_gameSettings[0]));
 			map->addPlayer(robot);
+		}*/
+		for (int i = 0; i < m_gameSettings[1]; i++){
+			glm::ivec2 pos = map->choosePos(m_gameSettings[0]);
+			if (pos != glm::ivec2(-1,-1)){
+				Human* human = new Human(map, glm::ivec2(pos.x,pos.y));
+				map->addPlayer(human);
+			}
 		}
-		Human* human = new Human(map);
-		human->getTransform().setPosition(vec3(1.0f, 0.0f, 1.0f));
-		map->addPlayer(human);
+		
 		map->calculateWallMesh();
 
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
@@ -503,11 +509,12 @@ void Game::setState(GameState state)
 		server_map->generateMap(m_gameSettings[0], m_gameSettings[2]);
 		
 		// Test de robots
+		/*
 		for (int i=0; i < m_gameSettings[4]; i++) {
 			Robot* robot = new Robot(server_map);
 			robot->getTransform().setPosition(vec3(1.0f, 0.0f, 1.0f) * float(rand()%m_gameSettings[0]));
 			server_map->addPlayer(robot);
-		}
+		}*/
 
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
 		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));

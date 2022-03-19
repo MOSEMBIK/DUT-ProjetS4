@@ -9,7 +9,7 @@ private:
 	int case_of_t;
 
 public:
-	Robot(Map* map);
+	Robot(Map* map, glm::ivec2 pos);
 	virtual ~Robot() {}
 
 	void update(float deltaTime);
