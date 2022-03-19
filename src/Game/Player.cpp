@@ -64,7 +64,7 @@ Player::Player(Map* map, string& data) : Actor(map,"assets/models/Bomber.obj") {
 	} playerData.push_back(data);
 
 	m_transform.setPosition(vec3(stof(playerData[0]), stof(playerData[1]), stof(playerData[2])));
-	m_transform.setRotation(vec3(stof(playerData[3]), stof(playerData[4]), stof(playerData[5])));
+	m_transform.setEulerAngle(vec3(stof(playerData[3]), stof(playerData[4]), stof(playerData[5])));
 
 	this->color = vec3(stof(playerData[6]), stof(playerData[7]), stof(playerData[8]));
 	this->m_materials[0].setDiffuseColor(color);
@@ -75,7 +75,7 @@ Player::Player(Map* map, string& data) : Actor(map,"assets/models/Bomber.obj") {
 
 string Player::getData() const {
 	vec3 pos = m_transform.getPosition();
-	auto rot = m_transform.getRotation();
+	vec3 rot = m_transform.getEuleurAngles();
 
 	return string(
 		"[" +
@@ -89,7 +89,7 @@ string Player::getData() const {
 
 string Player::getPosRot() const {
 	vec3 pos = m_transform.getPosition();
-	auto rot = m_transform.getRotation();
+	vec3 rot = m_transform.getEuleurAngles();
 
 	return string(
 		to_string(id) + "," +
