@@ -6,8 +6,9 @@
 class Human: public Player
 {
 private:
-	int mapSize;
-	int x, z;
+	unsigned int keyPressed = 0;
+	bool spacePressed = false;
+
 public:
 	Human(Map* map);
   	virtual ~Human() {}

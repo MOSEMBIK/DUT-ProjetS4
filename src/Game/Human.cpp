@@ -3,32 +3,63 @@
 
 Human::Human(Map* map) : Player(map) {
 	this->mapSize = map->getSize() - 1;
-	this->x = rand() % mapSize;
-	this->z = rand() % mapSize;
+	this->x = m_transform.getPosition().x;
+	this->z = m_transform.getPosition().z;
 }
 
 void Human::update(float deltaTime) {
-	Transform& transform = getTransform();
+	glm::vec3 pos = m_transform.getPosition();
 
-	glm::quat targetRotation = transform.getRotation();
-    if (glfwGetKey(m_window->getWindow(), GLFW_KEY_RIGHT) == GLFW_PRESS){
-        transform.translate(glm::vec3(1.0f, 0, 0) * deltaTime * (2 + getSpeed()));
-		targetRotation = glm::quat(glm::vec3(0, glm::radians(180.0f), 0));
-    }
-	else if (glfwGetKey(m_window->getWindow(), GLFW_KEY_LEFT) == GLFW_PRESS) {
-		transform.translate(glm::vec3(-1.0f, 0, 0) * deltaTime * (2 + getSpeed()));
-		targetRotation = glm::quat(glm::vec3(0, 0, 0));
+	unsigned int oldKeyPressed = keyPressed;
+	keyPressed = 0;
+	if (glfwGetKey(m_window->getWindow(), GLFW_KEY_RIGHT) == GLFW_PRESS)
+		keyPressed = GLFW_KEY_RIGHT;
+	if (glfwGetKey(m_window->getWindow(), GLFW_KEY_LEFT) == GLFW_PRESS)
+		keyPressed = GLFW_KEY_LEFT;
+	if (glfwGetKey(m_window->getWindow(), GLFW_KEY_DOWN) == GLFW_PRESS)
+		keyPressed = GLFW_KEY_DOWN;
+	if (glfwGetKey(m_window->getWindow(), GLFW_KEY_UP) == GLFW_PRESS)
+		keyPressed = GLFW_KEY_UP;
+	
+	switch (oldKeyPressed) {
+	case GLFW_KEY_RIGHT:
+		if (movement != 'U' && movement != 'D' && map->isReachable(glm::ivec2(pos.x + 1, pos.z))) {
+			movement = 'R';
+        	x = pos.x + 1;
+			z = pos.z;
+    	}
+		break;
+	case GLFW_KEY_LEFT:
+		if (movement != 'U' && movement != 'D' && map->isReachable(glm::ivec2(pos.x - 0.1f, pos.z))) {
+			movement = 'L';
+			x = pos.x - 0.1f;
+			z = pos.z;
+		}
+		break;
+	case GLFW_KEY_DOWN:
+		if (movement != 'R' && movement != 'L' && map->isReachable(glm::ivec2(pos.x, pos.z + 1))) {
+			movement = 'D';
+			x = pos.x;
+			z = pos.z + 1;
+		}
+		break;
+	case GLFW_KEY_UP:
+		if (movement != 'R' && movement != 'L' && map->isReachable(glm::ivec2(pos.x, pos.z - 0.1f))) {
+			movement = 'U';
+			x = pos.x;
+			z = pos.z - 0.1f;
+		}
+		break;
 	}
-	else if (glfwGetKey(m_window->getWindow(), GLFW_KEY_DOWN) == GLFW_PRESS) {
-		transform.translate(glm::vec3(0, 0, 1.0f) * deltaTime * (2 + getSpeed()));
-		targetRotation = glm::quat(glm::vec3(0, glm::radians(90.0f), 0));
+
+	if (spacePressed && glfwGetKey(m_window->getWindow(), GLFW_KEY_SPACE) == GLFW_RELEASE) {
+		if (pos.x > x) pos.x += 0.9f;
+		if (pos.z > z) pos.z += 0.9f;
+		setBomb(glm::ivec2(pos.x, pos.z));
+		spacePressed = false;
 	}
-	else if (glfwGetKey(m_window->getWindow(), GLFW_KEY_UP) == GLFW_PRESS) {
-		transform.translate(glm::vec3(0, 0, -1.0f) * deltaTime * (2 + getSpeed()));
-		targetRotation = glm::quat(glm::vec3(0, glm::radians(-90.0f), 0));
-	}
-    if (glfwGetKey(m_window->getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS) {
-        this->setBomb(glm::ivec2(m_transform.getPosition().x, m_transform.getPosition().z));
-    } 
-	transform.setRotation(glm::slerp(transform.getRotation(), targetRotation, 6.0f / 60.0f));
+	if (glfwGetKey(m_window->getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
+		spacePressed = true;
+
+	Player::update(deltaTime);
 }
