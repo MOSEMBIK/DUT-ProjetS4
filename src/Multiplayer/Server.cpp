@@ -3,9 +3,20 @@
 
 using namespace std;
 
+int Server::ServerClient::m_current_id = 2022000;
+
 Server::Server(unsigned short port) : m_context {}, m_clients {},
 	m_acceptor {m_context, asio::ip::tcp::endpoint {asio::ip::tcp::v4(), port}}
 {
+}
+
+void Server::stop() {
+	for (auto client : m_clients)
+		client->stop();
+	// Fermeture du socket.
+	m_acceptor.close();
+	// Arrêt du thread.
+	//m_thread.~thread();
 }
 
 void Server::start() {
@@ -73,59 +84,45 @@ void Server::process_join(ServerClientPtr client, const string & data) {
 	client->write(map);
 }
 
-void Server::process_private(ServerClientPtr client, const string & data) {
-	int delimiterPosition = data.find(' ');
-	string recipientName = data.substr(0, delimiterPosition);
-	string message = data.substr(delimiterPosition + 1, data.length() - 1);
-
-	ServerClientPtr recipientClient = find(recipientName);
-	if(recipientClient != nullptr)
-		recipientClient->write("#private " + client->alias() + " " + message);
+void Server::process_move(ServerClientPtr client, const string & data) {
+	int id = client->getId();
+	int x = stoi(data.substr(0, data.find(",")));
+	int z = stoi(data.substr(data.find(",") + 1));
+	m_map.movePlayer(id, x, z);
 }
 
-void Server::process_list(ServerClientPtr client, const string & data) {
-	UNUSED(data);
-	string m = "#list ";
-	for (ServerClientPtr client: m_clients) {
-		m += client->alias() + " ";
-		cerr << "-> [" << client->alias() << "]" << endl;
+void Server::process_bomb(ServerClientPtr client, const string & data) {
+	int id = client->getId();
+	string player = m_map.getPlayerData(id);
+	if (player != "") {
+		int x = stoi(data.substr(0, data.find(",")));
+		int z = stoi(data.substr(data.find(",") + 1));
+
+		vector<string> playerData;
+		for (int i = 0; i < (int)player.size(); i++) {
+			if (player[i] == ',') {
+				playerData.push_back(player.substr(0, i));
+				player = player.substr(i + 1, player.size() - i - 1);
+				i = 0;
+			}
+		} playerData.push_back(player);
+
+		m_map.addBomb(
+			new Bomb(
+				&m_map,
+				glm::vec3(stof(playerData[6]), stof(playerData[7]), stof(playerData[8])),
+				stoi(playerData[10])
+			),
+			glm::ivec2(x,z)
+		);
+		broadcast("#bomb " + to_string(x) + "," + to_string(z) + "," + playerData[6] + "," + playerData[7] + "," + playerData[8] + "," + playerData[10]);
 	}
-	m.pop_back();
-	client->write(m);
 }
 
-void Server::process_amogus(ServerClientPtr client, const string & data) {
-	UNUSED(client);
-	UNUSED(data);
-	broadcast("⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣤⣤⣤⣤⣶⣦⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀\n"
-			"⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⡿⠛⠉⠙⠛⠛⠛⠛⠻⢿⣿⣷⣤⡀⠀⠀⠀⠀⠀\n"
-			"⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⠋⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⠈⢻⣿⣿⡄⠀⠀⠀⠀\n"
-			"⠀⠀⠀⠀⠀⠀⠀⣸⣿⡏⠀⠀⠀⣠⣶⣾⣿⣿⣿⠿⠿⠿⢿⣿⣿⣿⣄⠀⠀⠀\n"
-			"⠀⠀⠀⠀⠀⠀⠀⣿⣿⠁⠀⠀⢰⣿⣿⣯⠁⠀⠀⠀⠀⠀⠀⠀⠈⠙⢿⣷⡄⠀\n"
-			"⠀⠀⣀⣤⣴⣶⣶⣿⡟⠀⠀⠀⢸⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣷⠀\n"
-			"⠀⢰⣿⡟⠋⠉⣹⣿⡇⠀⠀⠀⠘⣿⣿⣿⣿⣷⣦⣤⣤⣤⣶⣶⣶⣶⣿⣿⣿⠀\n"
-			"⠀⢸⣿⡇⠀⠀⣿⣿⡇⠀⠀⠀⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⠀\n"
-			"⠀⣸⣿⡇⠀⠀⣿⣿⡇⠀⠀⠀⠀⠀⠉⠻⠿⣿⣿⣿⣿⡿⠿⠿⠛⢻⣿⡇⠀⠀\n"
-			"⠀⣿⣿⠁⠀⠀⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣧⠀⠀\n"
-			"⠀⣿⣿⠀⠀⠀⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⠀⠀\n"
-			"⠀⣿⣿⠀⠀⠀⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⠀⠀\n"
-			"⠀⢿⣿⡆⠀⠀⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⡇⠀⠀\n"
-			"⠀⠸⣿⣧⡀⠀⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⠃⠀⠀\n"
-			"⠀⠀⠛⢿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⣰⣿⣿⣷⣶⣶⣶⣶⠶⠀⢠⣿⣿⠀⠀⠀\n"
-			"⠀⠀⠀⠀⠀⠀⠀⣿⣿⠀⠀⠀⠀⠀⣿⣿⡇⠀⣽⣿⡏⠁⠀⠀⢸⣿⡇⠀⠀⠀\n"
-			"⠀⠀⠀⠀⠀⠀⠀⣿⣿⠀⠀⠀⠀⠀⣿⣿⡇⠀⢹⣿⡆⠀⠀⠀⣸⣿⠇⠀⠀⠀\n"
-			"⠀⠀⠀⠀⠀⠀⠀⢿⣿⣦⣄⣀⣠⣴⣿⣿⠁⠀⠈⠻⣿⣿⣿⣿⡿⠏⠀⠀⠀⠀\n"
-			"⠀⠀⠀⠀⠀⠀⠀⠈⠛⠻⠿⠿⠿⠿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀");
-}
 
 void Server::process_message(ServerClientPtr client, const string & data) {
-	string m = "<b>" + client->alias() + "</b> : " + data;
+	string m = client->alias() + " : " + data;
 	broadcast (m);
-}
-
-void Server::process_quit(ServerClientPtr client, const string & data) {
-	UNUSED(data);
-	client->stop();
 }
 
 void Server::broadcast(const string & message, ServerClientPtr emitter) {
@@ -134,12 +131,17 @@ void Server::broadcast(const string & message, ServerClientPtr emitter) {
 			client->write(message);
 }
 
+void Server::sendList(const string & message) {
+	string list = "#playersList " + message + ";";
+	for (ServerClientPtr client: this->m_clients)
+		list += client->alias() + ",";
+	broadcast(list);
+}
+
 const map<string, Server::Processor> Server::PROCESSORS {
 	{"/join", &Server::process_join},
-	{"/quit", &Server::process_quit},
-	{"/list", &Server::process_list},
-	{"/private", &Server::process_private},
-	{"/ඞ", &Server::process_amogus},
+	{"/move", &Server::process_move},
+	{"/bomb", &Server::process_bomb},
 };
 
 const string Server::INVALID_ALIAS		{"#error invalid_alias"};

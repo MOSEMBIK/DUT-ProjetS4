@@ -4,7 +4,7 @@
 using namespace std;
 
 Server::ServerClient::ServerClient (Server * server, Socket && socket)
-	: m_server {server}, m_socket {move(socket)}, m_active {false}
+	: m_server {server}, m_socket {move(socket)}, m_active {false}, m_id {m_current_id++}
 {
 }
 
@@ -34,12 +34,14 @@ void Server::ServerClient::start() {
 			}
 
 			self->m_alias = alias;
-			m_server->broadcast("#connected " + alias, self);
 			self->m_active = true;
+			self->write("#connected " + to_string(self->m_id));
 			self->read();
 		}
-		else
+		else {
+			m_server->broadcast("#disconnected " + to_string(self->m_id));
 			m_server->m_clients.remove(self);
+		}
 	});
 }
 
@@ -72,7 +74,6 @@ void Server::ServerClient::read() {
 		else {
 			m_server->broadcast("#disconnected " + self->alias(), self);
 			m_server->m_clients.remove(self);
-			m_server->process_quit(self, string {});
 		}
 	});
 }

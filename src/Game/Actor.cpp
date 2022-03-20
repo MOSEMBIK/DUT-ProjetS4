@@ -13,7 +13,7 @@
 
 using namespace std;
 
-int Actor::current_id;
+int Actor::current_id = 0;
 
 Actor::Actor(Map* map) : id(current_id++), m_window(Game::getInstance()->getMainWindow()), map(map) {}
 

@@ -1,6 +1,7 @@
 
 #include <Game/Map.hpp>
 #include <Game/Actor.hpp>
+#include <Game/Human.hpp>
 #include <Game/Player.hpp>
 #include <Game/ObjectPerk.hpp>
 #include <algorithm>
@@ -54,8 +55,26 @@ string Map::getData() const {
 	return data;
 }
 
-void Map::loadMap(const std::string& mapData) {
+void Map::loadMap(const std::string& mapData, int humanId) {
 	cerr << endl << "Loading map from string.." << endl; float time = glfwGetTime();
+
+	for (auto wall : walls) {
+		if (wall.second != nullptr)
+			delete wall.second;
+	} walls.clear();
+	for (auto bomb : bombs) {
+		if (bomb.second != nullptr)
+			delete bomb.second;
+	} bombs.clear();
+	for (auto player : players) {
+		if (player != nullptr)
+			delete player;
+	} players.clear();
+	for (auto bonus : bonuses) {
+		if (bonus.second != nullptr)
+			delete bonus.second;
+	} bonuses.clear();
+
 
 	// Parsing map size
 	int pos = mapData.find("|");
@@ -96,13 +115,16 @@ void Map::loadMap(const std::string& mapData) {
 	}
 	for (auto player : playersData) {
 		player = player.substr(1, player.size() - 2);
-		players.push_back(new Player(this, player));
+		if (humanId != stoi(player.substr(player.find_last_of(",") + 1, player.size())))
+			players.push_back(new Player(this, player));
+		else
+			players.push_back(new Human(this, player));
 	}
 
 	cerr << "Loaded map from string in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 }
 
-std::string Map::getPosRot() const {
+string Map::getPosRot() const {
 	string data = "#updatePosRot ";
 	for (auto player : players) {
 		if (player != nullptr)
@@ -111,8 +133,23 @@ std::string Map::getPosRot() const {
 	return data;
 }
 
+string Map::getPlayerData(int id) const {
+	for (auto player : players) {
+		if (player != nullptr && player->getId() == id)
+			return player->getData();
+	}
+	return "";
+}
+
+Player* Map::getPlayer(int id) const {
+	for (auto player : players) {
+		if (player != nullptr && player->getId() == id)
+			return player;
+	}
+	return nullptr;
+}
+
 void Map::loadPosRot(const std::string& posRotData) {
-	// Parsing players
 	string playersStr = posRotData;
 	vector<string> playersData;
 	for (int i=0; i < (int)playersStr.size(); i++) {
@@ -126,7 +163,7 @@ void Map::loadPosRot(const std::string& posRotData) {
 		vector<float> playerData;
 		for (int i = 0; i < (int)player.size(); i++) {
 			if (player[i] == ',') {
-				playerData.push_back(stof(player.substr(0, i)));
+				try { playerData.push_back(stof(player.substr(0, i))); } catch (...) {}
 				player = player.substr(i + 1, player.size() - i - 1);
 				i = 0;
 			}
@@ -140,6 +177,40 @@ void Map::loadPosRot(const std::string& posRotData) {
 				);
 				break;
 			}
+		}
+	}
+}
+
+void Map::loadBombs(const std::string& bombsData) {
+	string bombsStr = bombsData;
+	for (int i=0; i < (int)bombsStr.size(); i++) {
+		if (bombsStr[i] == ';') {
+			string bomb = bombsStr.substr(0, i);
+			vector<string> bombData;
+			for (int i=0; i < (int)bomb.size(); i++) {
+				if (bomb[i] == ',') {
+					bombData.push_back(bomb.substr(0, i));
+					bomb = bomb.substr(i + 1, bomb.size() - i - 1);
+					i = 0;
+				}
+			} bombData.push_back(bomb);
+			int x = stoi(bombData[0]);
+			int z = stoi(bombData[1]);
+			vec3 color = vec3(stof(bombData[2]), stof(bombData[3]), stof(bombData[4]));
+			float range = stof(bombData[5]);
+
+			addBomb(new Bomb(this, color, range), glm::ivec2(x, z));
+			bombsStr = bombsStr.substr(i + 1, bombsStr.size() - i - 1);
+			i = 0;
+		}
+	}
+}
+
+void Map::movePlayer(int id, int x, int z) {
+	for (auto player : players) {
+		if (player != nullptr && player->getId() == id) {
+			player->move(x, z);
+			return;
 		}
 	}
 }
@@ -192,13 +263,10 @@ void Map::addPlayer(Player* player) {
 	positions.push_back(pos4);
 	for (glm::ivec2 pos : positions){
 		if (walls[pos] != nullptr && walls[pos]->getType() != Wall::Type::Metal){
-		delete walls[pos];
-		walls[pos]=nullptr;
+			delete walls[pos];
+			walls[pos] = nullptr;
+		}
 	}
-	}
-	
-
-		
 }
 
 void Map::addBomb(Bomb* bomb, glm::ivec2 pos) {
@@ -271,7 +339,7 @@ void Map::draw() {
 	mapActor.draw();
 }
 
-void Map::update(float deltaTime) {	
+void Map::update(float deltaTime) {
 	genEdgesMap();
 
 	for (auto player : players) {

@@ -167,7 +167,7 @@ Game::~Game()
 
 void Game::setState(GameState state)
 {
-	cerr << "Set State" << endl;
+	cerr << endl;
 	for (auto image : images) { delete image; } images.clear();
 	for (auto button : buttons) { delete button; } buttons.clear();
 	for (auto label : labels) { delete label; } labels.clear();
@@ -179,14 +179,20 @@ void Game::setState(GameState state)
 	 */
 	case GameState::MAIN_MENU: {
 		cerr << "Loading main menu..." << endl; float time = glfwGetTime();
-		if (m_gameState == GameState::SOLO_LOADING) {
-			// Delete game content
-			if(map != nullptr)
-			{
-				delete map;
-				map = nullptr;
-			}
+		// Delete game content
+		if (map != nullptr) {
+			delete map;
+			map = nullptr;
 		}
+		if (m_client != nullptr) {
+			m_client->stop();
+			m_client = nullptr;
+		}
+		if (m_server != nullptr) {
+			m_server->stop();
+			m_server = nullptr;
+		}
+
 		/* Load Buttons */
 		// Create button(window, position, anchor, size, ...)
 		buttons.push_back(new Button(mainWindow, vec2(0, 50), vec2(0.5f, 0.5f), vec2(475, 75), (char *)"assets/button.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
@@ -221,6 +227,8 @@ void Game::setState(GameState state)
 		buttons[1]->setLabel(Label(mainWindow, vec2(137.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 		if (m_gameState == GameState::SOLO_PAUSED)
 			buttons[1]->setOnClickCallback([this]() { setState(GameState::SOLO_PAUSED); });
+		else if (m_gameState == GameState::MULTI_PAUSED)
+			buttons[1]->setOnClickCallback([this]() { setState(GameState::MULTI_PAUSED); });
 		else
 			buttons[1]->setOnClickCallback([this]() { setState(GameState::MAIN_MENU); });
 
@@ -327,25 +335,17 @@ void Game::setState(GameState state)
 
 		map = new Map();
 		map->generateMap(m_gameSettings[0], m_gameSettings[2]);
-		
-		// Test de robots
-		/*
-		for (int i=0; i < m_gameSettings[4]; i++) {
-			Robot* robot = new Robot(map);
-			robot->getTransform().setPosition(vec3(1.0f, 0.0f, 1.0f) * float(rand()%m_gameSettings[0]));
-			map->addPlayer(robot);
-		}*/
 
-		// Placement des Players sur à côté des bords de la map
+		// Placement des Players à côté des bords de la map
 		map->addPlayer(new Human(map, map->choosePos(0)));
-		for (int i = 1; i < m_gameSettings[1]; i++){
+		for (int i = 1; i < m_gameSettings[1]; i++) {
 			map->addPlayer(new Robot(map, map->choosePos(i)));
 		}
 		
 		map->calculateWallMesh();
 
-		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
-		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
+		mainCamera->getTransform().setPosition(vec3(-1.0f, -12.0f, -6.0f));
+		mainCamera->getTransform().setRotation(vec3(1.20f, 0.0f, 0.0f));
 
 		cerr << "Loaded Singleplayer Game in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
@@ -356,7 +356,7 @@ void Game::setState(GameState state)
 	case GameState::SOLO_GAME: {
 		cerr << "Resuming Singleplayer Game..." << endl; float time = glfwGetTime();
 		/* Load labels */
-		labels.push_back(new Label(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), "Hey...", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		//labels.push_back(new Label(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), "Hey...", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
 
 		cerr << "Resumed Singleplayer Game in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
@@ -416,7 +416,7 @@ void Game::setState(GameState state)
 			labels.push_back(new Label(mainWindow, vec2(200.0f, -i*79.0f), vec2(0.5f, 1.0f), to_string(server.m_ping)+" ms"		, 24, bomberFont, ALIGN_RIGHT | ALIGN_MIDDLE, pingColor));
 			labels.push_back(new Label(mainWindow, vec2(400.0f, -i*79.0f), vec2(0.5f, 1.0f), "Join server"						, 24, bomberFont, ALIGN_RIGHT | ALIGN_MIDDLE));
 			buttons[i]->setOnClickCallback([this]() {
-				m_client = new Client("82.64.248.19");
+				m_client = new Client(this, "82.64.248.19");
 				setState(GameState::MULTI_JOIN_SERVER);
 			});
 		}
@@ -500,26 +500,75 @@ void Game::setState(GameState state)
 	case GameState::MULTI_LOADING_SERVER: {
 		cerr << "Loading Multiplayer Server..." << endl; float time = glfwGetTime();
 
-		if (m_server != nullptr) { delete m_server; m_server = nullptr; }
-		m_server = new Server();
-		m_server->start();
-		m_client = new Client("127.0.0.1");
+		if (m_server != nullptr) {
+			cerr << "Server already exists" << endl;
+			m_server->broadcast("#restart");
+		}
+		else {
+			m_server = new Server();
+			m_server->start();
+		}
+		if (m_client == nullptr) {
+			m_client = new Client(this, "127.0.0.1");
+			m_client->write(m_username);
+		}
+		else
+			m_connected = to_string(m_playerId);
 
-		Map* server_map = &m_server->getMap();
-		server_map->generateMap(m_gameSettings[0], m_gameSettings[2]);
-		
-		// Test de robots
-		/*
-		for (int i=0; i < m_gameSettings[4]; i++) {
-			Robot* robot = new Robot(server_map);
-			robot->getTransform().setPosition(vec3(1.0f, 0.0f, 1.0f) * float(rand()%m_gameSettings[0]));
-			server_map->addPlayer(robot);
-		}*/
+		m_server->setMap(Map());
+		Map& server_map = m_server->getMap();
+		server_map.generateMap(m_gameSettings[0], m_gameSettings[2]);
 
-		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
-		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
+		mainCamera->getTransform().setPosition(vec3(-1.0f, -12.0f, -6.0f));
+		mainCamera->getTransform().setRotation(vec3(1.20f, 0.0f, 0.0f));
 
 		cerr << "Loaded Multiplayer Server in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
+	} break;
+
+	/**
+	 * @brief Load Pre-multiplayer game
+	 */
+	case GameState::MULTI_PREGAME: {
+		cerr << "Loading Multiplayer Pregame..." << endl; float time = glfwGetTime();
+
+		/* Load Buttons */
+		buttons.push_back(new Button(mainWindow, vec2(137.5f, 50.0f), vec2(0.0f, 0.0f), vec2(250, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[0]->setLabel(Label(mainWindow, vec2(137.5f, 50.0f), vec2(0.0f, 0.0f), "Go back", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[0]->setOnClickCallback([this]() { setState(GameState::MAIN_MENU); });
+
+		if (m_server != nullptr) {
+			buttons.push_back(new Button(mainWindow, vec2(-137.5f, 50.0f), vec2(1.0f, 0.0f), vec2(250, 75), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+			buttons[1]->setLabel(Label(mainWindow, vec2(-137.5f, 50.0f), vec2(1.0f, 0.0f), "Launch game", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+			buttons[1]->setOnClickCallback([this]() {
+				// Création du serveur avec le nombre de joueurs
+				Map* server_map = &m_server->getMap();
+				int nbPlayers = m_gameSettings[1];
+				int nbRobots = m_gameSettings[4];
+				vector<int> clients = m_server->getClientsIds();
+				int nbClients = clients.size();
+				for (int i = 0; i < nbPlayers; i++) {
+					if (i < nbClients) {
+						server_map->addPlayer(new Player(server_map, server_map->choosePos(i), clients[i]));
+					}
+					else if (nbRobots > 0) {
+						server_map->addPlayer(new Robot(server_map, server_map->choosePos(i))); nbRobots--;
+					}
+				}
+				m_server->broadcast(m_server->getMap().getData());
+			});
+		}
+
+		if (map != nullptr) delete map;
+		map = new Map();
+
+		mainCamera->getTransform().setPosition(vec3(-1.0f, -12.0f, -6.0f));
+		mainCamera->getTransform().setRotation(vec3(1.20f, 0.0f, 0.0f));
+
+		/* Load Images */
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, 40.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/1.4, DEFAULT_WINDOW_H/1.3), (char *)"assets/bluetton.png", vec3(1.0f), vec3(1.0f), vec3(1.0f)));
+		images.push_back(new Image(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W), Textures::spaceBackground));
+
+		cerr << "Loaded Multiplayer Pregame in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
 
 	/**
@@ -528,13 +577,10 @@ void Game::setState(GameState state)
 	case GameState::MULTI_JOIN_SERVER: {
 		cerr << "Joining Multiplayer Server..." << endl; float time = glfwGetTime();
 
-		if (map != nullptr) delete map;
-		map = new Map();
 		m_client->write(m_username);
-		m_client->write("/join");
 
-		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
-		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
+		mainCamera->getTransform().setPosition(vec3(-1.0f, -12.0f, -6.0f));
+		mainCamera->getTransform().setRotation(vec3(1.20f, 0.0f, 0.0f));
 
 		cerr << "Joined Multiplayer Server in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
@@ -557,6 +603,39 @@ void Game::setState(GameState state)
 		/* Load labels */
 
 		cerr << "Resumed Multiplayer Game in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
+	} break;
+
+	/**
+	 * @brief Multi Paused game
+	 */
+	case GameState::MULTI_PAUSED: {
+		cerr << "Loading Multiplayer Paused menu..." << endl; float time = glfwGetTime();
+		/* Load Buttons */
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, 185.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[0]->setLabel(Label(mainWindow, vec2(0.0f, 185.0f), vec2(0.5f, 0.5f), "Resume", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[0]->setOnClickCallback([this]() { setState(GameState::MULTI_GAME_CLIENT); });
+
+		if (m_server != nullptr) {
+			buttons.push_back(new Button(mainWindow, vec2(0.0f, 62.5f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+			buttons[1]->setOnClickCallback([this]() { setState(GameState::MULTI_LOADING_SERVER); });
+		}
+		else {
+			buttons.push_back(new Button(mainWindow, vec2(0.0f, 62.5f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(0.25f), vec3(0.25f), vec3(0.25f)));
+		}
+		buttons[1]->setLabel(Label(mainWindow, vec2(0.0f, 62.5f), vec2(0.5f, 0.5f), "Restart", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, -62.5f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[2]->setLabel(Label(mainWindow, vec2(0.0f, -62.5f), vec2(0.5f, 0.5f), "Options", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[2]->setOnClickCallback([this]() { setState(GameState::OPTIONS); });
+		
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, -185.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2-10, 100), (char *)"assets/bluetton.png", vec3(1.0f), vec3(0.75f, 0.75f, 0.5f), vec3(0.5f)));
+		buttons[3]->setLabel(Label(mainWindow, vec2(0.0f, -185.0f), vec2(0.5f, 0.5f), "Exit to main menu", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		buttons[3]->setOnClickCallback([this]() { setState(GameState::MAIN_MENU); });
+
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, 0.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2, DEFAULT_WINDOW_H/1.5), (char *)"assets/graytton.png", vec3(1.0f), vec3(1.0f), vec3(1.0f)));
+		buttons.push_back(new Button(mainWindow, vec2(0.0f, 0.0f), vec2(0.5f, 0.5f), vec2(DEFAULT_WINDOW_W/2, DEFAULT_WINDOW_H/1.5)+10.0f, (char *)"assets/bluetton.png", vec3(1.0f), vec3(1.0f), vec3(1.0f)));
+		
+		cerr << "Loaded Multiplayer Paused menu in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;
 	}
 	m_gameState = state;
@@ -586,10 +665,9 @@ bool Game::postInit() {
 		optionsFile.close();
 	}
 	updateWindowOptions();
+	cerr << "Loaded options" << endl;
 
-	cerr << "Loading walls..." << endl;
 	wall = new Wall(map);
-	cerr << "Scale walls..." << endl;
 	wall->getTransform().setScale(vec3(0.0f));
 	this->setState(GameState::MAIN_MENU);
 	return true;
@@ -605,9 +683,13 @@ bool Game::onUpdate(AppUpdateEvent& e)
 	for (auto button : buttons) { button->draw(); }
 	for (auto image : images) { image->draw(); }
 	if (m_server != nullptr) {
-		Map* server_map = &m_server->getMap();
-		server_map->update(m_deltaTime);
-		m_server->broadcast(server_map->getPosRot());
+		Map& server_map = m_server->getMap();
+		server_map.update(m_deltaTime);
+		m_server->broadcast(server_map.getPosRot());
+	}
+	if (m_human != nullptr) {
+		vec3 pos = m_human->getTransform().getPosition();
+		mainCamera->getTransform().setPosition(vec3(-pos.x, -12.0f, -pos.z - 5.0f));
 	}
 	switch (m_gameState)
 	{
@@ -650,51 +732,118 @@ bool Game::onUpdate(AppUpdateEvent& e)
 		} break;
 
 		case GameState::MULTI_LOADING_SERVER: {
-			setState(GameState::MULTI_JOIN_SERVER);
+			if (m_connected != "") {
+				m_playerId = stoi(m_connected);
+				setState(GameState::MULTI_PREGAME);
+				m_connected = "";
+			}
 		} break;
 
 		case GameState::MULTI_JOIN_SERVER: {
+			if (m_connected != "") {
+				m_playerId = stoi(m_connected);
+				setState(GameState::MULTI_PREGAME);
+				m_connected = "";
+			}
+		} break;
+
+		case GameState::MULTI_PREGAME: {
+			if (m_mapInfo != "") {
+				for (auto label : labels) { delete label; } labels.clear();
+				map->loadMap(m_mapInfo, m_playerId);
+				m_mapInfo = "";
+				//if (m_server == nullptr)
+					setState(GameState::MULTI_GAME_CLIENT);
+				//else
+					//setState(GameState::MULTI_GAME_SERVER);
+				break;
+			}
+			if (m_server != nullptr) {
+				m_server->sendList(to_string(m_gameSettings[1]));
+			}
+			if (m_playersList != "") {
+				// m_playersList looks like "18;Stoupy51,PielleBoule,PielleBoule_2"
+				string data = m_playersList;
+				vector<string> players;
+				int pos = data.find(";");
+				string maxPlayers = data.substr(0, pos);
+				data = data.substr(pos + 1);
+				for (int i=0; i < (int)data.size(); i++) {
+					if (data[i] == ',') {
+						players.push_back(data.substr(0, i));
+						data = data.substr(i + 1);
+						i = 0;
+					}
+				}
+
+				// Create labels
+				char* bomberFont = (char*)"assets/fonts/bomberman.ttf";
+				for (auto label : labels) { delete label; } labels.clear();
+				string title = "Current Players : "+ to_string(players.size()) + " - " + maxPlayers;
+				labels.push_back(new Label(mainWindow, vec2(0.0f, 40.0f), vec2(0.5f, 0.8f), title, 48, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+				labels.push_back(new Label(mainWindow, vec2(7.5f, 32.5f), vec2(0.5f, 0.8f), title, 48, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE, vec3(0.0f)));
+				for (int i=0; i < (int)players.size(); i++) {
+					labels.push_back(new Label(mainWindow, vec2(-400.0f, -i*40.0f), vec2(0.5f, 0.75f), "- "+players[i], 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+					labels.push_back(new Label(mainWindow, vec2(-395.0f, -5-i*40.0f), vec2(0.5f, 0.75f), "- "+players[i], 24, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE, vec3(0.0f)));
+				}
+
+				m_playersList = "";
+			}
 		} break;
 
 		case GameState::MULTI_GAME_CLIENT: {
-			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_B) == GLFW_PRESS)
-        		m_server->getMap().addBomb( new Bomb(map, vec3(0.0f, 0.0f, 0.5f)),	ivec2(rand()%8+2,rand()%8+2) );
-
 			if (m_mapInfo != "") {
-				map->loadMap(m_mapInfo);
+				map->loadMap(m_mapInfo, m_playerId);
 				m_mapInfo = "";
 			}
 			if (m_updatePosRot != "") {
 				map->loadPosRot(m_updatePosRot);
 				m_updatePosRot = "";
 			}
+			if (m_newBombs != "") {
+				map->loadBombs(m_newBombs);
+				m_newBombs = "";
+			}
 			map->update(m_deltaTime);
 			map->draw();
-		} break;
 
-		case GameState::MULTI_GAME_SERVER: {
-			Map* server_map = &m_server->getMap();
-
-			server_map->update(m_deltaTime);
-			server_map->draw();
-
-			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_T) == GLFW_PRESS)
-        		m_client->write("/ඞ");
-			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_Y) == GLFW_PRESS)
-        		m_server->broadcast("broadcast test");
-
-			if (keyPressed == GLFW_KEY_B && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_B) == GLFW_RELEASE)
-        		server_map->addBomb( new Bomb(map, vec3(0.0f, 0.0f, 0.5f)),	ivec2(rand()%8+2,rand()%8+2) );
 			if (keyPressed == GLFW_KEY_ESCAPE && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)
-        		setState(GameState::SOLO_PAUSED);
-			
+        		setState(GameState::MULTI_PAUSED);
 			keyPressed = 0;
 			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         		keyPressed = GLFW_KEY_ESCAPE;
-			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_B) == GLFW_PRESS)
-        		keyPressed = GLFW_KEY_B;
 		} break;
 
+		case GameState::MULTI_GAME_SERVER: {
+			Map& server_map = m_server->getMap();
+
+			server_map.update(m_deltaTime);
+			server_map.draw();
+
+			if (keyPressed == GLFW_KEY_ESCAPE && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)
+        		setState(GameState::MULTI_PAUSED);
+			keyPressed = 0;
+			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        		keyPressed = GLFW_KEY_ESCAPE;
+		} break;
+
+		case GameState::MULTI_PAUSED: {
+			if (m_updatePosRot != "") {
+				map->loadPosRot(m_updatePosRot);
+				m_updatePosRot = "";
+			}
+			map->update(m_deltaTime);
+			map->draw();
+			if (keyPressed == GLFW_KEY_ESCAPE && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE) {
+				//if (m_server == nullptr)
+					setState(GameState::MULTI_GAME_CLIENT);
+				//else
+					//setState(GameState::MULTI_GAME_SERVER);
+				keyPressed = 0;
+			}
+			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        		keyPressed = GLFW_KEY_ESCAPE;
+		} break;
 	}
 
 	if(m_currentTime - m_lastTime >= 1)

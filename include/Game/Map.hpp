@@ -39,11 +39,15 @@ public:
 	Map();
 	~Map();
 
+	// Multiplayer
 	std::string getData() const; // Fonction qui retourne les données de la map sous forme de string
-	void loadMap(const std::string& mapData); // Fonction qui charge la map à partir d'un string
-
 	std::string getPosRot() const; // Retourne les positions et les rotations des joueurs
+	std::string getPlayerData(int id) const; // Retourne les données d'un joueur
+	Player* getPlayer(int id) const; // Retourne un joueur
+	void loadMap(const std::string& mapData, int humanId); // Fonction qui charge la map à partir d'un string
 	void loadPosRot(const std::string& posRotData); // Charge les positions et les rotations des joueurs
+	void loadBombs(const std::string& bombsData); // Charge les nouvelles bombes reçues
+	void movePlayer(int id, int x, int z); // Déplace un joueur selon son ID
 
 	void generateMap(int size = 13, int wallPercentage = 90);
 	void addActor(Actor* actor);
