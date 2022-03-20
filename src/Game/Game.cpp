@@ -516,21 +516,16 @@ void Game::setState(GameState state)
 			m_server = new Server();
 			m_server->start();
 		}
-		if (m_client != nullptr) {
-			delete m_client;
-			m_client = nullptr;
+		if (m_client == nullptr) {
+			m_client = new Client(this, "127.0.0.1");
+			m_client->write(m_username);
 		}
-		m_client = new Client(this, "127.0.0.1");
-		m_client->write(m_username);
+		else
+			m_connected = to_string(m_playerId);
 
-		Map* server_map = &m_server->getMap();
-		server_map->generateMap(m_gameSettings[0], m_gameSettings[2]);
-		
-		/* Placement des Players à côté des bords de la map
-		map->addPlayer(new Human(map, map->choosePos(0)));
-		for (int i = 1; i < m_gameSettings[1]; i++){
-			map->addPlayer(new Robot(map, map->choosePos(i)));
-		}*/
+		m_server->setMap(Map());
+		Map& server_map = m_server->getMap();
+		server_map.generateMap(m_gameSettings[0], m_gameSettings[2]);
 
 		mainCamera->getTransform().setPosition(vec3(-6.0f, -12.0f, -16.0f));
 		mainCamera->getTransform().setRotation(vec3(0.90f, 0.0f, 0.0f));
@@ -690,9 +685,9 @@ bool Game::onUpdate(AppUpdateEvent& e)
 	for (auto button : buttons) { button->draw(); }
 	for (auto image : images) { image->draw(); }
 	if (m_server != nullptr) {
-		Map* server_map = &m_server->getMap();
-		server_map->update(m_deltaTime);
-		m_server->broadcast(server_map->getPosRot());
+		Map& server_map = m_server->getMap();
+		server_map.update(m_deltaTime);
+		m_server->broadcast(server_map.getPosRot());
 	}
 	switch (m_gameState)
 	{
@@ -762,9 +757,6 @@ bool Game::onUpdate(AppUpdateEvent& e)
 		} break;
 
 		case GameState::MULTI_GAME_CLIENT: {
-			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_B) == GLFW_PRESS)
-        		m_server->getMap().addBomb( new Bomb(map, vec3(0.0f, 0.0f, 0.5f)),	ivec2(rand()%8+2,rand()%8+2) );
-
 			if (m_mapInfo != "") {
 				map->loadMap(m_mapInfo, m_playerId);
 				m_mapInfo = "";
@@ -775,31 +767,48 @@ bool Game::onUpdate(AppUpdateEvent& e)
 			}
 			map->update(m_deltaTime);
 			map->draw();
-		} break;
 
-		case GameState::MULTI_GAME_SERVER: {
-			Map* server_map = &m_server->getMap();
-
-			server_map->update(m_deltaTime);
-			server_map->draw();
-
-			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_T) == GLFW_PRESS)
-        		m_client->write("/ඞ");
-			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_Y) == GLFW_PRESS)
-        		m_server->broadcast("broadcast test");
-
-			if (keyPressed == GLFW_KEY_B && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_B) == GLFW_RELEASE)
-        		server_map->addBomb( new Bomb(map, vec3(0.0f, 0.0f, 0.5f)),	ivec2(rand()%8+2,rand()%8+2) );
 			if (keyPressed == GLFW_KEY_ESCAPE && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)
-        		setState(GameState::SOLO_PAUSED);
-			
+        		setState(GameState::MULTI_PAUSED);
 			keyPressed = 0;
 			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         		keyPressed = GLFW_KEY_ESCAPE;
-			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_B) == GLFW_PRESS)
-        		keyPressed = GLFW_KEY_B;
 		} break;
 
+		case GameState::MULTI_GAME_SERVER: {
+			Map& server_map = m_server->getMap();
+
+			server_map.update(m_deltaTime);
+			server_map.draw();
+
+			if (keyPressed == GLFW_KEY_ESCAPE && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)
+        		setState(GameState::MULTI_PAUSED);
+			keyPressed = 0;
+			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        		keyPressed = GLFW_KEY_ESCAPE;
+		} break;
+
+		case GameState::MULTI_PAUSED: {
+			if (m_mapInfo != "") {
+				map->loadMap(m_mapInfo, m_playerId);
+				m_mapInfo = "";
+			}
+			if (m_updatePosRot != "") {
+				map->loadPosRot(m_updatePosRot);
+				m_updatePosRot = "";
+			}
+			map->update(m_deltaTime);
+			map->draw();
+			if (keyPressed == GLFW_KEY_ESCAPE && glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE) {
+				//if (m_server == nullptr)
+					setState(GameState::MULTI_GAME_CLIENT);
+				//else
+					//setState(GameState::MULTI_GAME_SERVER);
+				keyPressed = 0;
+			}
+			if (glfwGetKey(mainWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        		keyPressed = GLFW_KEY_ESCAPE;
+		} break;
 	}
 
 	if(m_currentTime - m_lastTime >= 1)

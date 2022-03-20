@@ -133,8 +133,7 @@ std::string Map::getPosRot() const {
 	return data;
 }
 
-void Map::loadPosRot(const std::string& posRotData) {
-	// Parsing players
+void Map::loadPosRot(const std::string& posRotData) { try {
 	string playersStr = posRotData;
 	vector<string> playersData;
 	for (int i=0; i < (int)playersStr.size(); i++) {
@@ -164,6 +163,10 @@ void Map::loadPosRot(const std::string& posRotData) {
 			}
 		}
 	}
+	} catch(const std::exception& e) {
+		cerr << e.what() << " : " << posRotData << endl;
+	}
+	
 }
 
 void Map::generateMap(int size, int wallPercentage) {
