@@ -141,6 +141,14 @@ string Map::getPlayerData(int id) const {
 	return "";
 }
 
+Player* Map::getPlayer(int id) const {
+	for (auto player : players) {
+		if (player != nullptr && player->getId() == id)
+			return player;
+	}
+	return nullptr;
+}
+
 void Map::loadPosRot(const std::string& posRotData) {
 	string playersStr = posRotData;
 	vector<string> playersData;
@@ -255,13 +263,10 @@ void Map::addPlayer(Player* player) {
 	positions.push_back(pos4);
 	for (glm::ivec2 pos : positions){
 		if (walls[pos] != nullptr && walls[pos]->getType() != Wall::Type::Metal){
-		delete walls[pos];
-		walls[pos]=nullptr;
+			delete walls[pos];
+			walls[pos] = nullptr;
+		}
 	}
-	}
-	
-
-		
 }
 
 void Map::addBomb(Bomb* bomb, glm::ivec2 pos) {
@@ -334,7 +339,7 @@ void Map::draw() {
 	mapActor.draw();
 }
 
-void Map::update(float deltaTime) {	
+void Map::update(float deltaTime) {
 	genEdgesMap();
 
 	for (auto player : players) {

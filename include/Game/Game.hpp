@@ -72,6 +72,7 @@ public:
 	// Multiplayer
 	Server* m_server;
 	Client* m_client;
+	Player* m_human;
 	std::string m_connected;
 	std::string m_mapInfo;
 	std::string m_updatePosRot;

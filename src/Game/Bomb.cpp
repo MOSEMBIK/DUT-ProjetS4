@@ -15,8 +15,8 @@ void Bomb::onExplode() {
 void Bomb::update(float deltaTime) {
 	timer -= deltaTime;
 	if (timer <= 0) {
+		onExplode();
 		if (!exploded) {
-			onExplode();
 			exploded = true;
 		}
 		else {

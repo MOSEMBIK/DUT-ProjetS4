@@ -16,7 +16,7 @@ void Server::stop() {
 	// Fermeture du socket.
 	m_acceptor.close();
 	// Arrêt du thread.
-	m_thread.~thread();
+	//m_thread.~thread();
 }
 
 void Server::start() {
@@ -132,11 +132,9 @@ void Server::broadcast(const string & message, ServerClientPtr emitter) {
 }
 
 void Server::sendList(const string & message) {
-	UNUSED(message);
-	string list = "#playersList ";
+	string list = "#playersList " + message + ";";
 	for (ServerClientPtr client: this->m_clients)
-		list += client->alias() + ", ";
-	list.pop_back();
+		list += client->alias() + ",";
 	broadcast(list);
 }
 

@@ -4,10 +4,14 @@
 #include <Multiplayer/Server.hpp>
 
 
-Human::Human(Map* map, glm::ivec2 pos) : Player(map, pos) {}
+Human::Human(Map* map, glm::ivec2 pos) : Player(map, pos), m_client(nullptr) {
+	Game::getInstance()->m_human = this;
+}
 
 Human::Human(Map* map, std::string& data) : Player(map, data) {
-	m_client = Game::getInstance()->m_client;
+	Game* game = Game::getInstance();
+	game->m_human = this;
+	m_client = game->m_client;
 }
 
 void Human::update(float deltaTime) {
