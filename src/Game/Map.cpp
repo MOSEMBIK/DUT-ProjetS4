@@ -100,6 +100,9 @@ void Map::update(float deltaTime) {
 	cerr << "Generate edges map..." << endl;
 	genEdgesMap();
 
+	cerr << "Generate danger map..." << endl;
+	genDangerMap();
+
 	for (auto player : players) {
 		cerr << "Updating Players..." << endl;
 		if (player != nullptr)
@@ -298,13 +301,14 @@ std::vector<glm::ivec2> Map::nearRoads(glm::ivec2 coord) {
 	std::vector<glm::ivec2> nearR;
 
 	glm::ivec2 cordTest (coord[0]-1, coord[1]);
-	if (whatIs(cordTest) == 0) nearR.push_back(cordTest);
+	if (isReachable(cordTest)) nearR.push_back(cordTest);
 	cordTest = glm::ivec2(coord[0], coord[1]-1);
-	if (whatIs(cordTest) == 0) nearR.push_back(cordTest);
+	if (isReachable(cordTest)) nearR.push_back(cordTest);
 	cordTest = glm::ivec2(coord[0]+1, coord[1]);
-	if (whatIs(cordTest) == 0) nearR.push_back(cordTest);
+	if (isReachable(cordTest)) nearR.push_back(cordTest);
 	cordTest = glm::ivec2(coord[0], coord[1]+1);
-	if (whatIs(cordTest) == 0) nearR.push_back(cordTest);
+	if (isReachable(cordTest)) nearR.push_back(cordTest);
+
 	return nearR;
 }
 
@@ -313,9 +317,10 @@ void Map::genEdgesMap(){
 	for (int i=1; i < mapSize; i++) {
 		for (int j=1; j < mapSize; j++) {
 			glm::ivec2 checkCoord (i, j);
-			if (whatIs(checkCoord) == 0) roads.push_back(checkCoord);
+			if (isReachable(checkCoord)) roads.push_back(checkCoord);
 		}
 	}
+	edges_map.clear();
 	for (glm::ivec2 rCase : roads) {
 		std::vector<glm::ivec2> nRC = nearRoads(rCase);
 		edges_map[rCase] = nRC;
@@ -343,7 +348,7 @@ std::list<std::pair<glm::ivec2, int>> Map::getPlayersMap(){
 	return lst;
 }
 
-std::map<glm::ivec2, float, cmpVec> Map::getDangerMap(){
+void Map::genDangerMap(){
 	std::map<glm::ivec2, float, cmpVec> danger;
 	if (bombs.size() >= 1) {
 		for (std::pair<glm::ivec2, Bomb*> bombP : bombs){
@@ -356,8 +361,9 @@ std::map<glm::ivec2, float, cmpVec> Map::getDangerMap(){
 				}
 			}
 		}
-	}
-	return danger;
+	} 
+	danger_map.clear();
+	danger_map = danger;
 }
 
 ///-------------------------------------------------------

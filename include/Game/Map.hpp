@@ -31,6 +31,7 @@ private:
   
 public:
 	std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> edges_map; 			// Graph des accessibilités pour chaque position
+	std::map<glm::ivec2, float, cmpVec> danger_map; 							// Graph des zones dangeureuses
 
   
 public:
@@ -60,10 +61,9 @@ public:
 	///--- Fonctions utiles au déplacement des Players
 	std::vector<glm::ivec2> nearRoads(glm::ivec2);								// Retourne le vecteur de toute les coordonées voisine accessible depuis celles données
 	void genEdgesMap();															// (Re)genere la edges map
+	void genDangerMap();														// (Re)genere la danger map
 	bool isReachable(glm::ivec2);												// Retourne true si le localisation passee est accessible
 	int whatIs(glm::ivec2);														// Retourne le type de l'Actor aux coordonnees passees
 
-	std::list<std::pair<glm::ivec2, int>>  getPlayersMap();										// Retourne la liste des positions des Players
-	std::map<glm::ivec2, float, cmpVec> getDangerMap();							// Retourne la map complete avec pour chaque coord un valeur allant de 0 à 1 (1->safe, 0->danger)
-
+	std::list<std::pair<glm::ivec2, int>>  getPlayersMap();						// Retourne la liste des positions des Players
 };
