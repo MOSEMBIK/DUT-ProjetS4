@@ -5,9 +5,6 @@ using std::cerr;
 using std::endl;
 
 Robot::Robot(Map* map, glm::ivec2 pos) : Player(map, pos) {
-	this->x = rand() % mapSize + 1;
-	this->z = rand() % mapSize + 1;
-
 	case_of_t = 0;
 	trajet.clear();
 	trajet.push_back(glm::ivec2(x, z));
@@ -18,16 +15,9 @@ void Robot::update(float deltaTime) {
 	if (pos.x > x) pos.x += 0.9f;
 	if (pos.z > z) pos.z += 0.9f;
 
-	if (int(pos.x) == x && int(pos.z) == z) {
-		// Pick random x & z
-		x = rand() % mapSize + 1;
-		z = rand() % mapSize + 1;
-	}
 
-	/*
 	cerr << "Updating Robot..." << endl;
 	Transform& transform = getTransform();
-	glm::vec3 pos = transform.getPosition();
 	
 	// glm::ivec2 sBomb = shouldBomb();
 	// if (sBomb[0] != -1 && sBomb[1] != -1) {
@@ -40,10 +30,7 @@ void Robot::update(float deltaTime) {
 		setTrajet(genTrajetMann(choseDestination(9)));
 	}
 
-	if (pos.x > x) pos.x += 0.9f;
-	if (pos.z > z) pos.z += 0.9f;
-
-	if (case_of_t + 1 < trajet.size() && (pos.x == x && pos.z == z)) {
+	if (case_of_t + 1 < trajet.size() && (int(pos.x) == x && int(pos.z) == z)) {
 		case_of_t++;
 	}
 	x = trajet[case_of_t][0];
@@ -58,8 +45,6 @@ void Robot::update(float deltaTime) {
 		cerr << "( " << var[0] << ", " << var[1] << " ), "<< endl;
 	}
 	cerr << " }" << endl;
-	cerr << x << " - " << z << endl;
-	*/
 	Player::update(deltaTime);
 }
 
