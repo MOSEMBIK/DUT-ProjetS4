@@ -15,4 +15,11 @@ namespace Textures {
 	static Texture* bomberboy1 = new Texture();
 	static Texture* bomberboy2 = new Texture();
 	static Texture* bomberboy3 = new Texture();
+	static Texture* bombPush = new Texture();
+	static Texture* countDown = new Texture();
+	static Texture* countUp = new Texture();
+	static Texture* rangeDown = new Texture();
+	static Texture* rangeUp = new Texture();
+	static Texture* speedDown = new Texture();
+	static Texture* speedUp = new Texture();
 }

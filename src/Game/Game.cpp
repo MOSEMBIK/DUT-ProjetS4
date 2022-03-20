@@ -123,12 +123,16 @@ bool Game::loadRequiredResources()
 	std::vector<string> assets = {
 		"white_texture.png", "black_texture.png", "home_background.png",
 		"space_background.png", "bomberboy_1.png", "bomberboy_2.png",
-		"bomberboy_3.png", "blue_rectangle.png"
+		"bomberboy_3.png", "blue_rectangle.png", "bonus/bomb_push.png",
+		"bonus/count_down.png", "bonus/count_up.png", "bonus/range_down.png",
+		"bonus/range_up.png", "bonus/speed_down.png", "bonus/speed_up.png"
 	};
 	std::vector<Texture**> textures = {
 		&Textures::whiteTexture, &Textures::blackTexture, &Textures::homeBackground,
 		&Textures::spaceBackground, &Textures::bomberboy1, &Textures::bomberboy2,
-		&Textures::bomberboy3, &Textures::blueRectangle
+		&Textures::bomberboy3, &Textures::blueRectangle, &Textures::bombPush,
+		&Textures::countDown, &Textures::countUp, &Textures::rangeDown,
+		&Textures::rangeUp, &Textures::speedDown, &Textures::speedUp
 	};
 	for (uint i = 0; i < assets.size(); i++) {
 		if (!Resource::loadTexture(("assets/"+assets[i]).c_str(), (*textures[i]))) {
