@@ -262,7 +262,7 @@ void Map::addPlayer(Player* player) {
 	positions.push_back(pos3);
 	positions.push_back(pos4);
 	for (glm::ivec2 pos : positions){
-		if (walls[pos] != nullptr && walls[pos]->getType() != Wall::Type::Metal){
+		if (walls[pos] != nullptr && walls[pos]->getType() != Wall::Type::Metal) {
 			delete walls[pos];
 			walls[pos] = nullptr;
 		}
