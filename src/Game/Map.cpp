@@ -374,8 +374,10 @@ void Map::update(float deltaTime) {
 	{
 		if (exp != nullptr)
 		{
-			ivec3 expPos = exp->getTransform().getPosition();
-			killPlayers(expPos.x, expPos.z);
+			if (exp->m_time > 0.5f) {
+				ivec3 expPos = exp->getTransform().getPosition();
+				killPlayers(expPos.x, expPos.z);
+			}
 			if(exp->m_time <= 0)
 				exps.push_back(exp);
 		}
