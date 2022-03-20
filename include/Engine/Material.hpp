@@ -28,7 +28,7 @@ public:
      * @brief Construct a new Material object
      * 
      */
-    Material(const Shader& shader);
+    Material(Shader* shader);
 
     /**
      * @brief Get the Shader

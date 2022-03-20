@@ -40,6 +40,8 @@ in vec2 texCoords;
 
 out vec4 FragColor;
 
+uniform int u_isLit;
+
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir); 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);  
 
@@ -47,12 +49,22 @@ void main ()
 {
 	vec3 norm = normalize(normal);
 	vec3 viewDir = normalize(u_cameraPos - fragPos);
-	
-	vec3 result = CalcDirLight(u_dirLight, norm, viewDir);
-	for(int i = 0; i < NR_POINT_LIGHTS; i++)
-        result += CalcPointLight(u_pointLights[i], norm, fragPos, viewDir);  
 
-	FragColor = vec4(result, 1.0);
+    if(texture(u_material.diffuse, texCoords).a <= 0.1)
+        discard;
+	
+    if(u_isLit == 1)
+    {
+        vec3 result = CalcDirLight(u_dirLight, norm, viewDir);
+        for(int i = 0; i < NR_POINT_LIGHTS; i++)
+            result += CalcPointLight(u_pointLights[i], norm, fragPos, viewDir);  
+
+        FragColor = vec4(result, 1.0);
+    }
+    else
+    {
+        FragColor = vec4(vec3(texture(u_material.diffuse, texCoords)) * u_material.diffuseColor, 1.0);
+    }
 }
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)

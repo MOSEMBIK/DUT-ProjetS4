@@ -89,7 +89,9 @@
 		"variant": "cpp",
 		"*.ipp": "cpp",
 		"codecvt": "cpp",
-		"shared_mutex": "cpp"
+		"shared_mutex": "cpp",
+		"coroutine": "cpp",
+		"source_location": "cpp"
 	},
     "cmake.configureOnOpen": false
 }

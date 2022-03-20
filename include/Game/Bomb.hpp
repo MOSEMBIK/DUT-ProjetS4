@@ -19,7 +19,7 @@ public:
 	int getRange() {return range;}
 	float getTimer() {return timer;}
 
-	void onExplode();
+	void onExplode(bool);
 
 	virtual void update(float deltaTime);
 

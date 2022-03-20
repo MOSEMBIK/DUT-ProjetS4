@@ -15,4 +15,5 @@ namespace Textures {
 	static Texture* bomberboy1 = new Texture();
 	static Texture* bomberboy2 = new Texture();
 	static Texture* bomberboy3 = new Texture();
+	static Texture* fireTexture = new Texture();
 }

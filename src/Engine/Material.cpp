@@ -18,14 +18,14 @@ Material::Material() :
     
 }
 
-Material::Material(const Shader& shader) : 
+Material::Material(Shader* shader) : 
     m_ambientColor(vec3(1.0f)),
     m_diffuseColor(vec3(1.0f)),
     m_diffuseTexture(1),
     m_specularColor(vec3(1.0f)),
     m_specularTexture(1),
     m_specularExponent(32.0f),
-    m_shader(&shader)
+    m_shader(shader)
 {
     
 }

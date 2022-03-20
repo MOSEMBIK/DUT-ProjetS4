@@ -7,15 +7,15 @@ Bomb::Bomb(Map* map, glm::vec3 color, int range) : Actor(map,"assets/models/Bomb
 }
 
 
-void Bomb::onExplode() {
+void Bomb::onExplode(bool notFirst) {
 	glm::vec3 pos = this->getTransform().getPosition();
-	map->onExplosion(pos.x, pos.z, range);
+	map->onExplosion(pos.x, pos.z, range, notFirst);
 }
 
 void Bomb::update(float deltaTime) {
 	timer -= deltaTime;
 	if (timer <= 0) {
-		onExplode();
+		onExplode(exploded);
 		if (!exploded) {
 			exploded = true;
 		}

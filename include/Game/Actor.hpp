@@ -48,7 +48,7 @@ virtual ~Actor() {}
 	/**
 	 * @brief Draw the object
 	 */
-	void draw() const;
+	void draw(int isLit = 1) const;
 
 	/**
 	 * @brief Get the transform
