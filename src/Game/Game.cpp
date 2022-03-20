@@ -125,7 +125,8 @@ bool Game::loadRequiredResources()
 		"space_background.png", "bomberboy_1.png", "bomberboy_2.png",
 		"bomberboy_3.png", "blue_rectangle.png", "fireball.png",
 		"bonus/bomb_push.png", "bonus/count_down.png", "bonus/count_up.png",
-		"bonus/range_down.png", "bonus/range_up.png", "bonus/speed_down.png", "bonus/speed_up.png"
+		"bonus/range_down.png", "bonus/range_up.png", "bonus/speed_down.png",
+		"bonus/speed_up.png"
 	};
 	std::vector<Texture**> textures = {
 		&Textures::whiteTexture, &Textures::blackTexture, &Textures::homeBackground,
