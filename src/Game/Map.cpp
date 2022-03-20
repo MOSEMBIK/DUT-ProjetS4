@@ -379,13 +379,14 @@ void Map::update(float deltaTime) {
  * @param z
  * @param range 
  */
-void Map::onExplosion(int x, int z, int range) {
+void Map::onExplosion(int x, int z, int range, bool notFirst) {
 	bool wallUpdate = false;
 	std::vector<glm::ivec2> touched;
+	if(!notFirst)
 	for (int i = x; i < x+range; ++i) { //Droite
 		glm::ivec2 pos(i, z);
 		Wall* m = this->walls[pos];
-		bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
+			bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
 		if (m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;
@@ -398,8 +399,9 @@ void Map::onExplosion(int x, int z, int range) {
 	for (int i = x-1; i > x-range; --i) { //Gauche
 		glm::ivec2 pos(i, z);
 		Wall* m = this->walls[pos];
-		bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
-		if (m != nullptr) {
+		if(!notFirst)
+			bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
+		if (!notFirst && m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;
 			break;
@@ -410,8 +412,9 @@ void Map::onExplosion(int x, int z, int range) {
 	for (int i = z-1; i > z-range; --i) { //Haut
 		glm::ivec2 pos(x, i);
 		Wall* m = this->walls[pos];
-		bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
-		if (m != nullptr) {
+		if(!notFirst)
+			bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
+		if (!notFirst && m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;
 			break;
@@ -422,8 +425,9 @@ void Map::onExplosion(int x, int z, int range) {
 	for (int i = z; i < z+range; ++i) { //Bas
 		glm::ivec2 pos(x, i);
 		Wall* m = this->walls[pos];
-		bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
-		if (m != nullptr) {
+		if(!notFirst)
+			bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
+		if (!notFirst && m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;
 			break;

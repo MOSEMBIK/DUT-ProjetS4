@@ -7,12 +7,15 @@ BombExplosion::BombExplosion(Map* map, vec3 position, float time) : Actor(map), 
 {
     m_transform.setPosition(position);
 
-    std::vector<vec3> positions = { vec3(-0.5, -0.5, -0.5), vec3(0.5, -0.5, 0.5), vec3(-0.5, 0.5, -0.5), vec3(0.5, 0.5, 0.5), vec3(-0.5, -0.5, 0.5), vec3(0.5, -0.5, -0.5), vec3(-0.5, 0.5, 0.5), vec3(0.5, 0.5, -0.5) };
-    std::vector<vec3> normals = { vec3(0.5, 0, -0.5), vec3(-0.5, 0, 0.5), vec3(0.5, 0, -0.5), vec3(-0.5, 0, 0.5), vec3(0.5, 0, 0.5), vec3(-0.5, 0, -0.5), vec3(0.5, 0, 0.5), vec3(-0.5, 0, -0.5) };
-    std::vector<vec2> uvs = { vec2(0, 0), vec2(1, 0), vec2(0, 1), vec2(1, 1), vec2(0, 0), vec2(1, 0), vec2(0, 1), vec2(1, 1) };
-    std::vector<unsigned int> indices = { 0, 1, 2, 2, 3, 1, 4, 5, 6, 6, 7, 5 };
+    std::vector<vec3> positions = { 
+        vec3(-0.5, -0.5, -0.5), vec3( 0.5, -0.5,  0.5), vec3(-0.5,  0.5, -0.5), vec3( 0.5,  0.5,  0.5), 
+        vec3(-0.5, -0.5,  0.5), vec3( 0.5, -0.5, -0.5), vec3(-0.5,  0.5,  0.5), vec3( 0.5,  0.5, -0.5), 
+        vec3(-0.5,  0.0, -0.5), vec3( 0.5,  0.0, -0.5), vec3(-0.5,  0.0,  0.5), vec3(0.5,  0.0,  0.5) 
+    };
+    std::vector<vec2> uvs = { vec2(0, 0), vec2(1, 0), vec2(0, 1), vec2(1, 1), vec2(0, 0), vec2(1, 0), vec2(0, 1), vec2(1, 1), vec2(0, 0), vec2(1, 0), vec2(0, 1), vec2(1, 1) };
+    std::vector<unsigned int> indices = { 0, 1, 2, 2, 3, 1, 4, 5, 6, 6, 7, 5, 8, 9, 10, 10, 11, 9 };
 
-    m_meshes.push_back(new Mesh(Mesh::createFromVectors(positions, positions, uvs), indices, GL_TRIANGLES));
+    m_meshes.push_back(new Mesh(Mesh::createFromVectors(positions, uvs), indices, GL_TRIANGLES));
 
     Material mat = Material();
     mat.setDiffuseTexture(9);
@@ -42,8 +45,10 @@ bool BombExplosion::onUpdate(AppUpdateEvent& e)
 {
     m_time -= e.GetDeltaTime();
 
-    if(m_time <= m_max_time / 2.0f);
+    if(m_time <= m_max_time / 2.0f)
         m_transform.setScale(vec3(pow(m_time / (m_max_time / 2.0f), 4)));
+    else
+        m_transform.setScale(vec3(1));
 
     return false;
 }

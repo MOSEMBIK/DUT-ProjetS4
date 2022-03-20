@@ -72,7 +72,7 @@ public:
 	void calculateWallMesh();
 	void update(float deltaTime);
 
-	void onExplosion(int, int, int);
+	void onExplosion(int, int, int, bool);
 	
 
 	///--- Fonctions utiles au déplacement des Players
