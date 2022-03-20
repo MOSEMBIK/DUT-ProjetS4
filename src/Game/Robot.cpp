@@ -40,12 +40,15 @@ void Robot::update(float deltaTime) {
 		setTrajet(genTrajetMann(choseDestination(9)));
 	}
 
+	if (pos.x > x) pos.x += 0.9f;
+	if (pos.z > z) pos.z += 0.9f;
+
 	if (case_of_t + 1 < trajet.size() && (pos.x == x && pos.z == z)) {
 		case_of_t++;
-		x = trajet[case_of_t][0];
-		z = trajet[case_of_t][1];
 	}
-	
+	x = trajet[case_of_t][0];
+	z = trajet[case_of_t][1];
+
 	cerr << pos.x << " - " << pos.z << endl;
 	cerr << x << " - " << z << endl;
 	cerr << "Case of T : " << case_of_t << endl;
