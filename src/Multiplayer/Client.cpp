@@ -108,6 +108,8 @@ void Client::process_bomb(const string & message) {
 // Commande "#restart"
 void Client::process_restart(const string & message) {
 	UNUSED(message);
-	if (m_game->m_server == nullptr)
+	if (m_game->m_server == nullptr) {
+		m_game->m_connected = to_string(m_game->m_playerId);
 		m_game->setState(GameState::MULTI_JOIN_SERVER);
+	}
 }
