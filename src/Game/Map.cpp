@@ -278,6 +278,18 @@ void Map::addBonus(ObjectPerk* bonus, glm::ivec2 pos) {
 	bonuses[pos] = bonus;
 }
 
+void Map::killPlayers(int x, int z) {
+	for (auto player : players) {
+		if (player != nullptr) {
+			glm::ivec3 pos = player->getTransform().getPosition();
+			if (pos.x == x && pos.z == z) {
+				removePlayer(player);
+				delete player;
+			}
+		}
+	}
+}
+
 ObjectPerk::Type Map::pickUpBonus(glm::ivec2 pos) {
 	ObjectPerk::Type type = ObjectPerk::Type::None;
 	if (bonuses[pos] != nullptr) {
@@ -358,10 +370,15 @@ void Map::update(float deltaTime) {
 	}
 
 	std::list<BombExplosion*> exps;
-	for (auto be : bombsExplosions)
+	for (auto exp : bombsExplosions)
 	{
-		if(be->m_time <= 0)
-			exps.push_back(be);
+		if (exp != nullptr)
+		{
+			ivec3 expPos = exp->getTransform().getPosition();
+			killPlayers(expPos.x, expPos.z);
+			if(exp->m_time <= 0)
+				exps.push_back(exp);
+		}
 	}
 	for (auto exp : exps)
 	{
@@ -379,73 +396,52 @@ void Map::update(float deltaTime) {
  * @param z
  * @param range 
  */
-void Map::onExplosion(int x, int z, int range, bool notFirst) {
+void Map::onExplosion(int x, int z, int range, float duration) {
 	bool wallUpdate = false;
-	std::vector<glm::ivec2> touched;
-	if(!notFirst)
 	for (int i = x; i < x+range; ++i) { //Droite
 		glm::ivec2 pos(i, z);
 		Wall* m = this->walls[pos];
-			bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
 		if (m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;
 			break;
 		}
-		touched.push_back(pos);
-
+		bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y), duration));
 	}
 
 	for (int i = x-1; i > x-range; --i) { //Gauche
 		glm::ivec2 pos(i, z);
 		Wall* m = this->walls[pos];
-		if(!notFirst)
-			bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
-		if (!notFirst && m != nullptr) {
+		if (m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;
 			break;
 		}
-		touched.push_back(pos);
+		bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y), duration));
 	}
 
 	for (int i = z-1; i > z-range; --i) { //Haut
 		glm::ivec2 pos(x, i);
 		Wall* m = this->walls[pos];
-		if(!notFirst)
-			bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
-		if (!notFirst && m != nullptr) {
+		if (m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;
 			break;
 		}
-		touched.push_back(pos);
+		bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y), duration));
 	}
 
 	for (int i = z; i < z+range; ++i) { //Bas
 		glm::ivec2 pos(x, i);
 		Wall* m = this->walls[pos];
-		if(!notFirst)
-			bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
-		if (!notFirst && m != nullptr) {
+		if (m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;
 			break;
 		}
-		touched.push_back(pos);
+		bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y), duration));
 	}
 
-	list<Player*> playersToRemove;
-	for (Player* player : players) {
-		glm::ivec3 pos(player->getTransform().getPosition());
-		if (std::find(touched.begin(), touched.end(), glm::ivec2(pos.x,pos.z)) != touched.end())
-			playersToRemove.push_back(player);
-	}
-	for (Player* player : playersToRemove) {
-		players.remove(player);
-		delete player;
-		player = nullptr;
-	}
 	if (wallUpdate) calculateWallMesh();
 }
 

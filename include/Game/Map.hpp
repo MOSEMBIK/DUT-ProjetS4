@@ -59,7 +59,8 @@ public:
 
 	inline void removeWall(glm::ivec2 pos) { walls[pos] = nullptr; }
 	inline void removeBomb(glm::ivec2 pos) { bombs[pos] = nullptr; }
-	inline void removePlayer(Player* play) { players.remove(play); }
+	inline void removePlayer(Player* play) { players.erase(std::remove(players.begin(), players.end(), play), players.end()); }
+	void killPlayers(int x, int z);
 	ObjectPerk::Type pickUpBonus(glm::ivec2 pos);
 
 	glm::ivec2 choosePos(int iterateur = 0);
@@ -72,7 +73,7 @@ public:
 	void calculateWallMesh();
 	void update(float deltaTime);
 
-	void onExplosion(int, int, int, bool);
+	void onExplosion(int, int, int, float);
 	
 
 	///--- Fonctions utiles au déplacement des Players

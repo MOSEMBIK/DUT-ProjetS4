@@ -11,7 +11,6 @@ private:
 	int range = 2;
 	float duration = 1.0f;
 	float timer = 2.0f;
-	bool exploded = false;
 
 public:
 	Bomb(Map* map, glm::vec3 color, int range = 2);
@@ -19,7 +18,7 @@ public:
 	int getRange() {return range;}
 	float getTimer() {return timer;}
 
-	void onExplode(bool);
+	void onExplode();
 
 	virtual void update(float deltaTime);
 
