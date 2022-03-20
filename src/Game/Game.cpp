@@ -337,7 +337,8 @@ void Game::setState(GameState state)
 		}*/
 
 		// Placement des Players sur à côté des bords de la map
-		map->addPlayer(new Human(map, map->choosePos(0)));
+		Human* human = new Human(map, map->choosePos(0));
+		map->addPlayer(human);
 		for (int i = 1; i < m_gameSettings[1]; i++){
 			map->addPlayer(new Robot(map, map->choosePos(i)));
 		}
@@ -355,8 +356,24 @@ void Game::setState(GameState state)
 	 */
 	case GameState::SOLO_GAME: {
 		cerr << "Resuming Singleplayer Game..." << endl; float time = glfwGetTime();
+
+		int speed = map->getPlayers().front()->getSpeed();
+		std::string cspeed = "Vitesse : ";
+		cspeed.append(std::to_string(speed));
+
+		int range = map->getPlayers().front()->getRange();
+		std::string crange = "Portee des bombes : ";
+		crange.append(std::to_string(range));
+
+		int count = map->getPlayers().front()->getCount();
+		std::string ccount = "Nb de bombes : ";
+		ccount.append(std::to_string(count));
+
 		/* Load labels */
-		labels.push_back(new Label(mainWindow, vec2(0, 0), vec2(0.5f, 0.5f), "Hey...", 24, bomberFont, ALIGN_CENTER | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(0, 0), vec2(0.05f, 0.95f), "Stats Joueur : ", 16, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(0, 0), vec2(0.05f, 0.88f), cspeed, 16, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(0, 0), vec2(0.05f, 0.84f), ccount, 16, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
+		labels.push_back(new Label(mainWindow, vec2(0, 0), vec2(0.05f, 0.80f), crange, 16, bomberFont, ALIGN_LEFT | ALIGN_MIDDLE));
 
 		cerr << "Resumed Singleplayer Game in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 	} break;

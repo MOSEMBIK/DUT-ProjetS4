@@ -89,7 +89,13 @@
 		"variant": "cpp",
 		"*.ipp": "cpp",
 		"codecvt": "cpp",
-		"shared_mutex": "cpp"
+		"shared_mutex": "cpp",
+		"bitset": "cpp",
+		"coroutine": "cpp",
+		"random": "cpp",
+		"source_location": "cpp",
+		"numbers": "cpp",
+		"semaphore": "cpp"
 	},
     "cmake.configureOnOpen": false
 }

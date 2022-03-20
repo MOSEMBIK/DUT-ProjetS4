@@ -62,6 +62,8 @@ public:
 
 	inline int getSize() { return mapSize; }
 
+	inline std::list<Player*> getPlayers() { return players;};
+
 	void draw();
 	void calculateWallMesh();
 	void update(float deltaTime);

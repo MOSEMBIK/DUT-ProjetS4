@@ -30,6 +30,10 @@ public:
 
 	inline float getSpeed() const { return speed; }
 
+	inline int getRange() { return bombRange;}
+
+	inline int getCount() { return bombCount;}
+
 	void setBomb(glm::ivec2);
 
 	void update(float deltaTime);
