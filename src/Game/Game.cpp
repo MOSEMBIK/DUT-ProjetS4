@@ -551,14 +551,16 @@ void Game::setState(GameState state)
 				// Création du serveur avec le nombre de joueurs
 				Map* server_map = &m_server->getMap();
 				int nbPlayers = m_gameSettings[1];
+				int nbRobots = m_gameSettings[4];
 				vector<int> clients = m_server->getClientsIds();
 				int nbClients = clients.size();
 				for (int i = 0; i < nbPlayers; i++) {
 					if (i < nbClients) {
 						server_map->addPlayer(new Player(server_map, server_map->choosePos(i), clients[i]));
 					}
-					else
-						server_map->addPlayer(new Robot(server_map, server_map->choosePos(i)));
+					else if (nbRobots > 0) {
+						server_map->addPlayer(new Robot(server_map, server_map->choosePos(i))); nbRobots--;
+					}
 				}
 				m_server->broadcast(m_server->getMap().getData());
 			});
@@ -764,6 +766,10 @@ bool Game::onUpdate(AppUpdateEvent& e)
 			if (m_updatePosRot != "") {
 				map->loadPosRot(m_updatePosRot);
 				m_updatePosRot = "";
+			}
+			if (m_newBombs != "") {
+				map->loadBombs(m_newBombs);
+				m_newBombs = "";
 			}
 			map->update(m_deltaTime);
 			map->draw();

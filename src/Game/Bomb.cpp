@@ -2,7 +2,7 @@
 #include <Game/Bomb.hpp>
 #include <Game/Map.hpp>
 
-Bomb::Bomb(Map* map, glm::vec3 color, int range, float duration) : Actor(map,"assets/models/Bomb.obj"), color(color), range(range), duration(duration) {
+Bomb::Bomb(Map* map, glm::vec3 color, int range) : Actor(map,"assets/models/Bomb.obj"), color(color), range(range) {
 	this->m_materials[0].setDiffuseColor(color);
 }
 

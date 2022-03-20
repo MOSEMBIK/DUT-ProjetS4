@@ -124,7 +124,7 @@ void Map::loadMap(const std::string& mapData, int humanId) {
 	cerr << "Loaded map from string in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 }
 
-std::string Map::getPosRot() const {
+string Map::getPosRot() const {
 	string data = "#updatePosRot ";
 	for (auto player : players) {
 		if (player != nullptr)
@@ -133,7 +133,15 @@ std::string Map::getPosRot() const {
 	return data;
 }
 
-void Map::loadPosRot(const std::string& posRotData) { try {
+string Map::getPlayerData(int id) const {
+	for (auto player : players) {
+		if (player != nullptr && player->getId() == id)
+			return player->getData();
+	}
+	return "";
+}
+
+void Map::loadPosRot(const std::string& posRotData) {
 	string playersStr = posRotData;
 	vector<string> playersData;
 	for (int i=0; i < (int)playersStr.size(); i++) {
@@ -147,7 +155,7 @@ void Map::loadPosRot(const std::string& posRotData) { try {
 		vector<float> playerData;
 		for (int i = 0; i < (int)player.size(); i++) {
 			if (player[i] == ',') {
-				playerData.push_back(stof(player.substr(0, i)));
+				try { playerData.push_back(stof(player.substr(0, i))); } catch (...) {}
 				player = player.substr(i + 1, player.size() - i - 1);
 				i = 0;
 			}
@@ -163,10 +171,40 @@ void Map::loadPosRot(const std::string& posRotData) { try {
 			}
 		}
 	}
-	} catch(const std::exception& e) {
-		cerr << e.what() << " : " << posRotData << endl;
+}
+
+void Map::loadBombs(const std::string& bombsData) {
+	string bombsStr = bombsData;
+	for (int i=0; i < (int)bombsStr.size(); i++) {
+		if (bombsStr[i] == ';') {
+			string bomb = bombsStr.substr(0, i);
+			vector<string> bombData;
+			for (int i=0; i < (int)bomb.size(); i++) {
+				if (bomb[i] == ',') {
+					bombData.push_back(bomb.substr(0, i));
+					bomb = bomb.substr(i + 1, bomb.size() - i - 1);
+					i = 0;
+				}
+			} bombData.push_back(bomb);
+			int x = stoi(bombData[0]);
+			int z = stoi(bombData[1]);
+			vec3 color = vec3(stof(bombData[2]), stof(bombData[3]), stof(bombData[4]));
+			float range = stof(bombData[5]);
+
+			addBomb(new Bomb(this, color, range), glm::ivec2(x, z));
+			bombsStr = bombsStr.substr(i + 1, bombsStr.size() - i - 1);
+			i = 0;
+		}
 	}
-	
+}
+
+void Map::movePlayer(int id, int x, int z) {
+	for (auto player : players) {
+		if (player != nullptr && player->getId() == id) {
+			player->move(x, z);
+			return;
+		}
+	}
 }
 
 void Map::generateMap(int size, int wallPercentage) {

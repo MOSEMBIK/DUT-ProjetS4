@@ -41,9 +41,8 @@ Player::Player(Map* map, string& data) : Actor(map,"assets/models/Bomber.obj") {
 	this->id = stoi(playerData[11]);
 }
 
-void Player::setBomb(glm::ivec2 coord){
-    map->addBomb( new Bomb(map, glm::vec3(0.0f,0.0f,0.5f)),    coord );
-	cerr << "Fire is in the hole !" << endl;
+void Player::setBomb(glm::ivec2 coord) {
+    map->addBomb( new Bomb(map, color, bombRange), coord );
 }
 
 void Player::update(float deltaTime) {
@@ -122,6 +121,11 @@ string Player::getPosRot() const {
 void Player::loadPosRot(vec3 pos, vec3 rot, int x, int z) {
 	m_transform.setPosition(pos);
 	m_transform.setRotation(rot);
+	this->x = x;
+	this->z = z;
+}
+
+void Player::move(int x, int z) {
 	this->x = x;
 	this->z = z;
 }

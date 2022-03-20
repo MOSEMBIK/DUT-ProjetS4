@@ -74,7 +74,6 @@ void Server::ServerClient::read() {
 		else {
 			m_server->broadcast("#disconnected " + self->alias(), self);
 			m_server->m_clients.remove(self);
-			m_server->process_quit(self, string {});
 		}
 	});
 }

@@ -34,7 +34,7 @@ void Client::handle_read() {
 	}
 }
 
-Client::~Client() {
+void Client::stop() {
 	// Fermeture du socket.
 	m_socket.close();
 	// Arrêt du thread.
@@ -98,6 +98,11 @@ void Client::process_updatePosRot(const string & message) {
 // Commande "#playerslist"
 void Client::process_playersList(const string & message) {
 	m_game->m_playersList = message;
+}
+
+// Commande "#bomb"
+void Client::process_bomb(const string & message) {
+	m_game->m_newBombs += message + ";";
 }
 
 // Commande "#restart"

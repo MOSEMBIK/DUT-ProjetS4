@@ -66,10 +66,8 @@ class Server {
 	// Traitement des commandes
 	void process (ServerClientPtr, const std::string &);
 	void process_join (ServerClientPtr client, const std::string & = "");
-	void process_quit (ServerClientPtr client, const std::string & = "");
-	void process_list (ServerClientPtr client, const std::string & = "");
-	void process_private (ServerClientPtr client, const std::string & = "");
-	void process_amogus (ServerClientPtr client, const std::string & = "");
+	void process_move (ServerClientPtr client, const std::string & = "");
+	void process_bomb (ServerClientPtr client, const std::string & = "");
 
 	void process_message (ServerClientPtr, const std::string &);
 
@@ -80,7 +78,7 @@ class Server {
 
   public:
 	Server (unsigned short port = 42069);
-	~Server ();
+	void stop ();
 	void start (); // Démarrage.
 
 	inline void setMap (Map map) { m_map = map; }
@@ -97,4 +95,3 @@ class Server {
 	static const std::string INVALID_RECIPIENT;
 	static const std::string MISSING_ARGUMENT;
 };
-

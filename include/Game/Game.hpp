@@ -76,6 +76,7 @@ public:
 	std::string m_mapInfo;
 	std::string m_updatePosRot;
 	std::string m_playersList;
+	std::string m_newBombs;
 	int m_playerId = -1;
 
 	bool postInit();

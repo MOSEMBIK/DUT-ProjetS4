@@ -22,12 +22,13 @@ class Client {
 	void process_loadMap (const std::string & message);
 	void process_updatePosRot (const std::string & message);
 	void process_playersList (const std::string & message);
+	void process_bomb (const std::string & message);
 	void process_restart (const std::string & message);
 
   public:
 	// constructeur : nom du serveur, port et, éventuellement, objet parent.
 	Client (Game* game, const std::string & host, unsigned short port = 42069);
-	~Client ();
+	void stop ();
 
 	// Envoi d'un message.
 	void write (const std::string &);
@@ -48,6 +49,7 @@ class Client {
 		{"#loadMap", &Client::process_loadMap},
 		{"#updatePosRot", &Client::process_updatePosRot},
 		{"#playersList", &Client::process_playersList},
+		{"#bomb", &Client::process_bomb},
 		{"#restart", &Client::process_restart}
 	};
 };
