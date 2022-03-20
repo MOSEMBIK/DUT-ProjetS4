@@ -29,7 +29,7 @@ bool Actor::loadOBJ(const char* filename) {
 	return Resource::loadOBJ(filename, this->m_meshes, this->m_materials);
 }
 
-void Actor::draw() const {
+void Actor::draw(int isLit) const {
 	for (unsigned int i = 0; i < this->m_meshes.size(); i++) {
 		const Shader * shader;
 		if (this->m_materials.size() > i) {
@@ -46,6 +46,7 @@ void Actor::draw() const {
 
 		shader->use();
 		shader->setUniformValue("u_M", M);
+		shader->setUniformValue("u_isLit", isLit);
 		shader->setUniformValue("u_iTM", glm::mat3(glm::transpose(glm::inverse(M))));
 		shader->setUniformValue("u_V", Game::getInstance()->getMainCamera()->getViewMatrix());
 		shader->setUniformValue("u_P", Game::getInstance()->getMainCamera()->getProjectionMatrix(m_window->getWindow()));

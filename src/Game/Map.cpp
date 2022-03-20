@@ -14,7 +14,7 @@
 using namespace std;
 using namespace glm;
 
-Map::Map() : mapActor(this), mapMaterial(*Shader::find("Base"))
+Map::Map() : mapActor(this), mapMaterial(Shader::find("Base"))
 {
 	Resource::loadTexture("assets/map_texture.png", mapTexture);
 	Resource::loadTexture("assets/map_texture_specular.png", mapTextureSpecular);
@@ -336,6 +336,11 @@ void Map::draw() {
 			bonus.second->draw();
 	}
 
+	for (auto bombExplosion : bombsExplosions) {
+		if(bombExplosion != nullptr)
+			bombExplosion->draw(false);
+	}
+
 	mapActor.draw();
 }
 
@@ -350,6 +355,18 @@ void Map::update(float deltaTime) {
 	for (auto bomb : bombs) {
 		if (bomb.second != nullptr)
 			bomb.second->update(deltaTime);
+	}
+
+	std::list<BombExplosion*> exps;
+	for (auto be : bombsExplosions)
+	{
+		if(be->m_time <= 0)
+			exps.push_back(be);
+	}
+	for (auto exp : exps)
+	{
+		bombsExplosions.remove(exp);
+		delete exp;
 	}
 }
 
@@ -368,7 +385,7 @@ void Map::onExplosion(int x, int z, int range) {
 	for (int i = x; i < x+range; ++i) { //Droite
 		glm::ivec2 pos(i, z);
 		Wall* m = this->walls[pos];
-
+		bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
 		if (m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;
@@ -381,7 +398,7 @@ void Map::onExplosion(int x, int z, int range) {
 	for (int i = x-1; i > x-range; --i) { //Gauche
 		glm::ivec2 pos(i, z);
 		Wall* m = this->walls[pos];
-
+		bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
 		if (m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;
@@ -393,7 +410,7 @@ void Map::onExplosion(int x, int z, int range) {
 	for (int i = z-1; i > z-range; --i) { //Haut
 		glm::ivec2 pos(x, i);
 		Wall* m = this->walls[pos];
-
+		bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
 		if (m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;
@@ -405,7 +422,7 @@ void Map::onExplosion(int x, int z, int range) {
 	for (int i = z; i < z+range; ++i) { //Bas
 		glm::ivec2 pos(x, i);
 		Wall* m = this->walls[pos];
-
+		bombsExplosions.push_back(new BombExplosion(this, glm::vec3(pos.x, 0, pos.y)));
 		if (m != nullptr) {
 			m->removeHealth();
 			wallUpdate = true;

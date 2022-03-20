@@ -4,6 +4,7 @@
 #include <Game/Wall.hpp>
 #include <Game/Player.hpp>
 #include <Game/ObjectPerk.hpp>
+#include <Game/BombExplosion.hpp>
 
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
@@ -21,6 +22,7 @@ private:
 	std::map<glm::ivec2, Wall*, cmpVec> walls;
 	std::map<glm::ivec2, Bomb*, cmpVec> bombs;
 	std::list<Player*> players;
+	std::list<BombExplosion*> bombsExplosions;
 	std::map<glm::ivec2, ObjectPerk*, cmpVec> bonuses;
 
 	Actor mapActor;
