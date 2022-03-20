@@ -11,19 +11,39 @@ Robot::Robot(Map* map, glm::ivec2 pos) : Player(map, pos) {
 }
 
 void Robot::update(float deltaTime) {
-	glm::vec3 pos = m_transform.getPosition();
-	if (pos.x > x) pos.x += 0.9f;
-	if (pos.z > z) pos.z += 0.9f;
-
-
 	cerr << "Updating Robot..." << endl;
 	Transform& transform = getTransform();
+	glm::vec3 pos = transform.getPosition();
 	
 	// glm::ivec2 sBomb = shouldBomb();
 	// if (sBomb[0] != -1 && sBomb[1] != -1) {
 	// 	this->setBomb(sBomb);
 	// 	setTrajet(genTrajetMann(choseDestination()));
 	// }
+
+	if (trajet.size()<=1 || (trajet[case_of_t].x == trajet.back().x && trajet[case_of_t].y == trajet.back().y)) {
+		cerr << "Trajet fini" << endl;
+		setTrajet(genTrajetMann(choseDestination(9)));
+	}
+
+	if (pos.x > x) pos.x += 0.9f;
+	if (pos.z > z) pos.z += 0.9f;
+
+	if (case_of_t + 1 < trajet.size() && (pos.x == x && pos.z == z)) {
+		case_of_t++;
+	}
+	x = trajet[case_of_t][0];
+	z = trajet[case_of_t][1];
+
+	cerr << pos.x << " - " << pos.z << endl;
+	cerr << x << " - " << z << endl;
+	cerr << "Case of T : " << case_of_t << endl;
+	cerr << "trajet"<< endl;
+	cerr << "{ "<< endl;
+	for (auto var : trajet){
+		cerr << "( " << var[0] << ", " << var[1] << " ), "<< endl;
+	}
+	cerr << " }" << endl;
 
 	if (trajet.size()<=1 || (trajet[case_of_t].x == trajet.back().x && trajet[case_of_t].y == trajet.back().y)) {
 		cerr << "Trajet fini" << endl;
