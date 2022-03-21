@@ -10,6 +10,8 @@ using namespace glm;
 
 
 Wall::Wall(Map* map, Type type): Actor(map), type(type) {
+	if (map != nullptr)
+		seed = map->getWallSeed();
 	m_meshes.push_back(Primitives::cube());
 	Material mat;
 	switch (type) {
@@ -33,6 +35,8 @@ Wall::Wall(Map* map, Type type): Actor(map), type(type) {
 }
 
 Wall::Wall(Map* map, string& data) : Actor(map) {
+	if (map != nullptr)
+		seed = map->getWallSeed();
 	// data string example : [2,0,5,2,1]
 	vector<string> wallData;
 	for (int i = 0; i < (int)data.size(); i++) {
@@ -86,7 +90,8 @@ string Wall::getData() {
 void Wall::onDestroy() {
 	// summon un bonus ?
 	ivec2 pos(m_transform.getPosition().x, m_transform.getPosition().z);
-	int rdm = rand()%100;
+	seed = int(seed * 17.17f) % 1000000;
+	int rdm = seed % 100;
 	if (rdm < 10){
 		new ObjectPerk(map,pos,ObjectPerk::Type::Speed);
 	}

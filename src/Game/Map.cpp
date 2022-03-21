@@ -39,13 +39,11 @@ Map::~Map() {
 }
 
 string Map::getData() const {
-	string data = "#loadMap " + to_string(mapSize) + "|";
+	string data = "#loadMap "
+	+ to_string(mapSize) + "|"
+	+ to_string(m_wallPercentage) + "|"
+	+ to_string(m_seed) + "|";
 
-	for (auto wall : walls) {
-		if (wall.second != nullptr)
-			data += wall.second->getData() + ";";
-	}
-	data += "|";
 	for (auto player : players) {
 		if (player != nullptr)
 			data += player->getData() + ";";
@@ -57,6 +55,7 @@ string Map::getData() const {
 
 void Map::loadMap(const std::string& mapData, int humanId) {
 	cerr << endl << "Loading map from string.." << endl; float time = glfwGetTime();
+	string data = mapData;
 
 	for (auto wall : walls) {
 		if (wall.second != nullptr)
@@ -77,34 +76,24 @@ void Map::loadMap(const std::string& mapData, int humanId) {
 
 
 	// Parsing map size
-	int pos = mapData.find("|");
-	string sizeStr = mapData.substr(0, pos);
-	this->mapSize = stoi(sizeStr);
+	int pos = data.find("|");
+	this->mapSize = stoi(data.substr(0, pos));
+	data = data.substr(pos + 1);
 
-	// Parsing walls
-	pos = mapData.find("|", pos);
-	int pos2 = mapData.find("|", pos + 1);
-	string wallsStr = mapData.substr(pos + 1, pos2 - pos - 2);
-	vector<string> wallsData;
-	for (int i=0; i < (int)wallsStr.size(); i++) {
-		if (wallsStr[i] == ';') {
-			wallsData.push_back(wallsStr.substr(0, i));
-			wallsStr = wallsStr.substr(i + 1, wallsStr.size() - i - 1);
-			i = 0;
-		}
-	} wallsData.push_back(wallsStr);
+	// Parsing wall percentage
+	pos = data.find("|");
+	this->m_wallPercentage = stoi(data.substr(0, pos));
+	data = data.substr(pos + 1);
 
-	for (auto wall : wallsData) {
-		wall = wall.substr(1, wall.size() - 2);
-		Wall* w = new Wall(this, wall);
-		ivec2 pos(w->getTransform().getPosition().x, w->getTransform().getPosition().z);
-		walls[pos] = w;
-	}
-	calculateWallMesh();
+	// Parsing seed
+	pos = data.find("|");
+	this->m_seed = stoi(data.substr(0, pos));
+	data = data.substr(pos + 1);
+	generateMap(mapSize, m_wallPercentage);
 
 	// Parsing players
-	pos = mapData.find("|", pos2);
-	string playersStr = mapData.substr(pos2 + 1, pos - pos2 - 3);
+	pos = data.find("|");
+	string playersStr = data.substr(0, pos - 2);
 	vector<string> playersData;
 	for (int i=0; i < (int)playersStr.size(); i++) {
 		if (playersStr[i] == ';') {
@@ -116,11 +105,12 @@ void Map::loadMap(const std::string& mapData, int humanId) {
 	for (auto player : playersData) {
 		player = player.substr(1, player.size() - 2);
 		if (humanId != stoi(player.substr(player.find_last_of(",") + 1, player.size())))
-			players.push_back(new Player(this, player));
+			addPlayer(new Player(this, player));
 		else
-			players.push_back(new Human(this, player));
+			addPlayer(new Human(this, player));
 	}
 
+	calculateWallMesh();
 	cerr << "Loaded map from string in " << (glfwGetTime() - time) * 1000 << "ms" << endl;
 }
 
@@ -219,10 +209,15 @@ void Map::generateMap(int size, int wallPercentage) {
 	walls.clear();
 	if (size % 2 == 0)
 		size++;
-	this->mapSize = size;;
+	this->m_wallCount = 0;
+	this->mapSize = size;
+	this->m_wallPercentage = wallPercentage;
 	int sizeMax = size-1;
+	int seed = m_seed;
 	for (int i = 0; i < size; i++) {
 		for (int j = 0; j < size; j++) {
+			this->m_wallCount++;
+			seed = int(seed * 17.17f) % 1000000;
 			ivec2 pos(i, j);
 			/**
 			 * @brief Metal Walls
@@ -234,8 +229,8 @@ void Map::generateMap(int size, int wallPercentage) {
 			/**
 			 * @brief Random Walls
 			 */
-			else if (rand() % 100 < wallPercentage) {
-				walls[pos] = new Wall(this, (rand()%5 == 0) ? Wall::Type::Stone : Wall::Type::Wood);
+			else if (seed % 100 < wallPercentage) {
+				walls[pos] = new Wall(this, (seed % 5 == 0) ? Wall::Type::Stone : Wall::Type::Wood);
 				walls[pos]->getTransform().setPosition(vec3(i, 0, j));
 			}
 		}
@@ -332,7 +327,7 @@ glm::ivec2 Map::choosePos(int iterateur) {
 	return pos;
 }
 	
-void Map::draw() {	
+void Map::draw() {
 	for (auto player : players) {
 		if (player != nullptr)
 			player->draw();

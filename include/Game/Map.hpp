@@ -32,6 +32,9 @@ private:
 	Texture* mapTextureSpecular;
 
 	int mapSize;
+	int m_wallPercentage = 90;
+	int m_seed = rand();
+	int m_wallCount = 0;
   
 public:
 	std::map<glm::ivec2, std::vector<glm::ivec2>, cmpVec> edges_map; 			// Graph des accessibilités pour chaque position
@@ -68,6 +71,8 @@ public:
 	//void removePlayer()
 
 	inline int getSize() { return mapSize; }
+	inline int getSeed() { return m_seed; }
+	inline int getWallSeed() { return int(m_seed * (m_wallCount*0.017f)) % 1000000; }
 
 	void draw();
 	void calculateWallMesh();

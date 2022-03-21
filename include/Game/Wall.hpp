@@ -19,6 +19,7 @@ public:
 private:
 	Type type;
 	int health;
+	int seed = 0;
 
 	void onDestroy();
 
